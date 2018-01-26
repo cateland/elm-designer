@@ -1,8 +1,8 @@
 module DraggableSystem exposing (..)
 
 import Debug
-import Msgs
-import Components exposing (Entity, Component)
+import Msgs exposing (Msg(Press, Move, Release))
+import Components exposing (Entity, Component(Shape, Draggable), Draggable(Dragged, NotDragged))
 import Draggable exposing (getDraggable, updateDraggable)
 import Shape exposing (..)
 import Math exposing (isVectorOver, postionToPoint2d, translateBy)
@@ -15,16 +15,16 @@ applyDraggable msg dragging entity =
     case
         msg
     of
-        Msgs.Press position ->
+        Press position ->
             case
                 ( getDraggable entity, getShape entity )
             of
-                ( Just (Components.Draggable _), Just (Components.Shape entityShape) ) ->
+                ( Just (Draggable _), Just (Shape entityShape) ) ->
                     case
                         isVectorOver (postionToPoint2d position) entityShape
                     of
                         True ->
-                            updateDraggable (Components.Draggable Components.Dragged) entity
+                            updateDraggable (Draggable Dragged) entity
 
                         False ->
                             entity
@@ -32,23 +32,23 @@ applyDraggable msg dragging entity =
                 _ ->
                     entity
 
-        Msgs.Move position ->
+        Move position ->
             case
                 ( getDraggable entity, getShape entity, dragging )
             of
-                ( Just (Components.Draggable (Components.Dragged)), Just (Components.Shape entityShape), Just drag ) ->
-                    updateShape (Components.Shape (translateBy (Vector2d.fromComponents ( toFloat (drag.currentPos.x - drag.previousPos.x), toFloat (drag.currentPos.y - drag.previousPos.y) )) entityShape)) entity
+                ( Just (Draggable Dragged), Just (Shape entityShape), Just drag ) ->
+                    updateShape (Shape (translateBy (Vector2d.fromComponents ( toFloat (drag.currentPos.x - drag.previousPos.x), toFloat (drag.currentPos.y - drag.previousPos.y) )) entityShape)) entity
 
                 -- updatePosition (Components.Position position) entity
                 _ ->
                     entity
 
-        Msgs.Release position ->
+        Release position ->
             case
                 Debug.log "Release" (getDraggable entity)
             of
-                Just (Components.Draggable _) ->
-                    updateDraggable (Components.Draggable Components.NotDragged) entity
+                Just (Draggable _) ->
+                    updateDraggable (Draggable NotDragged) entity
 
                 _ ->
                     entity

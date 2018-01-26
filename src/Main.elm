@@ -3,11 +3,11 @@ module Main exposing (main)
 import Html exposing (Html, div, text)
 import Html.Events
 import Json.Decode as Decode
-import Mouse exposing (Position)
+import Mouse exposing (moves, ups, Position)
 import Svg exposing (rect, svg)
 import Svg.Attributes exposing (height, id, width, x, y)
-import Msgs exposing (Msg)
-import Components exposing (Entity(..), Component(..))
+import Msgs exposing (Msg(..))
+import Components exposing (Entity(..), Component(..), Draggable(Dragged, NotDragged), Shape(BoundingBox2d))
 import Shape exposing (..)
 import DraggableSystem exposing (..)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
@@ -30,7 +30,7 @@ box1 =
     Entity
         [ Drawable
         , Shape
-            (Components.BoundingBox2d
+            (BoundingBox2d
                 (BoundingBox2d.with
                     { minX = 50
                     , maxX = 70
@@ -39,7 +39,7 @@ box1 =
                     }
                 )
             )
-        , Draggable Components.NotDragged
+        , Draggable NotDragged
         ]
 
 
@@ -48,7 +48,7 @@ box2 =
     Entity
         [ Drawable
         , Shape
-            (Components.BoundingBox2d
+            (BoundingBox2d
                 (BoundingBox2d.with
                     { minX = 200
                     , maxX = 220
@@ -57,7 +57,7 @@ box2 =
                     }
                 )
             )
-        , Draggable Components.NotDragged
+        , Draggable NotDragged
         ]
 
 
@@ -86,13 +86,13 @@ updateEntities msg model =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case Debug.log "Messages" msg of
-        Msgs.Press pos ->
+        Press pos ->
             ( updateEntities msg { model | drag = Just (Drag pos pos pos) }, Cmd.none )
 
-        Msgs.Release pos ->
+        Release pos ->
             ( updateEntities msg { model | drag = Nothing }, Cmd.none )
 
-        Msgs.Move pos ->
+        Move pos ->
             case
                 model.drag
             of
@@ -116,7 +116,7 @@ renderEntity entity =
             case
                 shape
             of
-                Components.BoundingBox2d box ->
+                BoundingBox2d box ->
                     let
                         extrema =
                             BoundingBox2d.extrema box
@@ -149,13 +149,13 @@ customOnMouseDown =
         decoder =
             Decode.oneOf
                 [ Decode.map
-                    Msgs.Press
+                    Press
                     (Decode.map2
                         Position
                         (Decode.field "pageX" Decode.int)
                         (Decode.field "pageY" Decode.int)
                     )
-                , Decode.succeed (Msgs.Press (Mouse.Position 500 500))
+                , Decode.succeed (Press (Position 500 500))
                 ]
     in
         Html.Events.on "mousedown" decoder
@@ -172,4 +172,4 @@ subscriptions model =
             Sub.none
 
         Just _ ->
-            Sub.batch [ Mouse.moves Msgs.Move, Mouse.ups Msgs.Release ]
+            Sub.batch [ Mouse.moves Move, Mouse.ups Release ]
