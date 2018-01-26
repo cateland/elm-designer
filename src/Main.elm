@@ -11,17 +11,12 @@ import Components exposing (Entity(..), Component(..))
 import Shape exposing (..)
 import DraggableSystem exposing (..)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
+import Math exposing (Drag)
 
 
 main : Program Never Model Msg
 main =
     Html.program { init = init, view = view, update = update, subscriptions = subscriptions }
-
-
-type alias Drag =
-    { startPos : Position
-    , currentPos : Position
-    }
 
 
 type alias Model =
@@ -37,8 +32,8 @@ box1 =
         , Shape
             (Components.BoundingBox2d
                 (BoundingBox2d.with
-                    { minX = 100
-                    , maxX = 120
+                    { minX = 50
+                    , maxX = 70
                     , minY = 50
                     , maxY = 70
                     }
@@ -55,13 +50,14 @@ box2 =
         , Shape
             (Components.BoundingBox2d
                 (BoundingBox2d.with
-                    { minX = 50
-                    , maxX = 70
+                    { minX = 200
+                    , maxX = 220
                     , minY = 250
                     , maxY = 300
                     }
                 )
             )
+        , Draggable Components.NotDragged
         ]
 
 
@@ -70,16 +66,9 @@ init =
     ( Model Nothing [ box1, box2 ], Cmd.none )
 
 
-updateEntity : Msg -> Maybe a -> Entity -> Entity
+updateEntity : Msg -> Maybe Drag -> Entity -> Entity
 updateEntity msg drag entity =
-    case
-        drag
-    of
-        Just dragging ->
-            applyDraggable msg dragging entity
-
-        Nothing ->
-            entity
+    applyDraggable msg drag entity
 
 
 updateEntities : Msg -> Model -> Model
@@ -96,15 +85,26 @@ updateEntities msg model =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
+    case Debug.log "Messages" msg of
         Msgs.Press pos ->
-            ( updateEntities msg { model | drag = Just (Drag pos pos) }, Cmd.none )
+            ( updateEntities msg { model | drag = Just (Drag pos pos pos) }, Cmd.none )
 
         Msgs.Release pos ->
             ( updateEntities msg { model | drag = Nothing }, Cmd.none )
 
-        _ ->
-            ( updateEntities msg model, Cmd.none )
+        Msgs.Move pos ->
+            case
+                model.drag
+            of
+                Just drag ->
+                    let
+                        newDrag =
+                            Just (Drag drag.startPos drag.currentPos pos)
+                    in
+                        ( updateEntities msg { model | drag = newDrag }, Cmd.none )
+
+                Nothing ->
+                    ( updateEntities msg model, Cmd.none )
 
 
 renderEntity : Entity -> Html msg
@@ -121,7 +121,13 @@ renderEntity entity =
                         extrema =
                             BoundingBox2d.extrema box
                     in
-                        rect [ width (toString (extrema.maxX - extrema.minX)), height (toString (extrema.maxY - extrema.minY)), x (toString extrema.minX), y (toString extrema.minX) ] []
+                        rect
+                            [ width (toString (extrema.maxX - extrema.minX))
+                            , height (toString (extrema.maxY - extrema.minY))
+                            , x (toString extrema.minX)
+                            , y (toString extrema.minY)
+                            ]
+                            []
 
         _ ->
             div [] []

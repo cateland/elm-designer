@@ -1,13 +1,16 @@
 module DraggableSystem exposing (..)
 
+import Debug
 import Msgs
-import Components exposing (Entity)
+import Components exposing (Entity, Component)
 import Draggable exposing (getDraggable, updateDraggable)
 import Shape exposing (..)
-import Math exposing (isVectorOver, postionToPoint2d)
+import Math exposing (isVectorOver, postionToPoint2d, translateBy)
+import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
+import Math exposing (Drag)
 
 
-applyDraggable : Msgs.Msg -> a -> Entity -> Entity
+applyDraggable : Msgs.Msg -> Maybe Drag -> Entity -> Entity
 applyDraggable msg dragging entity =
     case
         msg
@@ -31,10 +34,10 @@ applyDraggable msg dragging entity =
 
         Msgs.Move position ->
             case
-                ( getDraggable entity, getShape entity )
+                ( getDraggable entity, getShape entity, dragging )
             of
-                ( Just (Components.Draggable (Components.Dragged)), Just (Components.Shape entityShape) ) ->
-                    entity
+                ( Just (Components.Draggable (Components.Dragged)), Just (Components.Shape entityShape), Just drag ) ->
+                    updateShape (Components.Shape (translateBy (Vector2d.fromComponents ( toFloat (drag.currentPos.x - drag.previousPos.x), toFloat (drag.currentPos.y - drag.previousPos.y) )) entityShape)) entity
 
                 -- updatePosition (Components.Position position) entity
                 _ ->
@@ -42,7 +45,7 @@ applyDraggable msg dragging entity =
 
         Msgs.Release position ->
             case
-                (getDraggable entity)
+                Debug.log "Release" (getDraggable entity)
             of
                 Just (Components.Draggable _) ->
                     updateDraggable (Components.Draggable Components.NotDragged) entity
