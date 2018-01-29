@@ -3,12 +3,13 @@ module Components
         ( Entity(Entity)
         , Component(Drawable, Shape, Draggable)
         , Draggable(Dragged, NotDragged)
-        , Shape(BoundingBox2d)
+        , Shape(BoundingBox2d, Circle2d)
         , addComponent
         )
 
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
+import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
 
 
 addComponent : Component -> Entity -> Entity
@@ -27,6 +28,7 @@ type Draggable
 
 type Shape
     = BoundingBox2d BoundingBox2d
+    | Circle2d Circle2d
 
 
 type Component

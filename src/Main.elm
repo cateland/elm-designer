@@ -5,12 +5,20 @@ import Html.Events
 import Json.Decode as Decode
 import Mouse exposing (moves, ups, Position)
 import Svg exposing (rect, svg)
-import Svg.Attributes exposing (height, id, width, x, y)
+import Svg.Attributes exposing (height, id, width, x, y, r, cx, cy)
 import Msgs exposing (Msg(..))
-import Components exposing (Entity(..), Component(..), Draggable(Dragged, NotDragged), Shape(BoundingBox2d))
+import Components
+    exposing
+        ( Entity(..)
+        , Component(..)
+        , Draggable(Dragged, NotDragged)
+        , Shape(BoundingBox2d, Circle2d)
+        )
 import Shape exposing (..)
 import DraggableSystem exposing (..)
+import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
+import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
 import Math exposing (Drag)
 
 
@@ -61,9 +69,29 @@ box2 =
         ]
 
 
+circle1 : Entity
+circle1 =
+    Entity
+        [ Drawable
+        , Shape
+            (Circle2d
+                (Circle2d.with
+                    { centerPoint = Point2d.fromCoordinates ( 70, 120 )
+                    , radius = 10
+                    }
+                )
+            )
+        , Draggable NotDragged
+        ]
+
+
+
+--{ centerPoint : Point2d, radius : Float }
+
+
 init : ( Model, Cmd msg )
 init =
-    ( Model Nothing [ box1, box2 ], Cmd.none )
+    ( Model Nothing [ box1, box2, circle1 ], Cmd.none )
 
 
 updateEntity : Msg -> Maybe Drag -> Entity -> Entity
@@ -128,6 +156,16 @@ renderEntity entity =
                             , y (toString extrema.minY)
                             ]
                             []
+
+                Circle2d circle ->
+                    let
+                        ( x, y ) =
+                            Point2d.coordinates (Circle2d.centerPoint circle)
+
+                        radius =
+                            Circle2d.radius circle
+                    in
+                        Svg.circle [ r (toString radius), cx (toString x), cy (toString y) ] []
 
         _ ->
             div [] []

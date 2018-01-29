@@ -37,7 +37,14 @@ applyDraggable msg dragging entity =
                 ( getDraggable entity, getShape entity, dragging )
             of
                 ( Just (Draggable Dragged), Just (Shape entityShape), Just drag ) ->
-                    updateShape (Shape (translateBy (Vector2d.fromComponents ( toFloat (drag.currentPos.x - drag.previousPos.x), toFloat (drag.currentPos.y - drag.previousPos.y) )) entityShape)) entity
+                    updateShape
+                        (Shape
+                            (translateBy
+                                (Vector2d.fromComponents ( toFloat (drag.currentPos.x - drag.previousPos.x), toFloat (drag.currentPos.y - drag.previousPos.y) ))
+                                entityShape
+                            )
+                        )
+                        entity
 
                 -- updatePosition (Components.Position position) entity
                 _ ->
@@ -45,7 +52,7 @@ applyDraggable msg dragging entity =
 
         Release position ->
             case
-                Debug.log "Release" (getDraggable entity)
+                getDraggable entity
             of
                 Just (Draggable _) ->
                     updateDraggable (Draggable NotDragged) entity
