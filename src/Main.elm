@@ -20,6 +20,7 @@ import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
 import Math exposing (Drag)
+import Dict exposing (Dict)
 
 
 main : Program Never Model Msg
@@ -29,13 +30,14 @@ main =
 
 type alias Model =
     { drag : Maybe Drag
-    , entities : List Entity
+    , entities : Dict String Entity
     }
 
 
-box1 : Entity
+box1 : ( String, Entity )
 box1 =
-    Entity
+    ( "box1"
+    , Entity
         [ Drawable
         , Shape
             (BoundingBox2d
@@ -49,11 +51,13 @@ box1 =
             )
         , Draggable NotDragged
         ]
+    )
 
 
-box2 : Entity
+box2 : ( String, Entity )
 box2 =
-    Entity
+    ( "box2"
+    , Entity
         [ Drawable
         , Shape
             (BoundingBox2d
@@ -67,11 +71,13 @@ box2 =
             )
         , Draggable NotDragged
         ]
+    )
 
 
-circle1 : Entity
+circle1 : ( String, Entity )
 circle1 =
-    Entity
+    ( "circle1"
+    , Entity
         [ Drawable
         , Shape
             (Circle2d
@@ -83,6 +89,7 @@ circle1 =
             )
         , Draggable NotDragged
         ]
+    )
 
 
 
@@ -91,12 +98,12 @@ circle1 =
 
 init : ( Model, Cmd msg )
 init =
-    ( Model Nothing [ box1, box2, circle1 ], Cmd.none )
+    ( Model Nothing (Dict.fromList [ box1, box2, circle1 ]), Cmd.none )
 
 
-updateEntity : Msg -> Maybe Drag -> Entity -> Entity
-updateEntity msg drag entity =
-    applyDraggable msg drag entity
+updateEntity : Msg -> Maybe Drag -> String -> Entity -> Entity
+updateEntity msg drag key components =
+    applyDraggable msg drag components
 
 
 updateEntities : Msg -> Model -> Model
@@ -106,7 +113,7 @@ updateEntities msg model =
             updateEntity msg model.drag
 
         newEntities =
-            List.map configuredUpdater model.entities
+            Dict.map configuredUpdater model.entities
     in
         { model | entities = newEntities }
 
@@ -135,8 +142,8 @@ update msg model =
                     ( updateEntities msg model, Cmd.none )
 
 
-renderEntity : Entity -> Html msg
-renderEntity entity =
+renderEntity : ( String, Entity ) -> Html msg
+renderEntity ( key, entity ) =
     case
         (getShape entity)
     of
@@ -177,7 +184,7 @@ view model =
         []
         [ svg
             [ id "svg", width "400", height "400", customOnMouseDown ]
-            (List.map renderEntity model.entities)
+            (List.map renderEntity (Dict.toList model.entities))
         ]
 
 
