@@ -1,9 +1,10 @@
 module Components
     exposing
         ( Entity(Entity)
-        , Component(Drawable, Shape, Draggable)
+        , Component(Drawable, Shape, Draggable, Node, Port, Node)
         , Draggable(Dragged, NotDragged)
         , Shape(BoundingBox2d, Circle2d)
+        , Port(PortSource, PortSink)
         , addComponent
         )
 
@@ -31,10 +32,18 @@ type Shape
     | Circle2d Circle2d
 
 
+type Port
+    = PortSource String
+    | PortSink String
+
+
 type Component
     = Drawable
     | Shape Shape
     | Draggable Draggable
+    | Node
+    | Port Port
+    | Link
 
 
 type Entity

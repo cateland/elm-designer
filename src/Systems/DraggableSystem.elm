@@ -1,13 +1,11 @@
 module DraggableSystem exposing (..)
 
-import Debug
 import Msgs exposing (Msg(Press, Move, Release))
 import Components exposing (Entity, Component(Shape, Draggable), Draggable(Dragged, NotDragged))
 import Draggable exposing (getDraggable, updateDraggable)
 import Shape exposing (..)
-import Math exposing (isVectorOver, postionToPoint2d, translateBy)
+import Math exposing (Drag, isVectorOver, postionToPoint2d, translateBy)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
-import Math exposing (Drag)
 
 
 applyDraggable : Msgs.Msg -> Maybe Drag -> Entity -> Entity

@@ -13,9 +13,11 @@ import Components
         , Component(..)
         , Draggable(Dragged, NotDragged)
         , Shape(BoundingBox2d, Circle2d)
+        , Port(PortSource)
         )
 import Shape exposing (..)
 import DraggableSystem exposing (..)
+import PortSystem exposing (..)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
@@ -63,13 +65,14 @@ box2 =
             (BoundingBox2d
                 (BoundingBox2d.with
                     { minX = 200
-                    , maxX = 220
+                    , maxX = 300
                     , minY = 250
-                    , maxY = 300
+                    , maxY = 320
                     }
                 )
             )
         , Draggable NotDragged
+        , Node
         ]
     )
 
@@ -88,6 +91,7 @@ circle1 =
                 )
             )
         , Draggable NotDragged
+        , Port (PortSource "box2")
         ]
     )
 
@@ -101,16 +105,18 @@ init =
     ( Model Nothing (Dict.fromList [ box1, box2, circle1 ]), Cmd.none )
 
 
-updateEntity : Msg -> Maybe Drag -> String -> Entity -> Entity
-updateEntity msg drag key components =
-    applyDraggable msg drag components
+updateEntity : Dict String Entity -> Msg -> Maybe Drag -> String -> Entity -> Entity
+updateEntity entities msg drag key components =
+    components
+        |> applyDraggable msg drag
+        |> applyPort entities
 
 
 updateEntities : Msg -> Model -> Model
 updateEntities msg model =
     let
         configuredUpdater =
-            updateEntity msg model.drag
+            updateEntity model.entities msg model.drag
 
         newEntities =
             Dict.map configuredUpdater model.entities
