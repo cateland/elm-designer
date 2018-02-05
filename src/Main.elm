@@ -13,7 +13,7 @@ import Components
         , Component(..)
         , Draggable(Dragged, NotDragged)
         , Shape(BoundingBox2d, Circle2d)
-        , Port(PortSource)
+        , Port(PortSource, PortSink)
         )
 import Shape exposing (..)
 import DraggableSystem exposing (..)
@@ -96,13 +96,32 @@ circle1 =
     )
 
 
+circle2 : ( String, Entity )
+circle2 =
+    ( "circle2"
+    , Entity
+        [ Drawable
+        , Shape
+            (Circle2d
+                (Circle2d.with
+                    { centerPoint = Point2d.fromCoordinates ( 70, 120 )
+                    , radius = 10
+                    }
+                )
+            )
+        , Draggable NotDragged
+        , Port (PortSink "box2")
+        ]
+    )
+
+
 
 --{ centerPoint : Point2d, radius : Float }
 
 
 init : ( Model, Cmd msg )
 init =
-    ( Model Nothing (Dict.fromList [ box1, box2, circle1 ]), Cmd.none )
+    ( Model Nothing (Dict.fromList [ box1, box2, circle1, circle2 ]), Cmd.none )
 
 
 updateEntity : Dict String Entity -> Msg -> Maybe Drag -> String -> Entity -> Entity
