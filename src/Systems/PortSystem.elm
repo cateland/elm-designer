@@ -50,6 +50,8 @@ getSourcePortPosition shape =
 
 
 -- i don't like this one...
+-- refactor inc with a attachedTo component
+-- Port component job will be to create the attachedTo component
 
 
 translatePort :
