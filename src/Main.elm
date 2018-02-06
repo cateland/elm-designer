@@ -5,24 +5,26 @@ import Html.Events
 import Json.Decode as Decode
 import Mouse exposing (moves, ups, Position)
 import Svg exposing (rect, svg)
-import Svg.Attributes exposing (height, id, width, x, y, r, cx, cy)
+import Svg.Attributes exposing (height, id, width, x, y, r, cx, cy, x1, x2, y1, y2, stroke, strokeWidth)
 import Msgs exposing (Msg(..))
 import Components
     exposing
         ( Entity(..)
         , Component(..)
         , Draggable(Dragged, NotDragged)
-        , Shape(BoundingBox2d, Circle2d)
+        , Shape(BoundingBox2d, Circle2d, LineSegment2d)
         , Port(PortSource, PortSink)
         )
 import Shape exposing (..)
 import DraggableSystem exposing (..)
 import PortSystem exposing (..)
 import AttachmentSystem exposing (..)
+import LinkSystem exposing (..)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
+import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import Math exposing (Drag)
 import Dict exposing (Dict)
 
@@ -111,7 +113,6 @@ circle1 =
                     }
                 )
             )
-        , Draggable NotDragged
         , Port (PortSource "circleComponent")
         ]
     )
@@ -130,8 +131,17 @@ circle2 =
                     }
                 )
             )
-        , Draggable NotDragged
         , Port (PortSink "box2")
+        ]
+    )
+
+
+link1 : ( String, Entity )
+link1 =
+    ( "link1"
+    , Entity
+        [ Drawable
+        , Link "circle1" "circle2"
         ]
     )
 
@@ -142,7 +152,7 @@ circle2 =
 
 init : ( Model, Cmd msg )
 init =
-    ( Model Nothing (Dict.fromList [ box1, box2, circleComponent, circle1, circle2 ]), Cmd.none )
+    ( Model Nothing (Dict.fromList [ box1, box2, circleComponent, circle1, circle2, link1 ]), Cmd.none )
 
 
 updateEntity : Dict String Entity -> Msg -> Maybe Drag -> String -> Entity -> Entity
@@ -151,6 +161,7 @@ updateEntity entities msg drag key components =
         |> applyDraggable msg drag
         |> applyPort entities
         |> applyAttachement entities
+        |> applyLink entities
 
 
 updateEntities : Msg -> Model -> Model
@@ -167,7 +178,7 @@ updateEntities msg model =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case Debug.log "Messages" msg of
+    case msg of
         Press pos ->
             ( updateEntities msg { model | drag = Just (Drag pos pos pos) }, Cmd.none )
 
@@ -220,6 +231,21 @@ renderEntity ( key, entity ) =
                             Circle2d.radius circle
                     in
                         Svg.circle [ r (toString radius), cx (toString x), cy (toString y) ] []
+
+                LineSegment2d lineSegment ->
+                    let
+                        ( sourcePoint, targetPoint ) =
+                            LineSegment2d.endpoints lineSegment
+                    in
+                        Svg.line
+                            [ x1 (toString (Point2d.xCoordinate sourcePoint))
+                            , x2 (toString (Point2d.xCoordinate targetPoint))
+                            , y1 (toString (Point2d.yCoordinate sourcePoint))
+                            , y2 (toString (Point2d.yCoordinate targetPoint))
+                            , stroke "red"
+                            , strokeWidth "1"
+                            ]
+                            []
 
         _ ->
             div [] []

@@ -5,6 +5,7 @@ import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (translateBy)
 import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
+import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import Components exposing (Shape(..))
 
 
@@ -31,6 +32,9 @@ isVectorOver point2d shape =
         Circle2d circle ->
             Circle2d.contains point2d circle
 
+        LineSegment2d _ ->
+            False
+
 
 translateBy : Vector2d -> Components.Shape -> Components.Shape
 translateBy vector shape =
@@ -42,6 +46,9 @@ translateBy vector shape =
         Circle2d circle ->
             Circle2d (Circle2d.translateBy vector circle)
 
+        LineSegment2d lineSegment ->
+            LineSegment2d (LineSegment2d.translateBy vector lineSegment)
+
 
 getCenterPosition : Components.Shape -> Point2d
 getCenterPosition shape =
@@ -51,3 +58,6 @@ getCenterPosition shape =
 
         Circle2d circle ->
             Circle2d.centerPoint circle
+
+        LineSegment2d lineSegment ->
+            LineSegment2d.midpoint lineSegment

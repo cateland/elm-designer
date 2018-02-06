@@ -18,6 +18,7 @@ import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
 import OpenSolid.Arc2d as Arc2d exposing (Arc2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
+import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import Math exposing (Drag, isVectorOver, postionToPoint2d, translateBy, getCenterPosition)
 
 
@@ -45,6 +46,9 @@ getSinkPortPosition shape =
         Circle2d circle ->
             Arc2d.pointOn (Circle2d.toArc circle) 0.5
 
+        LineSegment2d lineSegment ->
+            LineSegment2d.startPoint lineSegment
+
 
 getSourcePortPosition : Shape -> Point2d
 getSourcePortPosition shape =
@@ -55,12 +59,8 @@ getSourcePortPosition shape =
         Circle2d circle ->
             Arc2d.pointOn (Circle2d.toArc circle) 0
 
-
-
--- i don't like this one...
--- refactor inc with a attachedTo component
--- Port component job will be to create the attachedTo component
--- if parent node cease to exist what to do ?
+        LineSegment2d lineSegment ->
+            LineSegment2d.endPoint lineSegment
 
 
 calculatePortAttachement :
