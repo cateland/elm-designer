@@ -131,7 +131,7 @@ circle2 =
                 )
             )
         , Draggable NotDragged
-        , Attachment "box2" (Vector2d.fromComponents ( 75, 0 ))
+        , Port (PortSink "box2")
         ]
     )
 

@@ -1,10 +1,18 @@
 module PortSystem exposing (..)
 
 import Dict exposing (Dict)
-import Components exposing (Entity, Component(Port, Node, Shape), Port(..), Shape(..))
+import Components
+    exposing
+        ( Entity
+        , Component(Attachment, Port, Node, Shape)
+        , Port(..)
+        , Shape(..)
+        , addComponent
+        )
 import Shape exposing (..)
 import Port exposing (..)
 import Node exposing (..)
+import Attachment exposing (..)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
@@ -35,7 +43,7 @@ getSinkPortPosition shape =
             Point2d.fromCoordinates ( BoundingBox2d.minX box, BoundingBox2d.midY box )
 
         Circle2d circle ->
-            Arc2d.pointOn (Circle2d.toArc circle) 0
+            Arc2d.pointOn (Circle2d.toArc circle) 0.5
 
 
 getSourcePortPosition : Shape -> Point2d
@@ -45,28 +53,24 @@ getSourcePortPosition shape =
             Point2d.fromCoordinates ( BoundingBox2d.maxX box, BoundingBox2d.midY box )
 
         Circle2d circle ->
-            Arc2d.pointOn (Circle2d.toArc circle) 0.5
+            Arc2d.pointOn (Circle2d.toArc circle) 0
 
 
 
 -- i don't like this one...
 -- refactor inc with a attachedTo component
 -- Port component job will be to create the attachedTo component
+-- if parent node cease to exist what to do ?
 
 
-translatePort :
-    (a -> Point2d)
+calculatePortAttachement :
+    (Shape -> Point2d)
     -> Shape
-    -> a
-    -> Entity
-    -> Entity
-translatePort getPosition portShape nodeShape entity =
-    portShape
-        |> getCenterPosition
-        |> flip (Vector2d.from) (getPosition nodeShape)
-        |> flip (translateBy) portShape
-        |> Shape
-        |> flip (updateShape) entity
+    -> Vector2d
+calculatePortAttachement getPosition nodeShape =
+    nodeShape
+        |> getPosition
+        |> Vector2d.from (getCenterPosition nodeShape)
 
 
 applyPort : Dict String Entity -> Entity -> Entity
@@ -75,7 +79,12 @@ applyPort entities entity =
         ( Just (Port (PortSource nodeId)), Just (Shape portShape) ) ->
             case findNodeShape nodeId entities of
                 Just nodeShape ->
-                    translatePort getSourcePortPosition portShape nodeShape entity
+                    case getAttachment entity of
+                        Just (Attachment _ _) ->
+                            entity
+
+                        _ ->
+                            addComponent (Attachment nodeId (calculatePortAttachement getSourcePortPosition nodeShape)) entity
 
                 Nothing ->
                     entity
@@ -83,7 +92,12 @@ applyPort entities entity =
         ( Just (Port (PortSink nodeId)), Just (Shape portShape) ) ->
             case findNodeShape nodeId entities of
                 Just nodeShape ->
-                    translatePort getSinkPortPosition portShape nodeShape entity
+                    case getAttachment entity of
+                        Just (Attachment _ _) ->
+                            entity
+
+                        _ ->
+                            addComponent (Attachment nodeId (calculatePortAttachement getSinkPortPosition nodeShape)) entity
 
                 Nothing ->
                     entity
