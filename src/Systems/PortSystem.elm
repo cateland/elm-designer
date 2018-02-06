@@ -8,8 +8,9 @@ import Node exposing (..)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
+import OpenSolid.Arc2d as Arc2d exposing (Arc2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
-import Math exposing (Drag, isVectorOver, postionToPoint2d, translateBy)
+import Math exposing (Drag, isVectorOver, postionToPoint2d, translateBy, getCenterPosition)
 
 
 findNodeShape : String -> Dict String Entity -> Maybe Shape
@@ -27,70 +28,63 @@ findNodeShape key entities =
             Nothing
 
 
+getSinkPortPosition : Shape -> Point2d
+getSinkPortPosition shape =
+    case shape of
+        BoundingBox2d box ->
+            Point2d.fromCoordinates ( BoundingBox2d.minX box, BoundingBox2d.midY box )
+
+        Circle2d circle ->
+            Arc2d.pointOn (Circle2d.toArc circle) 0
+
+
+getSourcePortPosition : Shape -> Point2d
+getSourcePortPosition shape =
+    case shape of
+        BoundingBox2d box ->
+            Point2d.fromCoordinates ( BoundingBox2d.maxX box, BoundingBox2d.midY box )
+
+        Circle2d circle ->
+            Arc2d.pointOn (Circle2d.toArc circle) 0.5
+
+
+
+-- i don't like this one...
+
+
+translatePort :
+    (a -> Point2d)
+    -> Shape
+    -> a
+    -> Entity
+    -> Entity
+translatePort getPosition portShape nodeShape entity =
+    portShape
+        |> getCenterPosition
+        |> flip (Vector2d.from) (getPosition nodeShape)
+        |> flip (translateBy) portShape
+        |> Shape
+        |> flip (updateShape) entity
+
+
 applyPort : Dict String Entity -> Entity -> Entity
 applyPort entities entity =
     case ( getPort entity, getShape entity ) of
-        ( Just (Port portInfo), Just (Shape portShape) ) ->
-            case portInfo of
-                PortSource nodeId ->
-                    case findNodeShape nodeId entities of
-                        Just nodeShape ->
-                            case ( nodeShape, portShape ) of
-                                ( BoundingBox2d nodeBox, Circle2d portCircle ) ->
-                                    let
-                                        portPosition =
-                                            Circle2d.centerPoint portCircle
+        ( Just (Port (PortSource nodeId)), Just (Shape portShape) ) ->
+            case findNodeShape nodeId entities of
+                Just nodeShape ->
+                    translatePort getSourcePortPosition portShape nodeShape entity
 
-                                        nodeBoxTarget =
-                                            Point2d.fromCoordinates ( BoundingBox2d.maxX nodeBox, BoundingBox2d.midY nodeBox )
+                Nothing ->
+                    entity
 
-                                        vector =
-                                            Vector2d.from portPosition nodeBoxTarget
-                                    in
-                                        updateShape
-                                            (Shape
-                                                (translateBy
-                                                    vector
-                                                    portShape
-                                                )
-                                            )
-                                            entity
+        ( Just (Port (PortSink nodeId)), Just (Shape portShape) ) ->
+            case findNodeShape nodeId entities of
+                Just nodeShape ->
+                    translatePort getSinkPortPosition portShape nodeShape entity
 
-                                _ ->
-                                    entity
-
-                        Nothing ->
-                            entity
-
-                PortSink nodeId ->
-                    case findNodeShape nodeId entities of
-                        Just nodeShape ->
-                            case ( nodeShape, portShape ) of
-                                ( BoundingBox2d nodeBox, Circle2d portCircle ) ->
-                                    let
-                                        portPosition =
-                                            Circle2d.centerPoint portCircle
-
-                                        nodeBoxTarget =
-                                            Point2d.fromCoordinates ( BoundingBox2d.minX nodeBox, BoundingBox2d.midY nodeBox )
-
-                                        vector =
-                                            Vector2d.from portPosition nodeBoxTarget
-                                    in
-                                        updateShape
-                                            (Shape
-                                                (translateBy
-                                                    vector
-                                                    portShape
-                                                )
-                                            )
-                                            entity
-
-                                _ ->
-                                    entity
-
-                        Nothing ->
-                            entity
+                Nothing ->
+                    entity
 
         _ ->
             entity

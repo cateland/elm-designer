@@ -41,3 +41,13 @@ translateBy vector shape =
 
         Circle2d circle ->
             Circle2d (Circle2d.translateBy vector circle)
+
+
+getCenterPosition : Components.Shape -> Point2d
+getCenterPosition shape =
+    case shape of
+        BoundingBox2d box ->
+            BoundingBox2d.centroid box
+
+        Circle2d circle ->
+            Circle2d.centerPoint circle

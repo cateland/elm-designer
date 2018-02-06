@@ -77,6 +77,25 @@ box2 =
     )
 
 
+circleComponent : ( String, Entity )
+circleComponent =
+    ( "circleComponent"
+    , Entity
+        [ Drawable
+        , Shape
+            (Circle2d
+                (Circle2d.with
+                    { centerPoint = Point2d.fromCoordinates ( 300, 300 )
+                    , radius = 25
+                    }
+                )
+            )
+        , Draggable NotDragged
+        , Node
+        ]
+    )
+
+
 circle1 : ( String, Entity )
 circle1 =
     ( "circle1"
@@ -91,7 +110,7 @@ circle1 =
                 )
             )
         , Draggable NotDragged
-        , Port (PortSource "box2")
+        , Port (PortSource "circleComponent")
         ]
     )
 
@@ -110,7 +129,7 @@ circle2 =
                 )
             )
         , Draggable NotDragged
-        , Port (PortSink "box2")
+        , Port (PortSink "circleComponent")
         ]
     )
 
@@ -121,7 +140,7 @@ circle2 =
 
 init : ( Model, Cmd msg )
 init =
-    ( Model Nothing (Dict.fromList [ box1, box2, circle1, circle2 ]), Cmd.none )
+    ( Model Nothing (Dict.fromList [ box1, box2, circleComponent, circle1, circle2 ]), Cmd.none )
 
 
 updateEntity : Dict String Entity -> Msg -> Maybe Drag -> String -> Entity -> Entity
