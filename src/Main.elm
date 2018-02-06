@@ -18,9 +18,11 @@ import Components
 import Shape exposing (..)
 import DraggableSystem exposing (..)
 import PortSystem exposing (..)
+import AttachmentSystem exposing (..)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
+import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 import Math exposing (Drag)
 import Dict exposing (Dict)
 
@@ -129,7 +131,7 @@ circle2 =
                 )
             )
         , Draggable NotDragged
-        , Port (PortSink "circleComponent")
+        , Attachment "box2" (Vector2d.fromComponents ( 75, 0 ))
         ]
     )
 
@@ -148,6 +150,7 @@ updateEntity entities msg drag key components =
     components
         |> applyDraggable msg drag
         |> applyPort entities
+        |> applyAttachement entities
 
 
 updateEntities : Msg -> Model -> Model

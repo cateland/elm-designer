@@ -1,7 +1,7 @@
 module Components
     exposing
         ( Entity(Entity)
-        , Component(Drawable, Shape, Draggable, Node, Port, Node)
+        , Component(Drawable, Shape, Draggable, Node, Port, Node, Attachment)
         , Draggable(Dragged, NotDragged)
         , Shape(BoundingBox2d, Circle2d)
         , Port(PortSource, PortSink)
@@ -11,6 +11,7 @@ module Components
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
+import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
 addComponent : Component -> Entity -> Entity
@@ -44,6 +45,7 @@ type Component
     | Node
     | Port Port
     | Link
+    | Attachment String Vector2d
 
 
 type Entity
