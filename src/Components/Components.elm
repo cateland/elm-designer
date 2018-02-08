@@ -1,10 +1,11 @@
 module Components
     exposing
         ( Entity(Entity)
-        , Component(Drawable, Shape, Draggable, Node, Port, Node, Link, Attachment)
+        , Component(Drawable, Shape, Draggable, Node, Port, Node, Link, Attachment, Appearance)
         , Draggable(Dragged, NotDragged)
         , Shape(BoundingBox2d, Circle2d, LineSegment2d)
         , Port(PortSource, PortSink)
+        , Attribute(..)
         , addComponent
         )
 
@@ -40,6 +41,12 @@ type Port
     | PortSink String
 
 
+type Attribute
+    = Stroke String
+    | StrokeWidth String
+    | Fill String
+
+
 type Component
     = Drawable
     | Shape Shape
@@ -48,6 +55,7 @@ type Component
     | Port Port
     | Link String String
     | Attachment String Vector2d
+    | Appearance (List Attribute)
 
 
 type Entity

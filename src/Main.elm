@@ -17,6 +17,7 @@ import Components
         , Port(PortSource, PortSink)
         )
 import Shape exposing (..)
+import Appearance exposing (..)
 import DraggableSystem exposing (..)
 import PortSystem exposing (..)
 import AttachmentSystem exposing (..)
@@ -26,6 +27,7 @@ import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
 import Math exposing (Drag)
 import Dict exposing (Dict)
+import Render exposing (generateEntitySvgAttributes)
 
 
 main : Program Never Model Msg
@@ -141,6 +143,7 @@ link1 =
     , Entity
         [ Drawable
         , Link "circle1" "circle2"
+        , Appearance [ Components.Stroke "red", Components.StrokeWidth "5" ]
         ]
     )
 
@@ -199,6 +202,12 @@ update msg model =
                     ( updateEntities msg model, Cmd.none )
 
 
+createSvgAttribtues : Entity -> List (Svg.Attribute msg)
+createSvgAttribtues =
+    generateEntitySvgAttributes
+        << getAppearance
+
+
 renderEntity : ( String, Entity ) -> Html msg
 renderEntity ( key, entity ) =
     case
@@ -210,26 +219,17 @@ renderEntity ( key, entity ) =
             of
                 BoundingBox2d box ->
                     Svg.boundingBox2d
-                        [ Attributes.stroke "blue"
-                        , Attributes.strokeWidth "5"
-                        , Attributes.fill "white"
-                        , Attributes.rx "5"
-                        , Attributes.ry "5"
-                        ]
+                        (createSvgAttribtues entity)
                         (box)
 
                 Circle2d circle ->
                     Svg.circle2d
-                        [ Attributes.stroke "blue"
-                        , Attributes.strokeWidth "5"
-                        ]
+                        (createSvgAttribtues entity)
                         (circle)
 
                 LineSegment2d lineSegment ->
                     Svg.lineSegment2d
-                        [ Attributes.stroke "blue"
-                        , Attributes.strokeWidth "5"
-                        ]
+                        (createSvgAttribtues entity)
                         (lineSegment)
 
         _ ->
