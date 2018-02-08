@@ -4,8 +4,9 @@ import Html exposing (Html, div, text)
 import Html.Events
 import Json.Decode as Decode
 import Mouse exposing (moves, ups, Position)
-import Svg exposing (rect, svg)
-import Svg.Attributes exposing (height, id, width, x, y, r, cx, cy, x1, x2, y1, y2, stroke, strokeWidth)
+import Svg exposing (Svg, rect, svg)
+import Svg.Attributes as Attributes exposing (height, id, width, x, y, r, cx, cy, x1, x2, y1, y2, stroke, strokeWidth)
+import OpenSolid.Svg as Svg
 import Msgs exposing (Msg(..))
 import Components
     exposing
@@ -23,8 +24,6 @@ import LinkSystem exposing (..)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
-import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
-import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import Math exposing (Drag)
 import Dict exposing (Dict)
 
@@ -210,42 +209,28 @@ renderEntity ( key, entity ) =
                 shape
             of
                 BoundingBox2d box ->
-                    let
-                        extrema =
-                            BoundingBox2d.extrema box
-                    in
-                        rect
-                            [ width (toString (extrema.maxX - extrema.minX))
-                            , height (toString (extrema.maxY - extrema.minY))
-                            , x (toString extrema.minX)
-                            , y (toString extrema.minY)
-                            ]
-                            []
+                    Svg.boundingBox2d
+                        [ Attributes.stroke "blue"
+                        , Attributes.strokeWidth "5"
+                        , Attributes.fill "white"
+                        , Attributes.rx "5"
+                        , Attributes.ry "5"
+                        ]
+                        (box)
 
                 Circle2d circle ->
-                    let
-                        ( x, y ) =
-                            Point2d.coordinates (Circle2d.centerPoint circle)
-
-                        radius =
-                            Circle2d.radius circle
-                    in
-                        Svg.circle [ r (toString radius), cx (toString x), cy (toString y) ] []
+                    Svg.circle2d
+                        [ Attributes.stroke "blue"
+                        , Attributes.strokeWidth "5"
+                        ]
+                        (circle)
 
                 LineSegment2d lineSegment ->
-                    let
-                        ( sourcePoint, targetPoint ) =
-                            LineSegment2d.endpoints lineSegment
-                    in
-                        Svg.line
-                            [ x1 (toString (Point2d.xCoordinate sourcePoint))
-                            , x2 (toString (Point2d.xCoordinate targetPoint))
-                            , y1 (toString (Point2d.yCoordinate sourcePoint))
-                            , y2 (toString (Point2d.yCoordinate targetPoint))
-                            , stroke "red"
-                            , strokeWidth "1"
-                            ]
-                            []
+                    Svg.lineSegment2d
+                        [ Attributes.stroke "blue"
+                        , Attributes.strokeWidth "5"
+                        ]
+                        (lineSegment)
 
         _ ->
             div [] []
