@@ -1,8 +1,9 @@
 module Components
     exposing
         ( Entity(Entity)
-        , Component(Drawable, Shape, Draggable, Node, Port, Node, Link, Attachment, Appearance)
+        , Component(Drawable, Shape, Draggable, Hoverable, Node, Port, Node, Link, Attachment, Appearance)
         , Draggable(Dragged, NotDragged)
+        , Hoverable(..)
         , Shape(BoundingBox2d, Circle2d, LineSegment2d)
         , Port(PortSource, PortSink)
         , Attribute(..)
@@ -30,6 +31,11 @@ type Draggable
     | NotDragged
 
 
+type Hoverable
+    = Hovered (List Attribute)
+    | NotHovered (List Attribute)
+
+
 type Shape
     = BoundingBox2d BoundingBox2d
     | Circle2d Circle2d
@@ -51,6 +57,7 @@ type Component
     = Drawable
     | Shape Shape
     | Draggable Draggable
+    | Hoverable Hoverable
     | Node
     | Port Port
     | Link String String

@@ -19,6 +19,7 @@ import Components
 import Shape exposing (..)
 import Appearance exposing (..)
 import DraggableSystem exposing (..)
+import HoverableSystem exposing (..)
 import PortSystem exposing (..)
 import AttachmentSystem exposing (..)
 import LinkSystem exposing (..)
@@ -69,14 +70,15 @@ box2 =
         , Shape
             (BoundingBox2d
                 (BoundingBox2d.with
-                    { minX = 200
-                    , maxX = 300
-                    , minY = 250
-                    , maxY = 320
+                    { minX = 100
+                    , maxX = 200
+                    , minY = 150
+                    , maxY = 220
                     }
                 )
             )
         , Draggable NotDragged
+        , Hoverable (Components.NotHovered [ Components.Stroke "red", Components.StrokeWidth "5" ])
         , Node
         ]
     )
@@ -96,6 +98,8 @@ circleComponent =
                 )
             )
         , Draggable NotDragged
+        , Appearance [ Components.Stroke "blue" ]
+        , Hoverable (Components.NotHovered [ Components.Stroke "red", Components.StrokeWidth "5" ])
         , Node
         ]
     )
@@ -161,6 +165,7 @@ updateEntity : Dict String Entity -> Msg -> Maybe Drag -> String -> Entity -> En
 updateEntity entities msg drag key components =
     components
         |> applyDraggable msg drag
+        |> applyHoverable msg
         |> applyPort entities
         |> applyAttachement entities
         |> applyLink entities
@@ -270,9 +275,4 @@ customOnMouseDown =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    case model.drag of
-        Nothing ->
-            Sub.none
-
-        Just _ ->
-            Sub.batch [ Mouse.moves Move, Mouse.ups Release ]
+    Sub.batch [ Mouse.moves Move, Mouse.ups Release ]
