@@ -10,11 +10,13 @@ import OpenSolid.Svg as Svg
 import Msgs exposing (Msg(..))
 import Components
     exposing
-        ( Entity(..)
+        ( Entities
+        , Entity(..)
         , Component(..)
         , Draggable(Dragged, NotDragged)
         , Shape(BoundingBox2d, Circle2d, LineSegment2d)
         , Port(PortSource, PortSink)
+        , addEntity
         )
 import Shape exposing (..)
 import Appearance exposing (..)
@@ -38,14 +40,13 @@ main =
 
 type alias Model =
     { drag : Maybe Drag
-    , entities : Dict String Entity
+    , entities : Entities
     }
 
 
-box1 : ( String, Entity )
+box1 : Entity
 box1 =
-    ( "box1"
-    , Entity
+    Entity
         [ Drawable
         , Shape
             (BoundingBox2d
@@ -59,13 +60,11 @@ box1 =
             )
         , Draggable NotDragged
         ]
-    )
 
 
-box2 : ( String, Entity )
+box2 : Entity
 box2 =
-    ( "box2"
-    , Entity
+    Entity
         [ Drawable
         , Shape
             (BoundingBox2d
@@ -81,13 +80,11 @@ box2 =
         , Hoverable (Components.NotHovered [ Components.Stroke "red", Components.StrokeWidth "5" ])
         , Node
         ]
-    )
 
 
-circleComponent : ( String, Entity )
+circleComponent : Entity
 circleComponent =
-    ( "circleComponent"
-    , Entity
+    Entity
         [ Drawable
         , Shape
             (Circle2d
@@ -102,13 +99,11 @@ circleComponent =
         , Hoverable (Components.NotHovered [ Components.Stroke "red", Components.StrokeWidth "5" ])
         , Node
         ]
-    )
 
 
-circle1 : ( String, Entity )
+circle1 : Entity
 circle1 =
-    ( "circle1"
-    , Entity
+    Entity
         [ Drawable
         , Shape
             (Circle2d
@@ -120,13 +115,11 @@ circle1 =
             )
         , Port (PortSource "circleComponent")
         ]
-    )
 
 
-circle2 : ( String, Entity )
+circle2 : Entity
 circle2 =
-    ( "circle2"
-    , Entity
+    Entity
         [ Drawable
         , Shape
             (Circle2d
@@ -138,18 +131,15 @@ circle2 =
             )
         , Port (PortSink "box2")
         ]
-    )
 
 
-link1 : ( String, Entity )
+link1 : Entity
 link1 =
-    ( "link1"
-    , Entity
+    Entity
         [ Drawable
         , Link "circle1" "circle2"
         , Appearance [ Components.Stroke "red", Components.StrokeWidth "5" ]
         ]
-    )
 
 
 
@@ -158,10 +148,20 @@ link1 =
 
 init : ( Model, Cmd msg )
 init =
-    ( Model Nothing (Dict.fromList [ box1, box2, circleComponent, circle1, circle2, link1 ]), Cmd.none )
+    let
+        entities =
+            Dict.empty
+                |> addEntity "box1" box1
+                |> addEntity "box2" box2
+                |> addEntity "circleComponent" circleComponent
+                |> addEntity "circle1" circle1
+                |> addEntity "circle2" circle2
+                |> addEntity "link1" link1
+    in
+        ( Model Nothing entities, Cmd.none )
 
 
-updateEntity : Dict String Entity -> Msg -> Maybe Drag -> String -> Entity -> Entity
+updateEntity : Entities -> Msg -> Maybe Drag -> String -> Entity -> Entity
 updateEntity entities msg drag key components =
     components
         |> applyDraggable msg drag

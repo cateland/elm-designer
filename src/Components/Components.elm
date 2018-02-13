@@ -1,6 +1,7 @@
 module Components
     exposing
-        ( Entity(Entity)
+        ( Entities
+        , Entity(Entity)
         , Component(Drawable, Shape, Draggable, Hoverable, Node, Port, Node, Link, Attachment, Appearance)
         , Draggable(Dragged, NotDragged)
         , Hoverable(..)
@@ -8,6 +9,7 @@ module Components
         , Port(PortSource, PortSink)
         , Attribute(..)
         , addComponent
+        , addEntity
         )
 
 import OpenSolid.Point2d as Point2d exposing (Point2d)
@@ -15,11 +17,17 @@ import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
+import Dict exposing (Dict)
 
 
 addComponent : Component -> Entity -> Entity
 addComponent component (Entity components) =
     Entity (component :: components)
+
+
+addEntity : String -> Entity -> Entities -> Entities
+addEntity k v entities =
+    Dict.insert k v entities
 
 
 type alias Position =
@@ -67,3 +75,7 @@ type Component
 
 type Entity
     = Entity (List Component)
+
+
+type alias Entities =
+    Dict String Entity

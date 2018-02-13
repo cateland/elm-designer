@@ -3,7 +3,8 @@ module PortSystem exposing (..)
 import Dict exposing (Dict)
 import Components
     exposing
-        ( Entity
+        ( Entities
+        , Entity
         , Component(Attachment, Port, Node, Shape)
         , Port(..)
         , Shape(..)
@@ -22,7 +23,7 @@ import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import Math exposing (Drag, isVectorOver, postionToPoint2d, translateBy, getCenterPosition)
 
 
-findNodeShape : String -> Dict String Entity -> Maybe Shape
+findNodeShape : String -> Entities -> Maybe Shape
 findNodeShape key entities =
     case Dict.get key entities of
         Just entity ->
@@ -73,7 +74,7 @@ calculatePortAttachement getPosition nodeShape =
         |> Vector2d.from (getCenterPosition nodeShape)
 
 
-applyPort : Dict String Entity -> Entity -> Entity
+applyPort : Entities -> Entity -> Entity
 applyPort entities entity =
     case ( getPort entity, getShape entity ) of
         ( Just (Port (PortSource nodeId)), Just (Shape portShape) ) ->
