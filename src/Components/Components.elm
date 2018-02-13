@@ -59,6 +59,8 @@ type Attribute
     = Stroke String
     | StrokeWidth String
     | Fill String
+    | Rx String
+    | Ry String
 
 
 type Component

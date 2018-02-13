@@ -1,7 +1,7 @@
 module Render exposing (..)
 
 import Svg exposing (Attribute)
-import Svg.Attributes as Attributes exposing (stroke, strokeWidth, fill)
+import Svg.Attributes as Attributes exposing (stroke, strokeWidth, fill, rx, ry)
 import Components exposing (Component(..))
 
 
@@ -16,6 +16,12 @@ transformAppearenceToAttributes appearence =
 
         Components.Fill string ->
             fill string
+
+        Components.Rx string ->
+            rx string
+
+        Components.Ry string ->
+            ry string
 
 
 generateEntitySvgAttributes : Maybe Component -> List (Svg.Attribute msg)

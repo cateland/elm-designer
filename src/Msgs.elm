@@ -7,3 +7,4 @@ type Msg
     = Press Position
     | Release Position
     | Move Position
+    | Zoom Int

@@ -69,15 +69,30 @@ box2 =
         , Shape
             (BoundingBox2d
                 (BoundingBox2d.with
-                    { minX = 100
-                    , maxX = 200
+                    { minX = 200
+                    , maxX = 400
                     , minY = 150
-                    , maxY = 220
+                    , maxY = 250
                     }
                 )
             )
         , Draggable NotDragged
-        , Hoverable (Components.NotHovered [ Components.Stroke "red", Components.StrokeWidth "5" ])
+        , Appearance
+            [ Components.Stroke "#C5C5C5"
+            , Components.StrokeWidth "2"
+            , Components.Fill "#F6F6F6"
+            , Components.Rx "4"
+            , Components.Ry "4"
+            ]
+        , Hoverable
+            (Components.NotHovered
+                [ Components.Stroke "#C5C5C5"
+                , Components.StrokeWidth "2"
+                , Components.Fill "white"
+                , Components.Rx "4"
+                , Components.Ry "4"
+                ]
+            )
         , Node
         ]
 
@@ -90,13 +105,23 @@ circleComponent =
             (Circle2d
                 (Circle2d.with
                     { centerPoint = Point2d.fromCoordinates ( 300, 300 )
-                    , radius = 25
+                    , radius = 50
                     }
                 )
             )
         , Draggable NotDragged
-        , Appearance [ Components.Stroke "blue" ]
-        , Hoverable (Components.NotHovered [ Components.Stroke "red", Components.StrokeWidth "5" ])
+        , Appearance
+            [ Components.Stroke "#C5C5C5"
+            , Components.StrokeWidth "2"
+            , Components.Fill "#F6F6F6"
+            ]
+        , Hoverable
+            (Components.NotHovered
+                [ Components.Stroke "#C5C5C5"
+                , Components.StrokeWidth "2"
+                , Components.Fill "white"
+                ]
+            )
         , Node
         ]
 
@@ -113,7 +138,12 @@ circle1 =
                     }
                 )
             )
-        , Port (PortSource "circleComponent")
+        , Port (PortSource "circle0")
+        , Appearance
+            [ Components.Stroke "#1563A5"
+            , Components.StrokeWidth "2"
+            , Components.Fill "white"
+            ]
         ]
 
 
@@ -130,6 +160,11 @@ circle2 =
                 )
             )
         , Port (PortSink "box2")
+        , Appearance
+            [ Components.Stroke "#1563A5"
+            , Components.StrokeWidth "2"
+            , Components.Fill "white"
+            ]
         ]
 
 
@@ -138,7 +173,7 @@ link1 =
     Entity
         [ Drawable
         , Link "circle1" "circle2"
-        , Appearance [ Components.Stroke "red", Components.StrokeWidth "5" ]
+        , Appearance [ Components.Stroke "#1563A5", Components.StrokeWidth "5" ]
         ]
 
 
@@ -153,7 +188,7 @@ init =
             Dict.empty
                 |> addEntity "box1" box1
                 |> addEntity "box2" box2
-                |> addEntity "circleComponent" circleComponent
+                |> addEntity "circle0" circleComponent
                 |> addEntity "circle1" circle1
                 |> addEntity "circle2" circle2
                 |> addEntity "link1" link1
@@ -185,7 +220,7 @@ updateEntities msg model =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
+    case Debug.log "messages" msg of
         Press pos ->
             ( updateEntities msg { model | drag = Just (Drag pos pos pos) }, Cmd.none )
 
@@ -205,6 +240,8 @@ update msg model =
 
                 Nothing ->
                     ( updateEntities msg model, Cmd.none )
+        _ ->
+            ( updateEntities msg { model | drag = Nothing }, Cmd.none )
 
 
 createSvgAttribtues : Entity -> List (Svg.Attribute msg)
@@ -213,7 +250,7 @@ createSvgAttribtues =
         << getAppearance
 
 
-renderEntity : ( String, Entity ) -> Html msg
+renderEntity : ( String, Entity ) -> Html msg 
 renderEntity ( key, entity ) =
     case
         (getShape entity)
@@ -246,7 +283,7 @@ view model =
     div
         []
         [ svg
-            [ id "svg", width "400", height "400", customOnMouseDown ]
+            [ id "svg", width "700", height "700", customOnMouseDown, customOnWheel ]
             (List.map renderEntity (Dict.toList model.entities))
         ]
 
@@ -268,7 +305,13 @@ customOnMouseDown =
     in
         Html.Events.on "mousedown" decoder
 
-
+customOnWheel : Html.Attribute Msg
+customOnWheel =
+    let
+        decoder = Decode.oneOf
+            [Decode.map Zoom (Decode.field "deltaY" Decode.int) ]
+    in
+        Html.Events.on "wheel" decoder
 
 -- SUBSCRIPTIONS
 

@@ -38,7 +38,11 @@ applyDraggable msg dragging entity =
                     updateShape
                         (Shape
                             (translateBy
-                                (Vector2d.fromComponents ( toFloat (drag.currentPos.x - drag.previousPos.x), toFloat (drag.currentPos.y - drag.previousPos.y) ))
+                                (Vector2d.fromComponents
+                                    ( toFloat (drag.currentPos.x - drag.previousPos.x)
+                                    , toFloat (drag.currentPos.y - drag.previousPos.y)
+                                    )
+                                )
                                 entityShape
                             )
                         )
@@ -57,3 +61,6 @@ applyDraggable msg dragging entity =
 
                 _ ->
                     entity
+
+        _ ->
+            entity
