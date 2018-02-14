@@ -6,7 +6,6 @@ import Hoverable exposing (getHoverable, updateHoverable)
 import Appearance exposing (getAppearance, updateAppearance)
 import Shape exposing (..)
 import Math exposing (isVectorOver, postionToPoint2d)
-import Debug
 
 
 applyHoverable : Msgs.Msg -> Entity -> Entity
@@ -24,21 +23,25 @@ applyHoverable msg entity =
                     of
                         True ->
                             case getAppearance entity of
-                                Just (Appearance initialAppearence) ->
+                                Just (Appearance ( initialAppearence, overideAppearence )) ->
                                     updateHoverable
-                                        (Hoverable (Components.Hovered initialAppearence))
-                                        (updateAppearance (Appearance hoverAppearence) entity)
+                                        (Hoverable (Components.Hovered hoverAppearence))
+                                        (updateAppearance (Appearance ( initialAppearence, hoverAppearence )) entity)
 
                                 Nothing ->
                                     updateHoverable
-                                        (Hoverable (Components.Hovered []))
-                                        (addComponent (Appearance hoverAppearence) entity)
+                                        (Hoverable (Components.Hovered hoverAppearence))
+                                        (addComponent (Appearance ( [], hoverAppearence )) entity)
 
                                 _ ->
                                     entity
 
                         False ->
-                            entity
+                            case getAppearance entity of
+                                Just (Appearance ( initialAppearence, _ )) ->
+                                    updateAppearance (Appearance ( initialAppearence, [] )) entity
+                                _ ->
+                                    entity
 
                 ( Just (Hoverable (Components.Hovered hoverAppearence)), Just (Shape entityShape) ) ->
                     case
@@ -46,15 +49,15 @@ applyHoverable msg entity =
                     of
                         False ->
                             case getAppearance entity of
-                                Just (Appearance initialAppearence) ->
+                                Just (Appearance ( initialAppearence, _ )) ->
                                     updateHoverable
-                                        (Hoverable (Components.NotHovered initialAppearence))
-                                        (updateAppearance (Appearance hoverAppearence) entity)
+                                        (Hoverable (Components.NotHovered hoverAppearence))
+                                        (updateAppearance (Appearance ( initialAppearence, [] )) entity)
 
                                 Nothing ->
                                     updateHoverable
-                                        (Hoverable (Components.NotHovered []))
-                                        (addComponent (Appearance hoverAppearence) entity)
+                                        (Hoverable (Components.NotHovered hoverAppearence))
+                                        (addComponent (Appearance ( [], [] )) entity)
 
                                 _ ->
                                     entity

@@ -5,7 +5,7 @@ import Html.Events
 import Json.Decode as Decode
 import Mouse exposing (moves, ups, Position)
 import Svg exposing (Svg, rect, svg)
-import Svg.Attributes as Attributes exposing (height, id, width, x, y, r, cx, cy, x1, x2, y1, y2, stroke, strokeWidth)
+import Svg.Attributes as Attributes exposing (height, id, width, x, y, r, cx, cy, x1, x2, y1, y2, stroke)
 import OpenSolid.Svg as Svg
 import Msgs exposing (Msg(..))
 import Components
@@ -23,6 +23,7 @@ import Appearance exposing (..)
 import DragSystem exposing (..)
 import DraggableSystem exposing (..)
 import HoverableSystem exposing (..)
+import SelectableSystem exposing (..)
 import PortSystem exposing (..)
 import AttachmentSystem exposing (..)
 import LinkSystem exposing (..)
@@ -82,20 +83,21 @@ box2 =
             )
         , Draggable NotDragged
         , Appearance
-            [ Components.Stroke "#C5C5C5"
-            , Components.StrokeWidth "2"
-            , Components.Fill "#F6F6F6"
-            , Components.Rx "4"
-            , Components.Ry "4"
-            ]
+            ( [ Components.Stroke "#C5C5C5"
+              , Components.StrokeWidth "2"
+              , Components.Fill "#F6F6F6"
+              , Components.Rx "4"
+              , Components.Ry "4"
+              ]
+            , []
+            )
+        , Selectable
+            (Components.NotSelected
+                [ Components.Stroke "#67BBFF" ]
+            )
         , Hoverable
             (Components.NotHovered
-                [ Components.Stroke "#C5C5C5"
-                , Components.StrokeWidth "2"
-                , Components.Fill "white"
-                , Components.Rx "4"
-                , Components.Ry "4"
-                ]
+                [ Components.Fill "white" ]
             )
         , Node
         ]
@@ -115,16 +117,19 @@ circleComponent =
             )
         , Draggable NotDragged
         , Appearance
-            [ Components.Stroke "#C5C5C5"
-            , Components.StrokeWidth "2"
-            , Components.Fill "#F6F6F6"
-            ]
+            ( [ Components.Stroke "#C5C5C5"
+              , Components.StrokeWidth "2"
+              , Components.Fill "#F6F6F6"
+              ]
+            , []
+            )
+        , Selectable
+            (Components.NotSelected
+                [ Components.Stroke "red" ]
+            )
         , Hoverable
             (Components.NotHovered
-                [ Components.Stroke "#C5C5C5"
-                , Components.StrokeWidth "2"
-                , Components.Fill "white"
-                ]
+                [ Components.Fill "white" ]
             )
         , Node
         ]
@@ -144,10 +149,12 @@ circle1 =
             )
         , Port (PortSource "circle0")
         , Appearance
-            [ Components.Stroke "#1563A5"
-            , Components.StrokeWidth "2"
-            , Components.Fill "white"
-            ]
+            ( [ Components.Stroke "#1563A5"
+              , Components.StrokeWidth "2"
+              , Components.Fill "white"
+              ]
+            , []
+            )
         ]
 
 
@@ -165,10 +172,12 @@ circle2 =
             )
         , Port (PortSink "box2")
         , Appearance
-            [ Components.Stroke "#1563A5"
-            , Components.StrokeWidth "2"
-            , Components.Fill "white"
-            ]
+            ( [ Components.Stroke "#1563A5"
+              , Components.StrokeWidth "2"
+              , Components.Fill "white"
+              ]
+            , []
+            )
         ]
 
 
@@ -177,7 +186,7 @@ link1 =
     Entity
         [ Drawable
         , Link "circle1" "circle2"
-        , Appearance [ Components.Stroke "#1563A5", Components.StrokeWidth "5" ]
+        , Appearance ( [ Components.Stroke "#1563A5", Components.StrokeWidth "5" ], [] )
         ]
 
 
@@ -207,6 +216,7 @@ updateEntity entities msg key components =
         |> applyDrag msg
         |> applyDraggable entities
         |> applyHoverable msg
+        |> applySelectable msg
         |> applyPort entities
         |> applyAttachement entities
         |> applyLink entities
@@ -217,6 +227,7 @@ updateEntities msg model =
     let
         configuredUpdater =
             updateEntity model.entities msg
+
         newEntities =
             Dict.map configuredUpdater model.entities
     in
@@ -225,7 +236,6 @@ updateEntities msg model =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    
     ( updateEntities msg model, Cmd.none )
 
 

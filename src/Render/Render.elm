@@ -27,8 +27,10 @@ transformAppearenceToAttributes appearence =
 generateEntitySvgAttributes : Maybe Component -> List (Svg.Attribute msg)
 generateEntitySvgAttributes appearence =
     case appearence of
-        Just (Appearance appearence) ->
-            List.map transformAppearenceToAttributes appearence
+        Just (Appearance ( initialAppearence, overideAppearence )) ->
+            List.append
+                (List.map transformAppearenceToAttributes initialAppearence)
+                (List.map transformAppearenceToAttributes overideAppearence)
 
         Nothing ->
             []

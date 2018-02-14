@@ -2,9 +2,10 @@ module Components
     exposing
         ( Entities
         , Entity(Entity)
-        , Component(Drawable, Shape, DragStatus, Draggable, Hoverable, Node, Port, Node, Link, Attachment, Appearance)
+        , Component(Drawable, Shape, DragStatus, Draggable, Hoverable, Selectable, Node, Port, Node, Link, Attachment, Appearance, Brush)
         , Draggable(Dragged, NotDragged)
         , Hoverable(..)
+        , Selectable(..)
         , Shape(BoundingBox2d, Circle2d, LineSegment2d)
         , Port(PortSource, PortSink)
         , Attribute(..)
@@ -53,6 +54,12 @@ type Hoverable
     | NotHovered (List Attribute)
 
 
+type Selectable
+    = NotSelected (List Attribute)
+    | Pressed (Mouse.Position, List Attribute)
+    | Selected (List Attribute)
+
+
 type Shape
     = BoundingBox2d BoundingBox2d
     | Circle2d Circle2d
@@ -72,18 +79,19 @@ type Attribute
     | Ry String
 
 
-
 type Component
     = Drawable
     | Shape Shape
     | DragStatus (Maybe Drag)
     | Draggable Draggable
     | Hoverable Hoverable
+    | Selectable Selectable
     | Node
     | Port Port
     | Link String String
     | Attachment String Vector2d
-    | Appearance (List Attribute)
+    | Appearance (List Attribute, List (Attribute))
+    | Brush
 
 
 type Entity
