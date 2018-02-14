@@ -1,72 +1,87 @@
 module DraggableSystem exposing (..)
 
-import Msgs exposing (Msg(Press, Move, Release))
+import Dict exposing (Dict)
 import Components
     exposing
-        ( Entity
-        , Component(Shape, Draggable)
+        ( Entities
+        , Entity
+        , Component(Shape, Draggable, DragStatus)
         , Draggable(Dragged, NotDragged)
         , Drag
         )
 import Draggable exposing (getDraggable, updateDraggable)
 import Shape exposing (..)
+import DragStatus exposing (getDragStatus, updateDragStatus)
 import Math exposing (isVectorOver, postionToPoint2d, translateBy)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
+findControlDrag : Entities -> Maybe Drag
+findControlDrag entities =
+    case Dict.get "control" entities of
+        Just entity ->
+            case getDragStatus entity of
+                Just (Components.DragStatus dragStatus) ->
+                    case dragStatus of
+                        Just drag ->
+                            Just drag
 
-applyDraggable : Msgs.Msg -> Maybe Drag -> Entity -> Entity
-applyDraggable msg dragging entity =
-    case
-        msg
-    of
-        Press position ->
-            case
-                ( getDraggable entity, getShape entity )
-            of
-                ( Just (Draggable _), Just (Shape entityShape) ) ->
-                    case
-                        isVectorOver (postionToPoint2d position) entityShape
-                    of
-                        True ->
-                            updateDraggable (Draggable Dragged) entity
-
-                        False ->
-                            entity
+                        Nothing ->
+                            Nothing
 
                 _ ->
-                    entity
+                    Nothing
 
-        Move position ->
+        _ ->
+            Nothing
+
+
+applyDraggable : Entities -> Entity -> Entity
+applyDraggable entities entity =
+    case ( getDraggable entity, getShape entity, findControlDrag entities ) of
+        ( Just (Draggable dragStatus), Just (Shape entityShape), Just drag ) ->
             case
-                ( getDraggable entity, getShape entity, dragging )
+                isVectorOver (postionToPoint2d drag.startPos) entityShape
             of
-                ( Just (Draggable Dragged), Just (Shape entityShape), Just drag ) ->
-                    updateShape
-                        (Shape
-                            (translateBy
-                                (Vector2d.fromComponents
-                                    ( toFloat (drag.currentPos.x - drag.previousPos.x)
-                                    , toFloat (drag.currentPos.y - drag.previousPos.y)
+                True ->
+                    case dragStatus of
+                        Dragged ->
+                            updateShape
+                                (Shape
+                                    (translateBy
+                                        (Vector2d.fromComponents
+                                            ( toFloat (drag.currentPos.x - drag.previousPos.x)
+                                            , toFloat (drag.currentPos.y - drag.previousPos.y)
+                                            )
+                                        )
+                                        entityShape
                                     )
                                 )
-                                entityShape
-                            )
-                        )
-                        entity
+                                entity
 
-                -- updatePosition (Components.Position position) entity
-                _ ->
-                    entity
+                        NotDragged ->
+                            updateDraggable (Draggable Dragged) entity
 
-        Release position ->
-            case
-                getDraggable entity
-            of
-                Just (Draggable _) ->
-                    updateDraggable (Draggable NotDragged) entity
+                False ->
+                    case dragStatus of
+                        Dragged ->
+                            updateShape
+                                (Shape
+                                    (translateBy
+                                        (Vector2d.fromComponents
+                                            ( toFloat (drag.currentPos.x - drag.previousPos.x)
+                                            , toFloat (drag.currentPos.y - drag.previousPos.y)
+                                            )
+                                        )
+                                        entityShape
+                                    )
+                                )
+                                entity
 
-                _ ->
-                    entity
+                        NotDragged ->
+                            entity
+
+        ( Just (Draggable _), Just (Shape entityShape), Nothing ) ->
+            updateDraggable (Draggable NotDragged) entity
 
         _ ->
             entity

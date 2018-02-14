@@ -39,8 +39,7 @@ main =
 
 
 type alias Model =
-    { drag : Maybe Components.Drag
-    , entities : Entities
+    { entities : Entities
     }
 
 
@@ -199,14 +198,14 @@ init =
                 |> addEntity "circle2" circle2
                 |> addEntity "link1" link1
     in
-        ( Model Nothing entities, Cmd.none )
+        ( Model entities, Cmd.none )
 
 
-updateEntity : Entities -> Msg -> Maybe Components.Drag -> String -> Entity -> Entity
-updateEntity entities msg drag key components =
+updateEntity : Entities -> Msg -> String -> Entity -> Entity
+updateEntity entities msg key components =
     components
         |> applyDrag msg
-        |> applyDraggable msg drag
+        |> applyDraggable entities
         |> applyHoverable msg
         |> applyPort entities
         |> applyAttachement entities
@@ -217,8 +216,7 @@ updateEntities : Msg -> Model -> Model
 updateEntities msg model =
     let
         configuredUpdater =
-            updateEntity model.entities msg model.drag
-
+            updateEntity model.entities msg
         newEntities =
             Dict.map configuredUpdater model.entities
     in
@@ -227,29 +225,8 @@ updateEntities msg model =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case Debug.log "messages" msg of
-        Press pos ->
-            ( updateEntities msg { model | drag = Just (Components.Drag pos pos pos) }, Cmd.none )
-
-        Release pos ->
-            ( updateEntities msg { model | drag = Nothing }, Cmd.none )
-
-        Move pos ->
-            case
-                model.drag
-            of
-                Just drag ->
-                    let
-                        newDrag =
-                            Just (Components.Drag drag.startPos drag.currentPos pos)
-                    in
-                        ( updateEntities msg { model | drag = newDrag }, Cmd.none )
-
-                Nothing ->
-                    ( updateEntities msg model, Cmd.none )
-
-        _ ->
-            ( updateEntities msg { model | drag = Nothing }, Cmd.none )
+    
+    ( updateEntities msg model, Cmd.none )
 
 
 createSvgAttribtues : Entity -> List (Svg.Attribute msg)
