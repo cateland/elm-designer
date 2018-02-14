@@ -1,11 +1,18 @@
 module AttachmentSystem exposing (..)
 
 import Dict exposing (Dict)
-import Components exposing (Entities, Entity, Component(Attachment, Node, Shape), Shape(..))
+import Components
+    exposing
+        ( Entities
+        , Entity
+        , Component(Attachment, Node, Shape)
+        , Shape(..)
+        , Drag
+        )
 import Shape exposing (..)
 import Attachment exposing (..)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
-import Math exposing (Drag, isVectorOver, postionToPoint2d, translateBy, getCenterPosition)
+import Math exposing (isVectorOver, postionToPoint2d, translateBy, getCenterPosition)
 
 
 findParentShape : String -> Entities -> Maybe Shape

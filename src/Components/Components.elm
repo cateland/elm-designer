@@ -2,12 +2,13 @@ module Components
     exposing
         ( Entities
         , Entity(Entity)
-        , Component(Drawable, Shape, Draggable, Hoverable, Node, Port, Node, Link, Attachment, Appearance)
+        , Component(Drawable, Shape, DragStatus, Draggable, Hoverable, Node, Port, Node, Link, Attachment, Appearance)
         , Draggable(Dragged, NotDragged)
         , Hoverable(..)
         , Shape(BoundingBox2d, Circle2d, LineSegment2d)
         , Port(PortSource, PortSink)
         , Attribute(..)
+        , Drag
         , addComponent
         , addEntity
         )
@@ -18,6 +19,7 @@ import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import Dict exposing (Dict)
+import Mouse exposing (Position)
 
 
 addComponent : Component -> Entity -> Entity
@@ -28,6 +30,13 @@ addComponent component (Entity components) =
 addEntity : String -> Entity -> Entities -> Entities
 addEntity k v entities =
     Dict.insert k v entities
+
+
+type alias Drag =
+    { startPos : Mouse.Position
+    , previousPos : Mouse.Position
+    , currentPos : Mouse.Position
+    }
 
 
 type alias Position =
@@ -63,9 +72,11 @@ type Attribute
     | Ry String
 
 
+
 type Component
     = Drawable
     | Shape Shape
+    | DragStatus (Maybe Drag)
     | Draggable Draggable
     | Hoverable Hoverable
     | Node

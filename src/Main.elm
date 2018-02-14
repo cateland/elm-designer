@@ -20,6 +20,7 @@ import Components
         )
 import Shape exposing (..)
 import Appearance exposing (..)
+import DragSystem exposing (..)
 import DraggableSystem exposing (..)
 import HoverableSystem exposing (..)
 import PortSystem exposing (..)
@@ -28,7 +29,6 @@ import LinkSystem exposing (..)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
-import Math exposing (Drag)
 import Dict exposing (Dict)
 import Render exposing (generateEntitySvgAttributes)
 
@@ -39,9 +39,14 @@ main =
 
 
 type alias Model =
-    { drag : Maybe Drag
+    { drag : Maybe Components.Drag
     , entities : Entities
     }
+
+
+control : Entity
+control =
+    Entity [ Components.DragStatus Nothing ]
 
 
 box1 : Entity
@@ -186,6 +191,7 @@ init =
     let
         entities =
             Dict.empty
+                |> addEntity "control" control
                 |> addEntity "box1" box1
                 |> addEntity "box2" box2
                 |> addEntity "circle0" circleComponent
@@ -196,9 +202,10 @@ init =
         ( Model Nothing entities, Cmd.none )
 
 
-updateEntity : Entities -> Msg -> Maybe Drag -> String -> Entity -> Entity
+updateEntity : Entities -> Msg -> Maybe Components.Drag -> String -> Entity -> Entity
 updateEntity entities msg drag key components =
     components
+        |> applyDrag msg
         |> applyDraggable msg drag
         |> applyHoverable msg
         |> applyPort entities
@@ -222,7 +229,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case Debug.log "messages" msg of
         Press pos ->
-            ( updateEntities msg { model | drag = Just (Drag pos pos pos) }, Cmd.none )
+            ( updateEntities msg { model | drag = Just (Components.Drag pos pos pos) }, Cmd.none )
 
         Release pos ->
             ( updateEntities msg { model | drag = Nothing }, Cmd.none )
@@ -234,12 +241,13 @@ update msg model =
                 Just drag ->
                     let
                         newDrag =
-                            Just (Drag drag.startPos drag.currentPos pos)
+                            Just (Components.Drag drag.startPos drag.currentPos pos)
                     in
                         ( updateEntities msg { model | drag = newDrag }, Cmd.none )
 
                 Nothing ->
                     ( updateEntities msg model, Cmd.none )
+
         _ ->
             ( updateEntities msg { model | drag = Nothing }, Cmd.none )
 
@@ -250,7 +258,7 @@ createSvgAttribtues =
         << getAppearance
 
 
-renderEntity : ( String, Entity ) -> Html msg 
+renderEntity : ( String, Entity ) -> Html msg
 renderEntity ( key, entity ) =
     case
         (getShape entity)
@@ -305,13 +313,17 @@ customOnMouseDown =
     in
         Html.Events.on "mousedown" decoder
 
+
 customOnWheel : Html.Attribute Msg
 customOnWheel =
     let
-        decoder = Decode.oneOf
-            [Decode.map Zoom (Decode.field "deltaY" Decode.int) ]
+        decoder =
+            Decode.oneOf
+                [ Decode.map Zoom (Decode.field "deltaY" Decode.int) ]
     in
         Html.Events.on "wheel" decoder
+
+
 
 -- SUBSCRIPTIONS
 

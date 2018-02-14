@@ -8,6 +8,7 @@ import Components
         , Component(Attachment, Port, Node, Shape)
         , Port(..)
         , Shape(..)
+        , Drag
         , addComponent
         )
 import Shape exposing (..)
@@ -20,7 +21,7 @@ import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
 import OpenSolid.Arc2d as Arc2d exposing (Arc2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
-import Math exposing (Drag, isVectorOver, postionToPoint2d, translateBy, getCenterPosition)
+import Math exposing ( isVectorOver, postionToPoint2d, translateBy, getCenterPosition)
 
 
 findNodeShape : String -> Entities -> Maybe Shape

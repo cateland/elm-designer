@@ -9,11 +9,7 @@ import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import Components exposing (Shape(..))
 
 
-type alias Drag =
-    { startPos : Position
-    , previousPos : Position
-    , currentPos : Position
-    }
+
 
 
 postionToPoint2d : Position -> Point2d

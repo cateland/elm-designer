@@ -8,12 +8,13 @@ import Components
         , Component(Attachment, Port, Node, Link, Shape)
         , Port(..)
         , Shape(..)
+        , Drag
         , addComponent
         )
 import Shape exposing (..)
 import Link exposing (..)
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
-import Math exposing (Drag, isVectorOver, postionToPoint2d, translateBy, getCenterPosition)
+import Math exposing ( isVectorOver, postionToPoint2d, translateBy, getCenterPosition)
 
 
 findParentShape : String -> Entities -> Maybe Shape
