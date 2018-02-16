@@ -25,6 +25,7 @@ import DragSystem exposing (..)
 import DraggableSystem exposing (..)
 import HoverableSystem exposing (..)
 import SelectableSystem exposing (..)
+import BrushSelectSystem exposing (..)
 import PortSystem exposing (..)
 import AttachmentSystem exposing (..)
 import LinkSystem exposing (..)
@@ -196,7 +197,7 @@ brush : Entity
 brush =
     Entity
         [ Drawable 100
-        , Brush
+        , Brush True
         , Appearance
             ( [ Components.Stroke "#1563A5"
               , Components.StrokeWidth "2"
@@ -235,6 +236,7 @@ updateEntity entities msg key components =
         |> applyDraggable entities
         |> applyHoverable msg
         |> applySelectable msg
+        |> applyBrushSelect entities
         |> applyPort entities
         |> applyAttachement entities
         |> applyLink entities

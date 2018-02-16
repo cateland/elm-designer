@@ -9,9 +9,6 @@ import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import Components exposing (Shape(..))
 
 
-
-
-
 postionToPoint2d : Position -> Point2d
 postionToPoint2d position =
     Point2d.fromCoordinates ( toFloat position.x, toFloat position.y )
@@ -57,3 +54,16 @@ getCenterPosition shape =
 
         LineSegment2d lineSegment ->
             LineSegment2d.midpoint lineSegment
+
+
+getShapeBoundingBox : Components.Shape -> BoundingBox2d.BoundingBox2d
+getShapeBoundingBox shape =
+    case shape of
+        BoundingBox2d box ->
+            box
+
+        Circle2d circle ->
+            Circle2d.boundingBox circle
+
+        LineSegment2d segment ->
+            LineSegment2d.boundingBox segment

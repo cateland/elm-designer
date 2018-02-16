@@ -10,15 +10,17 @@ import Components
         , Shape(..)
         , Hoverable
         , addComponent
+        , removeComponent
         )
 import Hoverable exposing (getHoverable, updateHoverable)
 import Appearance exposing (getAppearance, updateAppearance)
-import Brush exposing (getBrush)
+import Brush exposing (getBrush, updateBrush)
 import DragStatus exposing (getDragStatus, updateDragStatus)
 import Shape exposing (..)
 import Math exposing (isVectorOver, postionToPoint2d)
 import Dict exposing (Dict)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
+import OpenSolid.Point2d as Point2d exposing (Point2d)
 
 
 findControlDrag : Entities -> Maybe Drag
@@ -41,48 +43,75 @@ findControlDrag entities =
             Nothing
 
 
+intersectWithEntity : Point2d -> String -> Entity -> Bool -> Bool
+intersectWithEntity point key entity intersect =
+    case intersect of
+        True ->
+            True
+
+        False ->
+            case (getShape entity, getHoverable entity) of
+                (Just (Shape shape), Just (Hoverable _)) ->
+                    isVectorOver point shape
+
+                _ ->
+                    False
+
+
+intersectWithEntities : Point2d -> Entities -> Bool
+intersectWithEntities point entities =
+    Dict.foldl (intersectWithEntity point) False entities
+
+
 applyBrush : Msgs.Msg -> Entities -> Entity -> Entity
 applyBrush msg entities entity =
-    case ( getBrush entity, findControlDrag entities ) of
-        ( Just Brush, Just drag ) ->
+    case ( getBrush entity, findControlDrag entities, getShape entity ) of
+        ( Just (Brush isBrushable), Just drag, _ ) ->
             case drag.startPos.x == drag.currentPos.x && drag.startPos.y == drag.currentPos.y of
                 True ->
                     entity
 
                 False ->
-                    case getShape entity of
-                        Just _ ->
-                            updateShape
-                                (Shape
-                                    (BoundingBox2d
-                                        (BoundingBox2d.with
-                                            { minX = toFloat drag.startPos.x
-                                            , maxX = toFloat drag.currentPos.x
-                                            , minY = toFloat drag.startPos.y
-                                            , maxY = toFloat drag.currentPos.y
-                                            }
-                                        )
-                                    )
-                                )
-                                entity
+                    case (intersectWithEntities (postionToPoint2d drag.startPos) entities, isBrushable) of
+                        (True, True) ->
+                            updateBrush (Brush False) entity
 
-                        Nothing ->
-                            addComponent
-                                (Shape
-                                    (BoundingBox2d
-                                        (BoundingBox2d.with
-                                            { minX = toFloat drag.startPos.x
-                                            , maxX = toFloat drag.currentPos.x
-                                            , minY = toFloat drag.startPos.y
-                                            , maxY = toFloat drag.currentPos.y
-                                            }
+                        (False, True) ->
+                            case getShape entity of
+                                Just _ ->
+                                    updateShape
+                                        (Shape
+                                            (BoundingBox2d
+                                                (BoundingBox2d.with
+                                                    { minX = toFloat drag.startPos.x
+                                                    , maxX = toFloat drag.currentPos.x
+                                                    , minY = toFloat drag.startPos.y
+                                                    , maxY = toFloat drag.currentPos.y
+                                                    }
+                                                )
+                                            )
                                         )
-                                    )
-                                )
-                                entity
+                                        entity
 
-        ( Just Brush, Nothing ) ->
-            entity
+                                Nothing ->
+                                    addComponent
+                                        (Shape
+                                            (BoundingBox2d
+                                                (BoundingBox2d.with
+                                                    { minX = toFloat drag.startPos.x
+                                                    , maxX = toFloat drag.currentPos.x
+                                                    , minY = toFloat drag.startPos.y
+                                                    , maxY = toFloat drag.currentPos.y
+                                                    }
+                                                )
+                                            )
+                                        )
+                                        entity
+                        _ ->
+                            entity
+
+        ( Just (Brush _), Nothing, Just shape ) ->
+            removeComponent shape entity
 
         _ ->
-            entity
+            updateBrush (Brush True) entity

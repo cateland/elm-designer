@@ -11,6 +11,7 @@ module Components
         , Attribute(..)
         , Drag
         , addComponent
+        , removeComponent
         , addEntity
         )
 
@@ -26,6 +27,16 @@ import Mouse exposing (Position)
 addComponent : Component -> Entity -> Entity
 addComponent component (Entity components) =
     Entity (component :: components)
+
+
+isComponentEquals : Component -> Component -> Bool
+isComponentEquals component1 component2 =
+    component1 == component2
+
+
+removeComponent : Component -> Entity -> Entity
+removeComponent component (Entity components) =
+    Entity (List.filter (not << (isComponentEquals component)) components)
 
 
 addEntity : String -> Entity -> Entities -> Entities
@@ -56,7 +67,7 @@ type Hoverable
 
 type Selectable
     = NotSelected (List Attribute)
-    | Pressed (Mouse.Position, List Attribute)
+    | Pressed ( Mouse.Position, List Attribute )
     | Selected (List Attribute)
 
 
@@ -90,8 +101,8 @@ type Component
     | Port Port
     | Link String String
     | Attachment String Vector2d
-    | Appearance (List Attribute, List (Attribute))
-    | Brush
+    | Appearance ( List Attribute, List Attribute )
+    | Brush Bool
 
 
 type Entity
