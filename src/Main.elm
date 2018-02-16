@@ -19,6 +19,7 @@ import Components
         , addEntity
         )
 import Shape exposing (..)
+import Drawable exposing (..)
 import Appearance exposing (..)
 import DragSystem exposing (..)
 import DraggableSystem exposing (..)
@@ -27,6 +28,7 @@ import SelectableSystem exposing (..)
 import PortSystem exposing (..)
 import AttachmentSystem exposing (..)
 import LinkSystem exposing (..)
+import BrushSystem exposing (..)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
@@ -52,7 +54,7 @@ control =
 box1 : Entity
 box1 =
     Entity
-        [ Drawable
+        [ Drawable 70
         , Shape
             (BoundingBox2d
                 (BoundingBox2d.with
@@ -70,7 +72,7 @@ box1 =
 box2 : Entity
 box2 =
     Entity
-        [ Drawable
+        [ Drawable 70
         , Shape
             (BoundingBox2d
                 (BoundingBox2d.with
@@ -106,11 +108,11 @@ box2 =
 circleComponent : Entity
 circleComponent =
     Entity
-        [ Drawable
+        [ Drawable 70
         , Shape
             (Circle2d
                 (Circle2d.with
-                    { centerPoint = Point2d.fromCoordinates ( 300, 300 )
+                    { centerPoint = Point2d.fromCoordinates ( 100, 150 )
                     , radius = 50
                     }
                 )
@@ -138,7 +140,7 @@ circleComponent =
 circle1 : Entity
 circle1 =
     Entity
-        [ Drawable
+        [ Drawable 80
         , Shape
             (Circle2d
                 (Circle2d.with
@@ -161,7 +163,7 @@ circle1 =
 circle2 : Entity
 circle2 =
     Entity
-        [ Drawable
+        [ Drawable 80
         , Shape
             (Circle2d
                 (Circle2d.with
@@ -184,9 +186,24 @@ circle2 =
 link1 : Entity
 link1 =
     Entity
-        [ Drawable
+        [ Drawable 90
         , Link "circle1" "circle2"
         , Appearance ( [ Components.Stroke "#1563A5", Components.StrokeWidth "5" ], [] )
+        ]
+
+
+brush : Entity
+brush =
+    Entity
+        [ Drawable 100
+        , Brush
+        , Appearance
+            ( [ Components.Stroke "#1563A5"
+              , Components.StrokeWidth "2"
+              , Components.Fill "rgba(21, 99, 165, 0.1)"
+              ]
+            , []
+            )
         ]
 
 
@@ -206,6 +223,7 @@ init =
                 |> addEntity "circle1" circle1
                 |> addEntity "circle2" circle2
                 |> addEntity "link1" link1
+                |> addEntity "brush" brush
     in
         ( Model entities, Cmd.none )
 
@@ -220,6 +238,7 @@ updateEntity entities msg key components =
         |> applyPort entities
         |> applyAttachement entities
         |> applyLink entities
+        |> applyBrush msg entities
 
 
 updateEntities : Msg -> Model -> Model
@@ -272,6 +291,24 @@ renderEntity ( key, entity ) =
         _ ->
             div [] []
 
+filterDrawable : ( String, Entity ) -> Bool
+filterDrawable (key, entity) = 
+    case getDrawable entity of
+        Just (Drawable _) ->
+            True
+    
+        _ ->
+            False
+
+sortDrawable : ( String, Entity ) -> ( String, Entity ) -> Order
+sortDrawable (_, entity1) (_, entity2)  =
+    case (getDrawable entity1, getDrawable entity2) of
+        (Just (Drawable order1), Just (Drawable order2)) ->
+            compare order1 order2
+    
+        _ ->
+            LT
+            
 
 view : Model -> Html Msg
 view model =
@@ -279,7 +316,7 @@ view model =
         []
         [ svg
             [ id "svg", width "700", height "700", customOnMouseDown, customOnWheel ]
-            (List.map renderEntity (Dict.toList model.entities))
+            (List.map renderEntity (List.sortWith sortDrawable (List.filter filterDrawable (Dict.toList model.entities))))
         ]
 
 

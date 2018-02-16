@@ -11,7 +11,7 @@ getBrush (Entity components) =
 
         x :: xs ->
             case x of
-                Brush _ _ ->
+                Brush  ->
                     Just x
 
                 _ ->
@@ -26,7 +26,7 @@ filterBrush (Entity components) =
 
         x :: xs ->
             case x of
-                Brush _ _ ->
+                Brush  ->
                     filterBrush (Entity xs)
 
                 _ ->
@@ -36,7 +36,7 @@ filterBrush (Entity components) =
 updateBrush : Component -> Entity -> Entity
 updateBrush component entity =
     case component of
-        Brush _ _ ->
+        Brush ->
             case getBrush entity of
                 Nothing ->
                     entity

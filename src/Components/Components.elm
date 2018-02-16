@@ -80,7 +80,7 @@ type Attribute
 
 
 type Component
-    = Drawable
+    = Drawable Int
     | Shape Shape
     | DragStatus (Maybe Drag)
     | Draggable Draggable
