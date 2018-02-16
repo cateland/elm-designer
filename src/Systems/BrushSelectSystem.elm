@@ -30,7 +30,7 @@ applyBrushSelect entities entity =
         ( Just (Selectable (Components.NotSelected selectedAppearence)), Just (Shape entityShape) ) ->
             case findBrushShape entities of
                 Just brushShape ->
-                    case BoundingBox2d.intersects (getShapeBoundingBox brushShape) (getShapeBoundingBox entityShape) of
+                    case BoundingBox2d.isContainedIn (getShapeBoundingBox brushShape) (getShapeBoundingBox entityShape) of
                         True ->
                             updateSelectable (Selectable (Components.Selected selectedAppearence)) entity
 
@@ -42,7 +42,7 @@ applyBrushSelect entities entity =
         ( Just (Selectable (Components.Selected selectedAppearence)), Just (Shape entityShape) ) ->
             case findBrushShape entities of
                 Just brushShape ->
-                    case BoundingBox2d.intersects (getShapeBoundingBox brushShape) (getShapeBoundingBox entityShape) of
+                    case BoundingBox2d.isContainedIn (getShapeBoundingBox brushShape) (getShapeBoundingBox entityShape) of
                         True ->
                             entity
 
