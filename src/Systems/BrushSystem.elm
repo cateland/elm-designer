@@ -63,8 +63,8 @@ intersectWithEntities point entities =
     Dict.foldl (intersectWithEntity point) False entities
 
 
-applyBrush : Msgs.Msg -> Entities -> Entity -> Entity
-applyBrush msg entities entity =
+applyBrush : Entities -> Entity -> Entity
+applyBrush entities entity =
     case ( getBrush entity, findControlDrag entities, getShape entity ) of
         ( Just (Brush isBrushable), Just drag, _ ) ->
             case drag.startPos.x == drag.currentPos.x && drag.startPos.y == drag.currentPos.y of

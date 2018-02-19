@@ -23,6 +23,7 @@ import Drawable exposing (..)
 import Appearance exposing (..)
 import DragSystem exposing (..)
 import DraggableSystem exposing (..)
+import MultiSelectDragSystem exposing (..)
 import HoverableSystem exposing (..)
 import SelectableSystem exposing (..)
 import BrushSelectSystem exposing (..)
@@ -240,7 +241,7 @@ updateEntity entities msg key components =
         |> applyPort entities
         |> applyAttachement entities
         |> applyLink entities
-        |> applyBrush msg entities
+        |> applyBrush entities
 
 
 updateEntities : Msg -> Model -> Model
@@ -250,7 +251,7 @@ updateEntities msg model =
             updateEntity model.entities msg
 
         newEntities =
-            Dict.map configuredUpdater model.entities
+            Dict.map configuredUpdater (applyMultiSelectDrag model.entities)
     in
         { model | entities = newEntities }
 
