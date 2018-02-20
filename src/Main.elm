@@ -250,6 +250,7 @@ updateEntities msg model =
         configuredUpdater =
             updateEntity model.entities msg
 
+        -- foldl here so we have acces to updated components during the update loop !!!!!!
         newEntities =
             Dict.map configuredUpdater (applyMultiSelectDrag model.entities)
     in
@@ -294,24 +295,26 @@ renderEntity ( key, entity ) =
         _ ->
             div [] []
 
+
 filterDrawable : ( String, Entity ) -> Bool
-filterDrawable (key, entity) = 
+filterDrawable ( key, entity ) =
     case getDrawable entity of
         Just (Drawable _) ->
             True
-    
+
         _ ->
             False
 
+
 sortDrawable : ( String, Entity ) -> ( String, Entity ) -> Order
-sortDrawable (_, entity1) (_, entity2)  =
-    case (getDrawable entity1, getDrawable entity2) of
-        (Just (Drawable order1), Just (Drawable order2)) ->
+sortDrawable ( _, entity1 ) ( _, entity2 ) =
+    case ( getDrawable entity1, getDrawable entity2 ) of
+        ( Just (Drawable order1), Just (Drawable order2) ) ->
             compare order1 order2
-    
+
         _ ->
             LT
-            
+
 
 view : Model -> Html Msg
 view model =

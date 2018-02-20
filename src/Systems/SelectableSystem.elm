@@ -8,6 +8,9 @@ import Shape exposing (..)
 import Math exposing (isVectorOver, postionToPoint2d)
 
 -- ok this is super duper unclean
+-- check if part of multiple element selected
+-- if -> noop
+-- problem (biding with MultiSelectDrag :/)
 
 applySelectable : Msgs.Msg -> Entity -> Entity
 applySelectable msg entity =
