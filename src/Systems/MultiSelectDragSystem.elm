@@ -6,7 +6,9 @@ import Components
     exposing
         ( Component(Selectable, Shape, Draggable, Drawable)
         , Shape(BoundingBox2d)
-        , Draggable(Dragged, NotDragged)
+        , Draggable
+        , createDragged
+        , toggleDraggable
         )
 import Selectable exposing (getSelectable)
 import Shape exposing (getShape)
@@ -60,7 +62,6 @@ applyMultiSelectDrag entities =
                 let
                     boxList =
                         selectedEntities
-
                 in
                     case convertShapeListToBox boxList of
                         Just hull ->
@@ -71,7 +72,7 @@ applyMultiSelectDrag entities =
                                         (BoundingBox2d
                                             (hull)
                                         )
-                                    , Draggable NotDragged
+                                    , Draggable createDragged
                                     ]
                                 )
                                 entities

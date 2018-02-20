@@ -1,12 +1,15 @@
 module DraggableSystem exposing (..)
 
 import Dict exposing (Dict)
-import Entity exposing ( Entities , Entity)
+import Entity exposing (Entities, Entity)
 import Components
     exposing
         ( Component(Shape, Draggable, DragStatus)
-        , Draggable(Dragged, NotDragged)
+        , Draggable
         , Drag
+        , isDragged
+        , createDragged
+        , toggleDraggable
         )
 import Draggable exposing (getDraggable, updateDraggable)
 import Shape exposing (..)
@@ -43,8 +46,8 @@ applyDraggable entities entity =
                 isVectorOver (postionToPoint2d drag.startPos) entityShape
             of
                 True ->
-                    case dragStatus of
-                        Dragged ->
+                    case isDragged dragStatus of
+                        True ->
                             updateShape
                                 (Shape
                                     (translateBy
@@ -58,12 +61,12 @@ applyDraggable entities entity =
                                 )
                                 entity
 
-                        NotDragged ->
-                            updateDraggable (Draggable Dragged) entity
+                        False ->
+                            updateDraggable (Draggable (createDragged |> toggleDraggable)) entity
 
                 False ->
-                    case dragStatus of
-                        Dragged ->
+                    case isDragged dragStatus of
+                        True ->
                             updateShape
                                 (Shape
                                     (translateBy
@@ -77,11 +80,11 @@ applyDraggable entities entity =
                                 )
                                 entity
 
-                        NotDragged ->
+                        False ->
                             entity
 
         ( Just (Draggable _), Just (Shape entityShape), Nothing ) ->
-            updateDraggable (Draggable NotDragged) entity
+            updateDraggable (Draggable createDragged) entity
 
         _ ->
             entity

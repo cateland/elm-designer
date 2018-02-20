@@ -1,13 +1,16 @@
 module Components
     exposing
         ( Component(Drawable, Shape, DragStatus, Draggable, Hoverable, Selectable, Node, Port, Node, Link, Attachment, Appearance, Brush)
-        , Draggable(Dragged, NotDragged)
+        , Draggable
         , Hoverable(..)
         , Selectable(..)
         , Shape(BoundingBox2d, Circle2d, LineSegment2d)
         , Port(PortSource, PortSink)
         , Attribute(..)
         , Drag
+        , isDragged
+        , createDragged
+        , toggleDraggable
         )
 
 import OpenSolid.Point2d as Point2d exposing (Point2d)
@@ -32,6 +35,31 @@ type alias Position =
 type Draggable
     = Dragged
     | NotDragged
+
+
+createDragged : Draggable
+createDragged =
+    NotDragged
+
+
+isDragged : Draggable -> Bool
+isDragged drag =
+    case drag of
+        Dragged ->
+            True
+
+        NotDragged ->
+            False
+
+
+toggleDraggable : Draggable -> Draggable
+toggleDraggable drag =
+    case drag of
+        Dragged ->
+            NotDragged
+
+        NotDragged ->
+            Dragged
 
 
 type Hoverable
