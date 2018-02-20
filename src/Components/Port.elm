@@ -1,12 +1,12 @@
 module Port exposing (getPort, filterPort, updatePort)
 
-import Entity exposing (Entity(..), addComponent)
+import Entity exposing (Entity, addComponent, getComponents, createEntity)
 import Components exposing (Component(Port))
 
 
 getPort : Entity -> Maybe Component
-getPort (Entity components) =
-    case components of
+getPort entity =
+    case getComponents entity of
         [] ->
             Nothing
 
@@ -16,22 +16,22 @@ getPort (Entity components) =
                     Just x
 
                 _ ->
-                    getPort (Entity xs)
+                    getPort (createEntity xs)
 
 
 filterPort : Entity -> Entity
-filterPort (Entity components) =
-    case components of
+filterPort entity =
+    case getComponents entity of
         [] ->
-            Entity components
+            createEntity []
 
         x :: xs ->
             case x of
                 Port _ ->
-                    filterPort (Entity xs)
+                    filterPort (createEntity xs)
 
                 _ ->
-                    addComponent x (filterPort (Entity xs))
+                    addComponent x (filterPort (createEntity xs))
 
 
 updatePort : Component -> Entity -> Entity

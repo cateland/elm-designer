@@ -1,12 +1,12 @@
 module DragStatus exposing (getDragStatus, filterDragStatus, updateDragStatus)
 
-import Entity exposing (Entity(..), addComponent)
+import Entity exposing (Entity, addComponent, getComponents, createEntity)
 import Components exposing (Component(DragStatus))
 
 
 getDragStatus : Entity -> Maybe Component
-getDragStatus (Entity components) =
-    case components of
+getDragStatus entity=
+    case getComponents entity of
         [] ->
             Nothing
 
@@ -16,22 +16,22 @@ getDragStatus (Entity components) =
                     Just x
 
                 _ ->
-                    getDragStatus (Entity xs)
+                    getDragStatus (createEntity xs)
 
 
 filterDragStatus : Entity -> Entity
-filterDragStatus (Entity components) =
-    case components of
+filterDragStatus entity=
+    case getComponents entity of
         [] ->
-            Entity components
+            createEntity []
 
         x :: xs ->
             case x of
                 DragStatus _ ->
-                    filterDragStatus (Entity xs)
+                    filterDragStatus (createEntity xs)
 
                 _ ->
-                    addComponent x (filterDragStatus (Entity xs))
+                    addComponent x (filterDragStatus (createEntity xs))
 
 
 updateDragStatus : Component -> Entity -> Entity

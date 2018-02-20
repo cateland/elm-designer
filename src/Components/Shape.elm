@@ -1,12 +1,12 @@
 module Shape exposing (..)
 
-import Entity exposing (Entity(..), addComponent)
+import Entity exposing (Entity, addComponent, getComponents, createEntity)
 import Components exposing (Component(Shape))
 
 
 getShape : Entity -> Maybe Component
-getShape (Entity components) =
-    case components of
+getShape entity =
+    case getComponents entity of
         [] ->
             Nothing
 
@@ -16,22 +16,22 @@ getShape (Entity components) =
                     Just x
 
                 _ ->
-                    getShape (Entity xs)
+                    getShape (createEntity xs)
 
 
 filterShape : Entity -> Entity
-filterShape (Entity components) =
-    case components of
+filterShape entity =
+    case getComponents entity of
         [] ->
-            Entity components
+            createEntity []
 
         x :: xs ->
             case x of
                 Shape _ ->
-                    filterShape (Entity xs)
+                    filterShape (createEntity xs)
 
                 _ ->
-                    addComponent x (filterShape (Entity xs))
+                    addComponent x (filterShape (createEntity xs))
 
 
 updateShape : Component -> Entity -> Entity

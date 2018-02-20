@@ -1,12 +1,12 @@
 module Selectable exposing (getSelectable, filterSelectable, updateSelectable)
 
-import Entity exposing (Entity(..), addComponent)
+import Entity exposing (Entity, addComponent, getComponents, createEntity)
 import Components exposing (Component(Selectable))
 
 
 getSelectable : Entity -> Maybe Component
-getSelectable (Entity components) =
-    case components of
+getSelectable entity =
+    case getComponents entity of
         [] ->
             Nothing
 
@@ -16,22 +16,22 @@ getSelectable (Entity components) =
                     Just x
 
                 _ ->
-                    getSelectable (Entity xs)
+                    getSelectable (createEntity xs)
 
 
 filterSelectable : Entity -> Entity
-filterSelectable (Entity components) =
-    case components of
+filterSelectable entity =
+    case getComponents entity of
         [] ->
-            Entity components
+            createEntity []
 
         x :: xs ->
             case x of
                 Selectable _ ->
-                    filterSelectable (Entity xs)
+                    filterSelectable (createEntity xs)
 
                 _ ->
-                    addComponent x (filterSelectable (Entity xs))
+                    addComponent x (filterSelectable (createEntity xs))
 
 
 updateSelectable : Component -> Entity -> Entity

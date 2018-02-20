@@ -1,12 +1,12 @@
 module Brush exposing (getBrush, filterBrush, updateBrush)
 
-import Entity exposing (Entity(..), addComponent)
+import Entity exposing (Entity, addComponent, getComponents, createEntity)
 import Components exposing (Component(Brush))
 
 
 getBrush : Entity -> Maybe Component
-getBrush (Entity components) =
-    case components of
+getBrush entity =
+    case getComponents entity of
         [] ->
             Nothing
 
@@ -16,22 +16,22 @@ getBrush (Entity components) =
                     Just x
 
                 _ ->
-                    getBrush (Entity xs)
+                    getBrush (createEntity xs)
 
 
 filterBrush : Entity -> Entity
-filterBrush (Entity components) =
-    case components of
+filterBrush entity =
+    case getComponents entity of
         [] ->
-            Entity components
+            createEntity []
 
         x :: xs ->
             case x of
                 Brush _ ->
-                    filterBrush (Entity xs)
+                    filterBrush (createEntity xs)
 
                 _ ->
-                    addComponent x (filterBrush (Entity xs))
+                    addComponent x (filterBrush (createEntity xs))
 
 
 updateBrush : Component -> Entity -> Entity

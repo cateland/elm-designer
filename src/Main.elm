@@ -8,7 +8,7 @@ import Svg exposing (Svg, rect, svg)
 import Svg.Attributes as Attributes exposing (height, id, width, x, y, r, cx, cy, x1, x2, y1, y2, stroke)
 import OpenSolid.Svg as Svg
 import Msgs exposing (Msg(..))
-import Entity exposing (Entities, Entity(..), addEntity)
+import Entity exposing (Entities, Entity, addEntity, createEntity)
 import Components
     exposing
         ( Component(..)
@@ -48,12 +48,12 @@ type alias Model =
 
 control : Entity
 control =
-    Entity [ Components.DragStatus Nothing ]
+    createEntity [ Components.DragStatus Nothing ]
 
 
 box1 : Entity
 box1 =
-    Entity
+    createEntity
         [ Drawable 70
         , Shape
             (BoundingBox2d
@@ -71,7 +71,7 @@ box1 =
 
 box2 : Entity
 box2 =
-    Entity
+    createEntity
         [ Drawable 70
         , Shape
             (BoundingBox2d
@@ -107,7 +107,7 @@ box2 =
 
 circleComponent : Entity
 circleComponent =
-    Entity
+    createEntity
         [ Drawable 70
         , Shape
             (Circle2d
@@ -139,7 +139,7 @@ circleComponent =
 
 circle1 : Entity
 circle1 =
-    Entity
+    createEntity
         [ Drawable 80
         , Shape
             (Circle2d
@@ -162,7 +162,7 @@ circle1 =
 
 circle2 : Entity
 circle2 =
-    Entity
+    createEntity
         [ Drawable 80
         , Shape
             (Circle2d
@@ -185,7 +185,7 @@ circle2 =
 
 link1 : Entity
 link1 =
-    Entity
+    createEntity
         [ Drawable 90
         , Link "circle1" "circle2"
         , Appearance ( [ Components.Stroke "#1563A5", Components.StrokeWidth "5" ], [] )
@@ -194,7 +194,7 @@ link1 =
 
 brush : Entity
 brush =
-    Entity
+    createEntity
         [ Drawable 100
         , Brush True
         , Appearance

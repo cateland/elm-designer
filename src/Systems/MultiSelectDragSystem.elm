@@ -1,7 +1,7 @@
 module MultiSelectDragSystem exposing (..)
 
 import Math exposing (getShapeBoundingBox)
-import Entity exposing (Entities, Entity(..))
+import Entity exposing (Entities, Entity, createEntity)
 import Components
     exposing
         ( Component(Selectable, Shape, Draggable, Drawable)
@@ -65,7 +65,7 @@ applyMultiSelectDrag entities =
                     case convertShapeListToBox boxList of
                         Just hull ->
                             Dict.insert "multiDrag"
-                                (Entity
+                                (createEntity
                                     [ Drawable 60
                                     , Shape
                                         (BoundingBox2d

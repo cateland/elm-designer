@@ -1,12 +1,12 @@
 module Appearance exposing (getAppearance, filterAppearance, updateAppearance)
 
-import Entity exposing (Entity(..), addComponent)
+import Entity exposing (Entity, addComponent, getComponents, createEntity)
 import Components exposing (Component(Appearance))
 
 
 getAppearance : Entity -> Maybe Component
-getAppearance (Entity components) =
-    case components of
+getAppearance entity =
+    case getComponents entity of
         [] ->
             Nothing
 
@@ -16,22 +16,22 @@ getAppearance (Entity components) =
                     Just x
 
                 _ ->
-                    getAppearance (Entity xs)
+                    getAppearance (createEntity xs)
 
 
 filterAppearance : Entity -> Entity
-filterAppearance (Entity components) =
-    case components of
+filterAppearance entity =
+    case getComponents entity of
         [] ->
-            Entity components
+            createEntity []
 
         x :: xs ->
             case x of
                 Appearance _ ->
-                    filterAppearance (Entity xs)
+                    filterAppearance (createEntity xs)
 
                 _ ->
-                    addComponent x (filterAppearance (Entity xs))
+                    addComponent x (filterAppearance (createEntity xs))
 
 
 updateAppearance : Component -> Entity -> Entity

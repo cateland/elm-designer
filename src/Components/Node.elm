@@ -1,12 +1,12 @@
 module Node exposing (getNode, filterNode, updateNode)
 
-import Entity exposing (Entity(..), addComponent)
+import Entity exposing (Entity, addComponent, getComponents, createEntity)
 import Components exposing (Component(Node))
 
 
 getNode : Entity -> Maybe Component
-getNode (Entity components) =
-    case components of
+getNode entity=
+    case getComponents entity of
         [] ->
             Nothing
 
@@ -16,22 +16,22 @@ getNode (Entity components) =
                     Just x
 
                 _ ->
-                    getNode (Entity xs)
+                    getNode (createEntity xs)
 
 
 filterNode : Entity -> Entity
-filterNode (Entity components) =
-    case components of
+filterNode entity =
+    case getComponents entity of
         [] ->
-            Entity components
+            createEntity []
 
         x :: xs ->
             case x of
                 Node ->
-                    filterNode (Entity xs)
+                    filterNode (createEntity xs)
 
                 _ ->
-                    addComponent x (filterNode (Entity xs))
+                    addComponent x (filterNode (createEntity xs))
 
 
 updateNode : Component -> Entity -> Entity

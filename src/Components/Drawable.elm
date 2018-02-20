@@ -1,12 +1,12 @@
 module Drawable exposing (getDrawable, filterDrawable, updateDrawable)
 
-import Entity exposing (Entity(..), addComponent)
+import Entity exposing (Entity, addComponent, getComponents, createEntity)
 import Components exposing (Component(Drawable))
 
 
 getDrawable : Entity -> Maybe Component
-getDrawable (Entity components) =
-    case components of
+getDrawable entity =
+    case getComponents entity of
         [] ->
             Nothing
 
@@ -16,22 +16,22 @@ getDrawable (Entity components) =
                     Just x
 
                 _ ->
-                    getDrawable (Entity xs)
+                    getDrawable (createEntity xs)
 
 
 filterDrawable : Entity -> Entity
-filterDrawable (Entity components) =
-    case components of
+filterDrawable entity =
+    case getComponents entity of
         [] ->
-            Entity components
+            createEntity []
 
         x :: xs ->
             case x of
                 Drawable _ ->
-                    filterDrawable (Entity xs)
+                    filterDrawable (createEntity xs)
 
                 _ ->
-                    addComponent x (filterDrawable (Entity xs))
+                    addComponent x (filterDrawable (createEntity xs))
 
 
 updateDrawable : Component -> Entity -> Entity

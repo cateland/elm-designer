@@ -1,12 +1,12 @@
 module Hoverable exposing (getHoverable, filterHoverable, updateHoverable)
 
-import Entity exposing (Entity(..), addComponent)
+import Entity exposing (Entity, addComponent, getComponents, createEntity)
 import Components exposing (Component(Hoverable))
 
 
 getHoverable : Entity -> Maybe Component
-getHoverable (Entity components) =
-    case components of
+getHoverable entity =
+    case getComponents entity of
         [] ->
             Nothing
 
@@ -16,22 +16,22 @@ getHoverable (Entity components) =
                     Just x
 
                 _ ->
-                    getHoverable (Entity xs)
+                    getHoverable (createEntity xs)
 
 
 filterHoverable : Entity -> Entity
-filterHoverable (Entity components) =
-    case components of
+filterHoverable entity =
+    case getComponents entity of
         [] ->
-            Entity components
+            createEntity []
 
         x :: xs ->
             case x of
                 Hoverable _ ->
-                    filterHoverable (Entity xs)
+                    filterHoverable (createEntity xs)
 
                 _ ->
-                    addComponent x (filterHoverable (Entity xs))
+                    addComponent x (filterHoverable (createEntity xs))
 
 
 updateHoverable : Component -> Entity -> Entity

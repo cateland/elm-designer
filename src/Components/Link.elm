@@ -1,12 +1,12 @@
 module Link exposing (getLink, filterLink, updateLink)
 
-import Entity exposing (Entity(..), addComponent)
+import Entity exposing (Entity, addComponent, getComponents, createEntity)
 import Components exposing (Component(Link))
 
 
 getLink : Entity -> Maybe Component
-getLink (Entity components) =
-    case components of
+getLink entity =
+    case getComponents entity of
         [] ->
             Nothing
 
@@ -16,22 +16,22 @@ getLink (Entity components) =
                     Just x
 
                 _ ->
-                    getLink (Entity xs)
+                    getLink (createEntity xs)
 
 
 filterLink : Entity -> Entity
-filterLink (Entity components) =
-    case components of
+filterLink entity =
+    case getComponents entity of
         [] ->
-            Entity components
+            createEntity []
 
         x :: xs ->
             case x of
                 Link _ _ ->
-                    filterLink (Entity xs)
+                    filterLink (createEntity xs)
 
                 _ ->
-                    addComponent x (filterLink (Entity xs))
+                    addComponent x (filterLink (createEntity xs))
 
 
 updateLink : Component -> Entity -> Entity

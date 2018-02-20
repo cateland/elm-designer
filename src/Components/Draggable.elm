@@ -1,12 +1,12 @@
 module Draggable exposing (getDraggable, filterDraggable, updateDraggable)
 
-import Entity exposing (Entity(..), addComponent)
+import Entity exposing (Entity, addComponent, getComponents, createEntity)
 import Components exposing (Component(Draggable))
 
 
 getDraggable : Entity -> Maybe Component
-getDraggable (Entity components) =
-    case components of
+getDraggable entity =
+    case getComponents entity of
         [] ->
             Nothing
 
@@ -16,22 +16,22 @@ getDraggable (Entity components) =
                     Just x
 
                 _ ->
-                    getDraggable (Entity xs)
+                    getDraggable (createEntity xs)
 
 
 filterDraggable : Entity -> Entity
-filterDraggable (Entity components) =
-    case components of
+filterDraggable entity =
+    case getComponents entity of
         [] ->
-            Entity components
+            createEntity []
 
         x :: xs ->
             case x of
                 Draggable _ ->
-                    filterDraggable (Entity xs)
+                    filterDraggable (createEntity xs)
 
                 _ ->
-                    addComponent x (filterDraggable (Entity xs))
+                    addComponent x (filterDraggable (createEntity xs))
 
 
 updateDraggable : Component -> Entity -> Entity

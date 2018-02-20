@@ -1,12 +1,12 @@
 module Attachment exposing (getAttachment, filterAttachment, updateAttachment)
 
-import Entity exposing (Entity(..), addComponent)
+import Entity exposing (Entity, addComponent, getComponents, createEntity)
 import Components exposing (Component(Attachment))
 
 
 getAttachment : Entity -> Maybe Component
-getAttachment (Entity components) =
-    case components of
+getAttachment entity =
+    case getComponents entity of
         [] ->
             Nothing
 
@@ -16,22 +16,22 @@ getAttachment (Entity components) =
                     Just x
 
                 _ ->
-                    getAttachment (Entity xs)
+                    getAttachment (createEntity xs)
 
 
 filterAttachment : Entity -> Entity
-filterAttachment (Entity components) =
-    case components of
+filterAttachment entity =
+    case getComponents entity of
         [] ->
-            Entity components
+            createEntity []
 
         x :: xs ->
             case x of
                 Attachment _ _ ->
-                    filterAttachment (Entity xs)
+                    filterAttachment (createEntity xs)
 
                 _ ->
-                    addComponent x (filterAttachment (Entity xs))
+                    addComponent x (filterAttachment (createEntity xs))
 
 
 updateAttachment : Component -> Entity -> Entity
