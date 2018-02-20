@@ -12,7 +12,6 @@ import Entity exposing (Entities, Entity, addEntity, createEntity)
 import Components
     exposing
         ( Component(..)
-        , Draggable
         , Shape(BoundingBox2d, Circle2d, LineSegment2d)
         , Port(PortSource, PortSink)
         , createDragged
@@ -67,7 +66,7 @@ box1 =
                     }
                 )
             )
-        , Draggable createDragged
+        , DraggableComponent createDragged
         ]
 
 
@@ -85,7 +84,7 @@ box2 =
                     }
                 )
             )
-        , Draggable createDragged
+        , DraggableComponent createDragged
         , Appearance
             ( [ Components.Stroke "#C5C5C5"
               , Components.StrokeWidth "2"
@@ -119,7 +118,7 @@ circleComponent =
                     }
                 )
             )
-        , Draggable createDragged
+        , DraggableComponent createDragged
         , Appearance
             ( [ Components.Stroke "#C5C5C5"
               , Components.StrokeWidth "2"

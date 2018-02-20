@@ -4,9 +4,8 @@ import Math exposing (getShapeBoundingBox)
 import Entity exposing (Entities, Entity, createEntity)
 import Components
     exposing
-        ( Component(Selectable, Shape, Draggable, Drawable)
+        ( Component(Selectable, Shape, DraggableComponent, Drawable)
         , Shape(BoundingBox2d)
-        , Draggable
         , createDragged
         , toggleDraggable
         )
@@ -72,7 +71,7 @@ applyMultiSelectDrag entities =
                                         (BoundingBox2d
                                             (hull)
                                         )
-                                    , Draggable createDragged
+                                    , DraggableComponent createDragged
                                     ]
                                 )
                                 entities

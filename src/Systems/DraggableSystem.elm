@@ -4,14 +4,13 @@ import Dict exposing (Dict)
 import Entity exposing (Entities, Entity)
 import Components
     exposing
-        ( Component(Shape, Draggable, DragStatus)
-        , Draggable
+        ( Component(Shape, DraggableComponent, DragStatus)
         , Drag
         , isDragged
         , createDragged
         , toggleDraggable
         )
-import Draggable exposing (getDraggable, updateDraggable)
+import DraggableComponent exposing (getDraggable, updateDraggable)
 import Shape exposing (..)
 import DragStatus exposing (getDragStatus, updateDragStatus)
 import Math exposing (isVectorOver, postionToPoint2d, translateBy)
@@ -41,7 +40,7 @@ findControlDrag entities =
 applyDraggable : Entities -> Entity -> Entity
 applyDraggable entities entity =
     case ( getDraggable entity, getShape entity, findControlDrag entities ) of
-        ( Just (Draggable dragStatus), Just (Shape entityShape), Just drag ) ->
+        ( Just (DraggableComponent dragStatus), Just (Shape entityShape), Just drag ) ->
             case
                 isVectorOver (postionToPoint2d drag.startPos) entityShape
             of
@@ -62,7 +61,7 @@ applyDraggable entities entity =
                                 entity
 
                         False ->
-                            updateDraggable (Draggable (createDragged |> toggleDraggable)) entity
+                            updateDraggable (DraggableComponent (createDragged |> toggleDraggable)) entity
 
                 False ->
                     case isDragged dragStatus of
@@ -83,8 +82,8 @@ applyDraggable entities entity =
                         False ->
                             entity
 
-        ( Just (Draggable _), Just (Shape entityShape), Nothing ) ->
-            updateDraggable (Draggable createDragged) entity
+        ( Just (DraggableComponent _), Just (Shape entityShape), Nothing ) ->
+            updateDraggable (DraggableComponent createDragged) entity
 
         _ ->
             entity

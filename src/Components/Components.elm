@@ -1,7 +1,20 @@
 module Components
     exposing
-        ( Component(Drawable, Shape, DragStatus, Draggable, Hoverable, Selectable, Node, Port, Node, Link, Attachment, Appearance, Brush)
-        , Draggable
+        ( Component
+            ( Drawable
+            , Shape
+            , DragStatus
+            , DraggableComponent
+            , Hoverable
+            , Selectable
+            , Node
+            , Port
+            , Node
+            , Link
+            , Attachment
+            , Appearance
+            , Brush
+            )
         , Hoverable(..)
         , Selectable(..)
         , Shape(BoundingBox2d, Circle2d, LineSegment2d)
@@ -96,7 +109,7 @@ type Component
     = Drawable Int
     | Shape Shape
     | DragStatus (Maybe Drag)
-    | Draggable Draggable
+    | DraggableComponent Draggable
     | Hoverable Hoverable
     | Selectable Selectable
     | Node
