@@ -6,11 +6,9 @@ import Components
     exposing
         ( Component(Shape, DraggableComponent, DragStatus)
         , Drag
-        , isDragged
-        , createDragged
-        , toggleDraggable
         )
 import DraggableComponent exposing (getDraggable, updateDraggable)
+import Draggable exposing (createDragged, createNotDragged, isDragged)
 import Shape exposing (..)
 import DragStatus exposing (getDragStatus, updateDragStatus)
 import Math exposing (isVectorOver, postionToPoint2d, translateBy)
@@ -61,7 +59,7 @@ applyDraggable entities entity =
                                 entity
 
                         False ->
-                            updateDraggable (DraggableComponent (createDragged |> toggleDraggable)) entity
+                            updateDraggable (DraggableComponent createDragged) entity
 
                 False ->
                     case isDragged dragStatus of
@@ -83,7 +81,7 @@ applyDraggable entities entity =
                             entity
 
         ( Just (DraggableComponent _), Just (Shape entityShape), Nothing ) ->
-            updateDraggable (DraggableComponent createDragged) entity
+            updateDraggable (DraggableComponent createNotDragged) entity
 
         _ ->
             entity

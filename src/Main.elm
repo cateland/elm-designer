@@ -14,9 +14,8 @@ import Components
         ( Component(..)
         , Shape(BoundingBox2d, Circle2d, LineSegment2d)
         , Port(PortSource, PortSink)
-        , createDragged
-        , toggleDraggable
         )
+import Draggable exposing (createNotDragged)
 import Shape exposing (..)
 import Drawable exposing (..)
 import Appearance exposing (..)
@@ -66,7 +65,7 @@ box1 =
                     }
                 )
             )
-        , DraggableComponent createDragged
+        , DraggableComponent createNotDragged
         ]
 
 
@@ -84,7 +83,7 @@ box2 =
                     }
                 )
             )
-        , DraggableComponent createDragged
+        , DraggableComponent createNotDragged
         , Appearance
             ( [ Components.Stroke "#C5C5C5"
               , Components.StrokeWidth "2"
@@ -118,7 +117,7 @@ circleComponent =
                     }
                 )
             )
-        , DraggableComponent createDragged
+        , DraggableComponent createNotDragged
         , Appearance
             ( [ Components.Stroke "#C5C5C5"
               , Components.StrokeWidth "2"

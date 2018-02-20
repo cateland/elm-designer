@@ -21,10 +21,9 @@ module Components
         , Port(PortSource, PortSink)
         , Attribute(..)
         , Drag
-        , isDragged
-        , createDragged
-        , toggleDraggable
         )
+
+import Draggable exposing (Draggable)
 
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
@@ -45,34 +44,7 @@ type alias Position =
     Point2d
 
 
-type Draggable
-    = Dragged
-    | NotDragged
 
-
-createDragged : Draggable
-createDragged =
-    NotDragged
-
-
-isDragged : Draggable -> Bool
-isDragged drag =
-    case drag of
-        Dragged ->
-            True
-
-        NotDragged ->
-            False
-
-
-toggleDraggable : Draggable -> Draggable
-toggleDraggable drag =
-    case drag of
-        Dragged ->
-            NotDragged
-
-        NotDragged ->
-            Dragged
 
 
 type Hoverable

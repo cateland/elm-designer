@@ -6,9 +6,8 @@ import Components
     exposing
         ( Component(Selectable, Shape, DraggableComponent, Drawable)
         , Shape(BoundingBox2d)
-        , createDragged
-        , toggleDraggable
         )
+import Draggable exposing (createDragged, toggleDraggable)
 import Selectable exposing (getSelectable)
 import Shape exposing (getShape)
 import Dict
