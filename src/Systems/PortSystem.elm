@@ -1,15 +1,13 @@
 module PortSystem exposing (..)
 
 import Dict exposing (Dict)
+import Entity exposing (Entities, Entity, addComponent)
 import Components
     exposing
-        ( Entities
-        , Entity
-        , Component(Attachment, Port, Node, Shape)
+        ( Component(Attachment, Port, Node, Shape)
         , Port(..)
         , Shape(..)
         , Drag
-        , addComponent
         )
 import Shape exposing (..)
 import Port exposing (..)

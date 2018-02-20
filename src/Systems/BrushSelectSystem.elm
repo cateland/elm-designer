@@ -1,7 +1,8 @@
 module BrushSelectSystem exposing (..)
 
 import Math exposing (getShapeBoundingBox)
-import Components exposing (Entities, Entity, Component(Selectable, Shape, Brush), Shape)
+import Entity exposing (Entities, Entity)
+import Components exposing (Component(Selectable, Shape, Brush), Shape)
 import Selectable exposing (getSelectable, updateSelectable)
 import Brush exposing (getBrush)
 import Shape exposing (getShape)

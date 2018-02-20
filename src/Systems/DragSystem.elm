@@ -1,7 +1,8 @@
 module DragSystem exposing (..)
 
 import Msgs exposing (Msg(Move))
-import Components exposing (Entity, Component(DragStatus), Drag, addComponent)
+import Entity exposing (Entity(..))
+import Components exposing (Component(DragStatus), Drag)
 import DragStatus exposing (getDragStatus, updateDragStatus)
 
 

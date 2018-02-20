@@ -1,6 +1,7 @@
 module Node exposing (getNode, filterNode, updateNode)
 
-import Components exposing (Entity(..), Component(Node), addComponent)
+import Entity exposing (Entity(..), addComponent)
+import Components exposing (Component(Node))
 
 
 getNode : Entity -> Maybe Component

@@ -1,7 +1,8 @@
 module HoverableSystem exposing (..)
 
 import Msgs exposing (Msg(Move))
-import Components exposing (Entity, Component(Shape, Hoverable, Appearance), Hoverable, addComponent)
+import Entity exposing (Entity, addComponent)
+import Components exposing (Component(Shape, Hoverable, Appearance), Hoverable)
 import Hoverable exposing (getHoverable, updateHoverable)
 import Appearance exposing (getAppearance, updateAppearance)
 import Shape exposing (..)

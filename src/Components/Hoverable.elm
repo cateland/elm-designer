@@ -1,6 +1,7 @@
 module Hoverable exposing (getHoverable, filterHoverable, updateHoverable)
 
-import Components exposing (Entity(..), Component(Hoverable), addComponent)
+import Entity exposing (Entity(..), addComponent)
+import Components exposing (Component(Hoverable))
 
 
 getHoverable : Entity -> Maybe Component

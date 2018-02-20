@@ -1,6 +1,7 @@
 module Selectable exposing (getSelectable, filterSelectable, updateSelectable)
 
-import Components exposing (Entity(..), Component(Selectable), addComponent)
+import Entity exposing (Entity(..), addComponent)
+import Components exposing (Component(Selectable))
 
 
 getSelectable : Entity -> Maybe Component

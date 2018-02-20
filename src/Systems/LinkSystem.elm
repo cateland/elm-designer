@@ -1,15 +1,13 @@
 module LinkSystem exposing (..)
 
 import Dict exposing (Dict)
+import Entity exposing (Entities, Entity, addComponent)
 import Components
     exposing
-        ( Entities
-        , Entity
-        , Component(Attachment, Port, Node, Link, Shape)
+        ( Component(Attachment, Port, Node, Link, Shape)
         , Port(..)
         , Shape(..)
         , Drag
-        , addComponent
         )
 import Shape exposing (..)
 import Link exposing (..)

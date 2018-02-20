@@ -1,11 +1,10 @@
 module AttachmentSystem exposing (..)
 
 import Dict exposing (Dict)
+import Entity exposing (Entities, Entity)
 import Components
     exposing
-        ( Entities
-        , Entity
-        , Component(Attachment, Node, Shape)
+        ( Component(Attachment, Node, Shape)
         , Shape(..)
         , Drag
         )

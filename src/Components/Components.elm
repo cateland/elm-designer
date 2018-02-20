@@ -1,8 +1,6 @@
 module Components
     exposing
-        ( Entities
-        , Entity(Entity)
-        , Component(Drawable, Shape, DragStatus, Draggable, Hoverable, Selectable, Node, Port, Node, Link, Attachment, Appearance, Brush)
+        ( Component(Drawable, Shape, DragStatus, Draggable, Hoverable, Selectable, Node, Port, Node, Link, Attachment, Appearance, Brush)
         , Draggable(Dragged, NotDragged)
         , Hoverable(..)
         , Selectable(..)
@@ -10,9 +8,6 @@ module Components
         , Port(PortSource, PortSink)
         , Attribute(..)
         , Drag
-        , addComponent
-        , removeComponent
-        , addEntity
         )
 
 import OpenSolid.Point2d as Point2d exposing (Point2d)
@@ -20,28 +15,7 @@ import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
-import Dict exposing (Dict)
 import Mouse exposing (Position)
-
-
-addComponent : Component -> Entity -> Entity
-addComponent component (Entity components) =
-    Entity (component :: components)
-
-
-isComponentEquals : Component -> Component -> Bool
-isComponentEquals component1 component2 =
-    component1 == component2
-
-
-removeComponent : Component -> Entity -> Entity
-removeComponent component (Entity components) =
-    Entity (List.filter (not << (isComponentEquals component)) components)
-
-
-addEntity : String -> Entity -> Entities -> Entities
-addEntity k v entities =
-    Dict.insert k v entities
 
 
 type alias Drag =
@@ -103,11 +77,3 @@ type Component
     | Attachment String Vector2d
     | Appearance ( List Attribute, List Attribute )
     | Brush Bool
-
-
-type Entity
-    = Entity (List Component)
-
-
-type alias Entities =
-    Dict String Entity

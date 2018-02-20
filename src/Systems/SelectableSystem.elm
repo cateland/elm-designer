@@ -1,7 +1,8 @@
 module SelectableSystem exposing (..)
 
 import Msgs exposing (Msg(Move))
-import Components exposing (Entity, Component(Shape, Selectable, Appearance), Selectable(..), addComponent)
+import Entity exposing (Entity, addComponent)
+import Components exposing (Component(Shape, Selectable, Appearance), Selectable(..))
 import Selectable exposing (getSelectable, updateSelectable)
 import Appearance exposing (getAppearance, updateAppearance)
 import Shape exposing (..)

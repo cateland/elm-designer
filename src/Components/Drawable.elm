@@ -1,6 +1,7 @@
 module Drawable exposing (getDrawable, filterDrawable, updateDrawable)
 
-import Components exposing (Entity(..), Component(Drawable), addComponent)
+import Entity exposing (Entity(..), addComponent)
+import Components exposing (Component(Drawable))
 
 
 getDrawable : Entity -> Maybe Component

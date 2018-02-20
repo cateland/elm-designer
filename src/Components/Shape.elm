@@ -1,6 +1,7 @@
 module Shape exposing (..)
 
-import Components exposing (Entity(..), Component(Shape), addComponent)
+import Entity exposing (Entity(..), addComponent)
+import Components exposing (Component(Shape))
 
 
 getShape : Entity -> Maybe Component

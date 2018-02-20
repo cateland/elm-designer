@@ -8,15 +8,13 @@ import Svg exposing (Svg, rect, svg)
 import Svg.Attributes as Attributes exposing (height, id, width, x, y, r, cx, cy, x1, x2, y1, y2, stroke)
 import OpenSolid.Svg as Svg
 import Msgs exposing (Msg(..))
+import Entity exposing (Entities, Entity(..), addEntity)
 import Components
     exposing
-        ( Entities
-        , Entity(..)
-        , Component(..)
+        ( Component(..)
         , Draggable(Dragged, NotDragged)
         , Shape(BoundingBox2d, Circle2d, LineSegment2d)
         , Port(PortSource, PortSink)
-        , addEntity
         )
 import Shape exposing (..)
 import Drawable exposing (..)

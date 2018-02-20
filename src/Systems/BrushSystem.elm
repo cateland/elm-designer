@@ -1,19 +1,20 @@
 module BrushSystem exposing (..)
 
-import Msgs exposing (Msg(Move))
-import Components
+import Entity
     exposing
         ( Entities
         , Entity
-        , Component(Shape, Hoverable, Appearance, Brush)
-        , Drag
-        , Shape(..)
-        , Hoverable
         , addComponent
         , removeComponent
         )
+import Components
+    exposing
+        ( Component(Shape, Hoverable, Appearance, Brush)
+        , Drag
+        , Shape(..)
+        , Hoverable
+        )
 import Hoverable exposing (getHoverable, updateHoverable)
-import Appearance exposing (getAppearance, updateAppearance)
 import Brush exposing (getBrush, updateBrush)
 import DragStatus exposing (getDragStatus, updateDragStatus)
 import Shape exposing (..)
@@ -50,8 +51,8 @@ intersectWithEntity point key entity intersect =
             True
 
         False ->
-            case (getShape entity, getHoverable entity) of
-                (Just (Shape shape), Just (Hoverable _)) ->
+            case ( getShape entity, getHoverable entity ) of
+                ( Just (Shape shape), Just (Hoverable _) ) ->
                     isVectorOver point shape
 
                 _ ->
@@ -72,11 +73,11 @@ applyBrush entities entity =
                     entity
 
                 False ->
-                    case (intersectWithEntities (postionToPoint2d drag.startPos) entities, isBrushable) of
-                        (True, True) ->
+                    case ( intersectWithEntities (postionToPoint2d drag.startPos) entities, isBrushable ) of
+                        ( True, True ) ->
                             updateBrush (Brush False) entity
 
-                        (False, True) ->
+                        ( False, True ) ->
                             case getShape entity of
                                 Just _ ->
                                     updateShape
@@ -107,6 +108,7 @@ applyBrush entities entity =
                                             )
                                         )
                                         entity
+
                         _ ->
                             entity
 

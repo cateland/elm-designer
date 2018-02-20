@@ -1,11 +1,10 @@
 module MultiSelectDragSystem exposing (..)
 
 import Math exposing (getShapeBoundingBox)
+import Entity exposing (Entities, Entity(..))
 import Components
     exposing
-        ( Entities
-        , Entity(..)
-        , Component(Selectable, Shape, Draggable, Drawable)
+        ( Component(Selectable, Shape, Draggable, Drawable)
         , Shape(BoundingBox2d)
         , Draggable(Dragged, NotDragged)
         )

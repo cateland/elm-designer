@@ -1,6 +1,7 @@
 module Link exposing (getLink, filterLink, updateLink)
 
-import Components exposing (Entity(..), Component(Link), addComponent)
+import Entity exposing (Entity(..), addComponent)
+import Components exposing (Component(Link))
 
 
 getLink : Entity -> Maybe Component

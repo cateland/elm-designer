@@ -1,6 +1,7 @@
 module DragStatus exposing (getDragStatus, filterDragStatus, updateDragStatus)
 
-import Components exposing (Entity(..), Component(DragStatus), addComponent)
+import Entity exposing (Entity(..), addComponent)
+import Components exposing (Component(DragStatus))
 
 
 getDragStatus : Entity -> Maybe Component
