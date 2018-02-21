@@ -5,7 +5,7 @@ module Components
             , Shape
             , DragStatus
             , DraggableComponent
-            , Hoverable
+            , HoverableComponent
             , Selectable
             , Node
             , Port
@@ -15,15 +15,15 @@ module Components
             , Appearance
             , Brush
             )
-        , Hoverable(..)
         , Selectable(..)
         , Shape(BoundingBox2d, Circle2d, LineSegment2d)
         , Port(PortSource, PortSink)
-        , Attribute(..)
         , Drag
         )
 
 import Draggable exposing (Draggable)
+import Attribute exposing (Attribute)
+import Hoverable exposing (Hoverable)
 
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
@@ -47,11 +47,6 @@ type alias Position =
 
 
 
-type Hoverable
-    = Hovered (List Attribute)
-    | NotHovered (List Attribute)
-
-
 type Selectable
     = NotSelected (List Attribute)
     | Pressed ( Mouse.Position, List Attribute )
@@ -69,12 +64,7 @@ type Port
     | PortSink String
 
 
-type Attribute
-    = Stroke String
-    | StrokeWidth String
-    | Fill String
-    | Rx String
-    | Ry String
+
 
 
 type Component
@@ -82,7 +72,7 @@ type Component
     | Shape Shape
     | DragStatus (Maybe Drag)
     | DraggableComponent Draggable
-    | Hoverable Hoverable
+    | HoverableComponent Hoverable
     | Selectable Selectable
     | Node
     | Port Port

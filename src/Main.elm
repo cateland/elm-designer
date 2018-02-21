@@ -5,7 +5,9 @@ import Html.Events
 import Json.Decode as Decode
 import Mouse exposing (moves, ups, Position)
 import Svg exposing (Svg, rect, svg)
-import Svg.Attributes as Attributes exposing (height, id, width, x, y, r, cx, cy, x1, x2, y1, y2, stroke)
+import Svg.Attributes as Attributes exposing (height, id, width)
+
+import Attribute exposing (stroke, strokeWidth, fill, rx, ry)
 import OpenSolid.Svg as Svg
 import Msgs exposing (Msg(..))
 import Entity exposing (Entities, Entity, addEntity, createEntity)
@@ -16,6 +18,7 @@ import Components
         , Port(PortSource, PortSink)
         )
 import Draggable exposing (createNotDragged)
+import Hoverable exposing (createNotHovered)
 import Shape exposing (..)
 import Drawable exposing (..)
 import Appearance exposing (..)
@@ -85,21 +88,21 @@ box2 =
             )
         , DraggableComponent createNotDragged
         , Appearance
-            ( [ Components.Stroke "#C5C5C5"
-              , Components.StrokeWidth "2"
-              , Components.Fill "#F6F6F6"
-              , Components.Rx "4"
-              , Components.Ry "4"
+            ( [ stroke "#C5C5C5"
+              , strokeWidth "2"
+              , fill "#F6F6F6"
+              , rx "4"
+              , ry "4"
               ]
             , []
             )
         , Selectable
             (Components.NotSelected
-                [ Components.Stroke "#67BBFF" ]
+                [ stroke "#67BBFF" ]
             )
-        , Hoverable
-            (Components.NotHovered
-                [ Components.Fill "white" ]
+        , HoverableComponent
+            (createNotHovered
+                [ fill "white" ]
             )
         , Node
         ]
@@ -119,19 +122,19 @@ circleComponent =
             )
         , DraggableComponent createNotDragged
         , Appearance
-            ( [ Components.Stroke "#C5C5C5"
-              , Components.StrokeWidth "2"
-              , Components.Fill "#F6F6F6"
+            ( [ stroke "#C5C5C5"
+              , strokeWidth "2"
+              , fill "#F6F6F6"
               ]
             , []
             )
         , Selectable
             (Components.NotSelected
-                [ Components.Stroke "red" ]
+                [ stroke "red" ]
             )
-        , Hoverable
-            (Components.NotHovered
-                [ Components.Fill "white" ]
+        , HoverableComponent
+            (createNotHovered
+                [ fill "white" ]
             )
         , Node
         ]
@@ -151,9 +154,9 @@ circle1 =
             )
         , Port (PortSource "circle0")
         , Appearance
-            ( [ Components.Stroke "#1563A5"
-              , Components.StrokeWidth "2"
-              , Components.Fill "white"
+            ( [ stroke "#1563A5"
+              , strokeWidth "2"
+              , fill "white"
               ]
             , []
             )
@@ -174,9 +177,9 @@ circle2 =
             )
         , Port (PortSink "box2")
         , Appearance
-            ( [ Components.Stroke "#1563A5"
-              , Components.StrokeWidth "2"
-              , Components.Fill "white"
+            ( [ stroke "#1563A5"
+              , strokeWidth "2"
+              , fill "white"
               ]
             , []
             )
@@ -188,7 +191,7 @@ link1 =
     createEntity
         [ Drawable 90
         , Link "circle1" "circle2"
-        , Appearance ( [ Components.Stroke "#1563A5", Components.StrokeWidth "5" ], [] )
+        , Appearance ( [ stroke "#1563A5", strokeWidth "5" ], [] )
         ]
 
 
@@ -198,9 +201,9 @@ brush =
         [ Drawable 100
         , Brush True
         , Appearance
-            ( [ Components.Stroke "#1563A5"
-              , Components.StrokeWidth "2"
-              , Components.Fill "rgba(21, 99, 165, 0.1)"
+            ( [ stroke "#1563A5"
+              , strokeWidth "2"
+              , fill "rgba(21, 99, 165, 0.1)"
               ]
             , []
             )

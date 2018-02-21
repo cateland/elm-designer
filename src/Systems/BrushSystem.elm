@@ -9,12 +9,12 @@ import Entity
         )
 import Components
     exposing
-        ( Component(Shape, Hoverable, Appearance, Brush)
+        ( Component(Shape, HoverableComponent, Appearance, Brush)
         , Drag
         , Shape(..)
-        , Hoverable
         )
-import Hoverable exposing (getHoverable, updateHoverable)
+import HoverableComponent exposing (getHoverable, updateHoverable)
+import Hoverable exposing (Hoverable)
 import Brush exposing (getBrush, updateBrush)
 import DragStatus exposing (getDragStatus, updateDragStatus)
 import Shape exposing (..)
@@ -52,7 +52,7 @@ intersectWithEntity point key entity intersect =
 
         False ->
             case ( getShape entity, getHoverable entity ) of
-                ( Just (Shape shape), Just (Hoverable _) ) ->
+                ( Just (Shape shape), Just (HoverableComponent _) ) ->
                     isVectorOver point shape
 
                 _ ->

@@ -2,8 +2,9 @@ module HoverableSystem exposing (..)
 
 import Msgs exposing (Msg(Move))
 import Entity exposing (Entity, addComponent)
-import Components exposing (Component(Shape, Hoverable, Appearance), Hoverable)
-import Hoverable exposing (getHoverable, updateHoverable)
+import Components exposing (Component(Shape, HoverableComponent, Appearance))
+import HoverableComponent exposing (getHoverable, updateHoverable)
+import Hoverable exposing (isHovered, toggleHoverrable, getHoverAppearence)
 import Appearance exposing (getAppearance, updateAppearance)
 import Shape exposing (..)
 import Math exposing (isVectorOver, postionToPoint2d)
@@ -18,53 +19,57 @@ applyHoverable msg entity =
             case
                 ( getHoverable entity, getShape entity )
             of
-                ( Just (Hoverable (Components.NotHovered hoverAppearence)), Just (Shape entityShape) ) ->
-                    case
-                        isVectorOver (postionToPoint2d position) entityShape
-                    of
+                ( Just (HoverableComponent hoverStatus), Just (Shape entityShape) ) ->
+                    case isHovered hoverStatus of
                         True ->
-                            case getAppearance entity of
-                                Just (Appearance ( initialAppearence, overideAppearence )) ->
-                                    updateHoverable
-                                        (Hoverable (Components.Hovered hoverAppearence))
-                                        (updateAppearance (Appearance ( initialAppearence, hoverAppearence )) entity)
+                            case
+                            isVectorOver (postionToPoint2d position) entityShape
+                        of
+                            False ->
+                                case getAppearance entity of
+                                    Just (Appearance ( initialAppearence, _ )) ->
+                                        updateHoverable
+                                            (HoverableComponent (toggleHoverrable hoverStatus))
+                                            (updateAppearance (Appearance ( initialAppearence, [] )) entity)
 
-                                Nothing ->
-                                    updateHoverable
-                                        (Hoverable (Components.Hovered hoverAppearence))
-                                        (addComponent (Appearance ( [], hoverAppearence )) entity)
+                                    Nothing ->
+                                        updateHoverable
+                                            (HoverableComponent (toggleHoverrable hoverStatus))
+                                            (addComponent (Appearance ( [], [] )) entity)
 
-                                _ ->
-                                    entity
+                                    _ ->
+                                        entity
 
+                            True ->
+                                entity
+                    
                         False ->
-                            case getAppearance entity of
-                                Just (Appearance ( initialAppearence, _ )) ->
-                                    updateAppearance (Appearance ( initialAppearence, [] )) entity
-                                _ ->
-                                    entity
+                            
+                            case
+                                isVectorOver (postionToPoint2d position) entityShape
+                            of
+                                True ->
+                                    case getAppearance entity of
+                                        Just (Appearance ( initialAppearence, overideAppearence )) ->
+                                            updateHoverable
+                                                (HoverableComponent (toggleHoverrable hoverStatus))
+                                                (updateAppearance (Appearance ( initialAppearence, getHoverAppearence hoverStatus )) entity)
 
-                ( Just (Hoverable (Components.Hovered hoverAppearence)), Just (Shape entityShape) ) ->
-                    case
-                        isVectorOver (postionToPoint2d position) entityShape
-                    of
-                        False ->
-                            case getAppearance entity of
-                                Just (Appearance ( initialAppearence, _ )) ->
-                                    updateHoverable
-                                        (Hoverable (Components.NotHovered hoverAppearence))
-                                        (updateAppearance (Appearance ( initialAppearence, [] )) entity)
+                                        Nothing ->
+                                            updateHoverable
+                                                (HoverableComponent (toggleHoverrable hoverStatus))
+                                                (addComponent (Appearance ( [], getHoverAppearence hoverStatus )) entity)
 
-                                Nothing ->
-                                    updateHoverable
-                                        (Hoverable (Components.NotHovered hoverAppearence))
-                                        (addComponent (Appearance ( [], [] )) entity)
+                                        _ ->
+                                            entity
 
-                                _ ->
-                                    entity
+                                False ->
+                                    case getAppearance entity of
+                                        Just (Appearance ( initialAppearence, _ )) ->
+                                            updateAppearance (Appearance ( initialAppearence, [] )) entity
+                                        _ ->
+                                            entity
 
-                        True ->
-                            entity
 
                 _ ->
                     entity
