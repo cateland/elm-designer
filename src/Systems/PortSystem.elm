@@ -1,25 +1,25 @@
 module PortSystem exposing (..)
 
-import Dict exposing (Dict)
-import Entity exposing (Entities, Entity, addComponent)
+import Attachment exposing (..)
 import Components
     exposing
-        ( Component(Attachment, Port, Node, Shape)
+        ( Component(Attachment, Node, Port, Shape)
+        , Drag
         , Port(..)
         , Shape(..)
-        , Drag
         )
-import Shape exposing (..)
-import Port exposing (..)
+import Dict exposing (Dict)
+import Entity exposing (Entities, Entity, addComponent)
+import Math exposing (getCenterPosition, isVectorOver, postionToPoint2d, translateBy)
 import Node exposing (..)
-import Attachment exposing (..)
-import OpenSolid.Point2d as Point2d exposing (Point2d)
+import OpenSolid.Arc2d as Arc2d exposing (Arc2d)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
-import OpenSolid.Arc2d as Arc2d exposing (Arc2d)
-import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
-import Math exposing ( isVectorOver, postionToPoint2d, translateBy, getCenterPosition)
+import OpenSolid.Point2d as Point2d exposing (Point2d)
+import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
+import Port exposing (..)
+import Shape exposing (..)
 
 
 findNodeShape : String -> Entities -> Maybe Shape

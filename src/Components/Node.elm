@@ -1,11 +1,11 @@
-module Node exposing (getNode, filterNode, updateNode)
+module Node exposing (filterNode, getNode, updateNode)
 
-import Entity exposing (Entity, addComponent, getComponents, createEntity)
 import Components exposing (Component(Node))
+import Entity exposing (Entity, addComponent, createEntity, getComponents)
 
 
 getNode : Entity -> Maybe Component
-getNode entity=
+getNode entity =
     case getComponents entity of
         [] ->
             Nothing

@@ -3,8 +3,8 @@ module Hoverable
         ( Hoverable
         , createHovered
         , createNotHovered
-        , isHovered
         , getHoverAppearence
+        , isHovered
         , toggleHoverrable
         )
 
@@ -34,6 +34,7 @@ isHovered hoverable =
 
         NotHovered _ ->
             False
+
 
 getHoverAppearence : Hoverable -> List Attribute
 getHoverAppearence hoverable =

@@ -1,17 +1,19 @@
 module SelectableSystem exposing (..)
 
-import Msgs exposing (Msg(Move))
-import Entity exposing (Entity, addComponent)
-import Components exposing (Component(Shape, Selectable, Appearance), Selectable(..))
-import Selectable exposing (getSelectable, updateSelectable)
 import Appearance exposing (getAppearance, updateAppearance)
-import Shape exposing (..)
+import Components exposing (Component(Appearance, SelectableComponent, Shape), Selectable(..))
+import Entity exposing (Entity, addComponent)
 import Math exposing (isVectorOver, postionToPoint2d)
+import Msgs exposing (Msg(Move))
+import Selectable exposing (getSelectable, updateSelectable)
+import Shape exposing (..)
+
 
 -- ok this is super duper unclean
 -- check if part of multiple element selected
 -- if -> noop
 -- problem (biding with MultiSelectDrag :/)
+
 
 applySelectable : Msgs.Msg -> Entity -> Entity
 applySelectable msg entity =
@@ -22,22 +24,22 @@ applySelectable msg entity =
             case
                 ( getSelectable entity, getShape entity, getAppearance entity )
             of
-                ( Just (Selectable (Components.NotSelected selectedAppearence)), Just (Shape entityShape), _ ) ->
+                ( Just (SelectableComponent (Components.NotSelected selectedAppearence)), Just (Shape entityShape), _ ) ->
                     case isVectorOver (postionToPoint2d position) entityShape of
                         True ->
-                            updateSelectable (Selectable (Pressed ( position, selectedAppearence ))) entity
+                            updateSelectable (SelectableComponent (Pressed ( position, selectedAppearence ))) entity
 
                         False ->
                             entity
 
-                ( Just (Selectable (Components.Selected selectedAppearence)), Just (Shape entityShape), Just (Appearance ( initialAppearence, overideAppearence )) ) ->
+                ( Just (SelectableComponent (Components.Selected selectedAppearence)), Just (Shape entityShape), Just (Appearance ( initialAppearence, overideAppearence )) ) ->
                     case isVectorOver (postionToPoint2d position) entityShape of
                         True ->
                             entity
 
                         False ->
                             updateSelectable
-                                (Selectable (Components.NotSelected selectedAppearence))
+                                (SelectableComponent (Components.NotSelected selectedAppearence))
                                 (updateAppearance (Appearance ( initialAppearence, overideAppearence )) entity)
 
                 _ ->
@@ -47,18 +49,18 @@ applySelectable msg entity =
             case
                 ( getSelectable entity, getShape entity )
             of
-                ( Just (Selectable (Components.Pressed ( pressPosition, selectedAppearence ))), Just (Shape entityShape) ) ->
+                ( Just (SelectableComponent (Components.Pressed ( pressPosition, selectedAppearence ))), Just (Shape entityShape) ) ->
                     case getAppearance entity of
                         Just (Appearance ( initialAppearence, overideAppearence )) ->
                             case pressPosition.x == position.x && pressPosition.y == position.y of
                                 True ->
                                     updateSelectable
-                                        (Selectable (Selected selectedAppearence))
+                                        (SelectableComponent (Selected selectedAppearence))
                                         (updateAppearance (Appearance ( initialAppearence, List.append overideAppearence selectedAppearence )) entity)
 
                                 False ->
                                     updateSelectable
-                                        (Selectable (NotSelected selectedAppearence))
+                                        (SelectableComponent (NotSelected selectedAppearence))
                                         (updateAppearance (Appearance ( initialAppearence, overideAppearence )) entity)
 
                         Nothing ->
@@ -72,7 +74,7 @@ applySelectable msg entity =
 
         _ ->
             case ( getSelectable entity, getAppearance entity ) of
-                ( Just (Selectable (Components.Selected selectedAppearence)), Just (Appearance ( initialAppearence, overideAppearence )) ) ->
+                ( Just (SelectableComponent (Components.Selected selectedAppearence)), Just (Appearance ( initialAppearence, overideAppearence )) ) ->
                     updateAppearance (Appearance ( initialAppearence, List.append overideAppearence selectedAppearence )) entity
 
                 _ ->

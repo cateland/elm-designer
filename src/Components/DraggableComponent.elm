@@ -1,7 +1,7 @@
-module DraggableComponent exposing (getDraggable, filterDraggable, updateDraggable)
+module DraggableComponent exposing (filterDraggable, getDraggable, updateDraggable)
 
-import Entity exposing (Entity, addComponent, getComponents, createEntity)
 import Components exposing (Component(DraggableComponent))
+import Entity exposing (Entity, addComponent, createEntity, getComponents)
 
 
 getDraggable : Entity -> Maybe Component

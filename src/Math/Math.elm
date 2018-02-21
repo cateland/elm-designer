@@ -1,12 +1,12 @@
 module Math exposing (..)
 
+import Components exposing (Shape(..))
 import Mouse exposing (Position)
-import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (translateBy)
 import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
-import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
-import Components exposing (Shape(..))
+import OpenSolid.Point2d as Point2d exposing (Point2d)
+import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
 postionToPoint2d : Position -> Point2d

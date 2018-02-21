@@ -1,18 +1,18 @@
 module DraggableSystem exposing (..)
 
-import Dict exposing (Dict)
-import Entity exposing (Entities, Entity)
 import Components
     exposing
-        ( Component(Shape, DraggableComponent, DragStatus)
+        ( Component(DragStatus, DraggableComponent, Shape)
         , Drag
         )
-import DraggableComponent exposing (getDraggable, updateDraggable)
-import Draggable exposing (createDragged, createNotDragged, isDragged)
-import Shape exposing (..)
+import Dict exposing (Dict)
 import DragStatus exposing (getDragStatus, updateDragStatus)
+import Draggable exposing (createDragged, createNotDragged, isDragged)
+import DraggableComponent exposing (getDraggable, updateDraggable)
+import Entity exposing (Entities, Entity)
 import Math exposing (isVectorOver, postionToPoint2d, translateBy)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
+import Shape exposing (..)
 
 
 findControlDrag : Entities -> Maybe Drag

@@ -1,11 +1,15 @@
-module Draggable exposing (Draggable, createDragged, createNotDragged, toggleDraggable, isDragged)
+module Draggable exposing (Draggable, createDragged, createNotDragged, isDragged, toggleDraggable)
+
 
 type Draggable
     = Dragged
     | NotDragged
 
+
 createDragged : Draggable
-createDragged = Dragged
+createDragged =
+    Dragged
+
 
 createNotDragged : Draggable
 createNotDragged =

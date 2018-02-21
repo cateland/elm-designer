@@ -1,7 +1,7 @@
-module Brush exposing (getBrush, filterBrush, updateBrush)
+module Brush exposing (filterBrush, getBrush, updateBrush)
 
-import Entity exposing (Entity, addComponent, getComponents, createEntity)
 import Components exposing (Component(Brush))
+import Entity exposing (Entity, addComponent, createEntity, getComponents)
 
 
 getBrush : Entity -> Maybe Component

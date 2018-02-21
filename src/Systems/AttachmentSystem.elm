@@ -1,17 +1,17 @@
 module AttachmentSystem exposing (..)
 
-import Dict exposing (Dict)
-import Entity exposing (Entities, Entity)
+import Attachment exposing (..)
 import Components
     exposing
         ( Component(Attachment, Node, Shape)
-        , Shape(..)
         , Drag
+        , Shape(..)
         )
-import Shape exposing (..)
-import Attachment exposing (..)
+import Dict exposing (Dict)
+import Entity exposing (Entities, Entity)
+import Math exposing (getCenterPosition, isVectorOver, postionToPoint2d, translateBy)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
-import Math exposing (isVectorOver, postionToPoint2d, translateBy, getCenterPosition)
+import Shape exposing (..)
 
 
 findParentShape : String -> Entities -> Maybe Shape
@@ -42,14 +42,14 @@ applyAttachement entities entity =
                         newVector =
                             Vector2d.difference vector actualVector
                     in
-                        updateShape
-                            (Shape
-                                (translateBy
-                                    newVector
-                                    shape
-                                )
+                    updateShape
+                        (Shape
+                            (translateBy
+                                newVector
+                                shape
                             )
-                            entity
+                        )
+                        entity
 
                 Nothing ->
                     entity

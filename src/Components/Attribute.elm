@@ -1,16 +1,16 @@
 module Attribute
     exposing
         ( Attribute
-        , transformAppearenceToAttributes
-        , stroke
-        , strokeWidth
         , fill
         , rx
         , ry
+        , stroke
+        , strokeWidth
+        , transformAppearenceToAttributes
         )
 
 import Svg exposing (Attribute)
-import Svg.Attributes exposing (stroke, strokeWidth, fill, rx, ry)
+import Svg.Attributes exposing (fill, rx, ry, stroke, strokeWidth)
 
 
 type Attribute

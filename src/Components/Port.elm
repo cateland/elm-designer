@@ -1,7 +1,7 @@
-module Port exposing (getPort, filterPort, updatePort)
+module Port exposing (filterPort, getPort, updatePort)
 
-import Entity exposing (Entity, addComponent, getComponents, createEntity)
 import Components exposing (Component(Port))
+import Entity exposing (Entity, addComponent, createEntity, getComponents)
 
 
 getPort : Entity -> Maybe Component

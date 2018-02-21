@@ -1,13 +1,13 @@
 module BrushSelectSystem exposing (..)
 
-import Math exposing (getShapeBoundingBox)
-import Entity exposing (Entities, Entity)
-import Components exposing (Component(Selectable, Shape, Brush), Shape)
-import Selectable exposing (getSelectable, updateSelectable)
 import Brush exposing (getBrush)
-import Shape exposing (getShape)
+import Components exposing (Component(Brush, SelectableComponent, Shape), Shape)
 import Dict
+import Entity exposing (Entities, Entity)
+import Math exposing (getShapeBoundingBox)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
+import Selectable exposing (getSelectable, updateSelectable)
+import Shape exposing (getShape)
 
 
 findBrushShape : Entities -> Maybe Shape
@@ -28,19 +28,20 @@ findBrushShape entities =
 applyBrushSelect : Entities -> Entity -> Entity
 applyBrushSelect entities entity =
     case ( getSelectable entity, getShape entity ) of
-        ( Just (Selectable (Components.NotSelected selectedAppearence)), Just (Shape entityShape) ) ->
+        ( Just (SelectableComponent (Components.NotSelected selectedAppearence)), Just (Shape entityShape) ) ->
             case findBrushShape entities of
                 Just brushShape ->
                     case BoundingBox2d.isContainedIn (getShapeBoundingBox brushShape) (getShapeBoundingBox entityShape) of
                         True ->
-                            updateSelectable (Selectable (Components.Selected selectedAppearence)) entity
+                            updateSelectable (SelectableComponent (Components.Selected selectedAppearence)) entity
 
                         False ->
                             entity
 
                 Nothing ->
                     entity
-        ( Just (Selectable (Components.Selected selectedAppearence)), Just (Shape entityShape) ) ->
+
+        ( Just (SelectableComponent (Components.Selected selectedAppearence)), Just (Shape entityShape) ) ->
             case findBrushShape entities of
                 Just brushShape ->
                     case BoundingBox2d.isContainedIn (getShapeBoundingBox brushShape) (getShapeBoundingBox entityShape) of
@@ -48,7 +49,7 @@ applyBrushSelect entities entity =
                             entity
 
                         False ->
-                            updateSelectable (Selectable (Components.NotSelected selectedAppearence)) entity
+                            updateSelectable (SelectableComponent (Components.NotSelected selectedAppearence)) entity
 
                 Nothing ->
                     entity
