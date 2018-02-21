@@ -1,8 +1,8 @@
 module Render exposing (..)
 
-import Svg exposing (Attribute)
-import Svg.Attributes as Attributes exposing (stroke, strokeWidth, fill, rx, ry)
 import Components exposing (Component(..))
+import Svg exposing (Attribute)
+import Svg.Attributes as Attributes exposing (fill, rx, ry, stroke, strokeWidth)
 
 
 transformAppearenceToAttributes : Components.Attribute -> Attribute msg

@@ -1,5 +1,15 @@
 module BrushSystem exposing (..)
 
+import Brush exposing (getBrush, updateBrush)
+import Components
+    exposing
+        ( Component(Appearance, Brush, Hoverable, Shape)
+        , Drag
+        , Hoverable
+        , Shape(..)
+        )
+import Dict exposing (Dict)
+import DragStatus exposing (getDragStatus, updateDragStatus)
 import Entity
     exposing
         ( Entities
@@ -7,21 +17,11 @@ import Entity
         , addComponent
         , removeComponent
         )
-import Components
-    exposing
-        ( Component(Shape, Hoverable, Appearance, Brush)
-        , Drag
-        , Shape(..)
-        , Hoverable
-        )
 import Hoverable exposing (getHoverable, updateHoverable)
-import Brush exposing (getBrush, updateBrush)
-import DragStatus exposing (getDragStatus, updateDragStatus)
-import Shape exposing (..)
 import Math exposing (isVectorOver, postionToPoint2d)
-import Dict exposing (Dict)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
+import Shape exposing (..)
 
 
 findControlDrag : Entities -> Maybe Drag

@@ -1,17 +1,19 @@
 module SelectableSystem exposing (..)
 
-import Msgs exposing (Msg(Move))
-import Entity exposing (Entity, addComponent)
-import Components exposing (Component(Shape, Selectable, Appearance), Selectable(..))
-import Selectable exposing (getSelectable, updateSelectable)
 import Appearance exposing (getAppearance, updateAppearance)
-import Shape exposing (..)
+import Components exposing (Component(Appearance, Selectable, Shape), Selectable(..))
+import Entity exposing (Entity, addComponent)
 import Math exposing (isVectorOver, postionToPoint2d)
+import Msgs exposing (Msg(Move))
+import Selectable exposing (getSelectable, updateSelectable)
+import Shape exposing (..)
+
 
 -- ok this is super duper unclean
 -- check if part of multiple element selected
 -- if -> noop
 -- problem (biding with MultiSelectDrag :/)
+
 
 applySelectable : Msgs.Msg -> Entity -> Entity
 applySelectable msg entity =

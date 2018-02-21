@@ -1,9 +1,9 @@
 module DragSystem exposing (..)
 
-import Msgs exposing (Msg(Move))
-import Entity exposing (Entity(..))
 import Components exposing (Component(DragStatus), Drag)
 import DragStatus exposing (getDragStatus, updateDragStatus)
+import Entity exposing (Entity(..))
+import Msgs exposing (Msg(Move))
 
 
 applyDrag : Msgs.Msg -> Entity -> Entity
@@ -15,11 +15,13 @@ applyDrag msg entity =
                     case msg of
                         Msgs.Move position ->
                             let
-                                previousPos = drag.currentPos
+                                previousPos =
+                                    drag.currentPos
+
                                 newDrag =
                                     { drag | previousPos = previousPos, currentPos = position }
                             in
-                                updateDragStatus (Components.DragStatus (Just newDrag)) entity
+                            updateDragStatus (Components.DragStatus (Just newDrag)) entity
 
                         Msgs.Release position ->
                             updateDragStatus (Components.DragStatus Nothing) entity
@@ -37,7 +39,7 @@ applyDrag msg entity =
                                     , currentPos = position
                                     }
                             in
-                                updateDragStatus (Components.DragStatus (Just drag)) entity
+                            updateDragStatus (Components.DragStatus (Just drag)) entity
 
                         _ ->
                             entity

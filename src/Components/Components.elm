@@ -1,36 +1,34 @@
 module Components
     exposing
-        ( Component
-            ( Drawable
-            , Shape
+        ( Attribute(..)
+        , Component
+            ( Appearance
+            , Attachment
+            , Brush
             , DragStatus
             , DraggableComponent
+            , Drawable
             , Hoverable
-            , Selectable
+            , Link
             , Node
             , Port
-            , Node
-            , Link
-            , Attachment
-            , Appearance
-            , Brush
+            , Selectable
+            , Shape
             )
+        , Drag
         , Hoverable(..)
+        , Port(PortSink, PortSource)
         , Selectable(..)
         , Shape(BoundingBox2d, Circle2d, LineSegment2d)
-        , Port(PortSource, PortSink)
-        , Attribute(..)
-        , Drag
         )
 
 import Draggable exposing (Draggable)
-
-import OpenSolid.Point2d as Point2d exposing (Point2d)
+import Mouse exposing (Position)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
-import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
-import Mouse exposing (Position)
+import OpenSolid.Point2d as Point2d exposing (Point2d)
+import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
 type alias Drag =
@@ -42,9 +40,6 @@ type alias Drag =
 
 type alias Position =
     Point2d
-
-
-
 
 
 type Hoverable

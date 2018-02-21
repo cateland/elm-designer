@@ -1,11 +1,11 @@
-module DragStatus exposing (getDragStatus, filterDragStatus, updateDragStatus)
+module DragStatus exposing (filterDragStatus, getDragStatus, updateDragStatus)
 
-import Entity exposing (Entity, addComponent, getComponents, createEntity)
 import Components exposing (Component(DragStatus))
+import Entity exposing (Entity, addComponent, createEntity, getComponents)
 
 
 getDragStatus : Entity -> Maybe Component
-getDragStatus entity=
+getDragStatus entity =
     case getComponents entity of
         [] ->
             Nothing
@@ -20,7 +20,7 @@ getDragStatus entity=
 
 
 filterDragStatus : Entity -> Entity
-filterDragStatus entity=
+filterDragStatus entity =
     case getComponents entity of
         [] ->
             createEntity []

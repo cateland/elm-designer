@@ -1,17 +1,17 @@
 module MultiSelectDragSystem exposing (..)
 
-import Math exposing (getShapeBoundingBox)
-import Entity exposing (Entities, Entity, createEntity)
 import Components
     exposing
-        ( Component(Selectable, Shape, DraggableComponent, Drawable)
+        ( Component(DraggableComponent, Drawable, Selectable, Shape)
         , Shape(BoundingBox2d)
         )
+import Dict
 import Draggable exposing (createDragged, toggleDraggable)
+import Entity exposing (Entities, Entity, createEntity)
+import Math exposing (getShapeBoundingBox)
+import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import Selectable exposing (getSelectable)
 import Shape exposing (getShape)
-import Dict
-import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 
 
 filter : String -> Entity -> Bool
@@ -55,28 +55,28 @@ applyMultiSelectDrag entities =
         selectedEntities =
             filterSelectedEntities entities
     in
-        case (Dict.size selectedEntities) > 1 of
-            True ->
-                let
-                    boxList =
-                        selectedEntities
-                in
-                    case convertShapeListToBox boxList of
-                        Just hull ->
-                            Dict.insert "multiDrag"
-                                (createEntity
-                                    [ Drawable 60
-                                    , Shape
-                                        (BoundingBox2d
-                                            (hull)
-                                        )
-                                    , DraggableComponent createDragged
-                                    ]
+    case Dict.size selectedEntities > 1 of
+        True ->
+            let
+                boxList =
+                    selectedEntities
+            in
+            case convertShapeListToBox boxList of
+                Just hull ->
+                    Dict.insert "multiDrag"
+                        (createEntity
+                            [ Drawable 60
+                            , Shape
+                                (BoundingBox2d
+                                    hull
                                 )
-                                entities
+                            , DraggableComponent createDragged
+                            ]
+                        )
+                        entities
 
-                        _ ->
-                            entities
+                _ ->
+                    entities
 
-            False ->
-                Dict.remove "multiDrag" entities
+        False ->
+            Dict.remove "multiDrag" entities

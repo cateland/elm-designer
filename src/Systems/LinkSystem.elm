@@ -1,25 +1,25 @@
 module LinkSystem exposing (..)
 
-import Dict exposing (Dict)
-import Entity exposing (Entities, Entity, addComponent)
 import Components
     exposing
-        ( Component(Attachment, Port, Node, Link, Shape)
+        ( Component(Attachment, Link, Node, Port, Shape)
+        , Drag
         , Port(..)
         , Shape(..)
-        , Drag
         )
-import Shape exposing (..)
+import Dict exposing (Dict)
+import Entity exposing (Entities, Entity, addComponent)
 import Link exposing (..)
+import Math exposing (getCenterPosition, isVectorOver, postionToPoint2d, translateBy)
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
-import Math exposing ( isVectorOver, postionToPoint2d, translateBy, getCenterPosition)
+import Shape exposing (..)
 
 
 findParentShape : String -> Entities -> Maybe Shape
 findParentShape key entities =
     case Dict.get key entities of
         Just entity ->
-            case (getShape entity) of
+            case getShape entity of
                 Just (Shape nodeShape) ->
                     Just nodeShape
 
@@ -32,20 +32,20 @@ findParentShape key entities =
 
 applyLink : Entities -> Entity -> Entity
 applyLink entities entity =
-    case (getLink entity) of
+    case getLink entity of
         Just (Link sourceId targetId) ->
             case ( findParentShape sourceId entities, findParentShape targetId entities ) of
                 ( Just sourceShape, Just targetShape ) ->
-                    case (getShape entity) of
+                    case getShape entity of
                         Just shape ->
                             updateShape
                                 (Shape
-                                    (LineSegment2d (LineSegment2d.fromEndpoints ( (getCenterPosition sourceShape), (getCenterPosition targetShape) )))
+                                    (LineSegment2d (LineSegment2d.fromEndpoints ( getCenterPosition sourceShape, getCenterPosition targetShape )))
                                 )
                                 entity
 
                         Nothing ->
-                            addComponent (Shape (LineSegment2d (LineSegment2d.fromEndpoints ( (getCenterPosition sourceShape), (getCenterPosition targetShape) )))) entity
+                            addComponent (Shape (LineSegment2d (LineSegment2d.fromEndpoints ( getCenterPosition sourceShape, getCenterPosition targetShape )))) entity
 
                 _ ->
                     entity

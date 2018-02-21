@@ -1,7 +1,7 @@
-module Appearance exposing (getAppearance, filterAppearance, updateAppearance)
+module Appearance exposing (filterAppearance, getAppearance, updateAppearance)
 
-import Entity exposing (Entity, addComponent, getComponents, createEntity)
 import Components exposing (Component(Appearance))
+import Entity exposing (Entity, addComponent, createEntity, getComponents)
 
 
 getAppearance : Entity -> Maybe Component

@@ -1,13 +1,13 @@
 module BrushSelectSystem exposing (..)
 
-import Math exposing (getShapeBoundingBox)
-import Entity exposing (Entities, Entity)
-import Components exposing (Component(Selectable, Shape, Brush), Shape)
-import Selectable exposing (getSelectable, updateSelectable)
 import Brush exposing (getBrush)
-import Shape exposing (getShape)
+import Components exposing (Component(Brush, Selectable, Shape), Shape)
 import Dict
+import Entity exposing (Entities, Entity)
+import Math exposing (getShapeBoundingBox)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
+import Selectable exposing (getSelectable, updateSelectable)
+import Shape exposing (getShape)
 
 
 findBrushShape : Entities -> Maybe Shape
@@ -40,6 +40,7 @@ applyBrushSelect entities entity =
 
                 Nothing ->
                     entity
+
         ( Just (Selectable (Components.Selected selectedAppearence)), Just (Shape entityShape) ) ->
             case findBrushShape entities of
                 Just brushShape ->

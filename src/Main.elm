@@ -1,39 +1,39 @@
 module Main exposing (main)
 
-import Html exposing (Html, div, text)
-import Html.Events
-import Json.Decode as Decode
-import Mouse exposing (moves, ups, Position)
-import Svg exposing (Svg, rect, svg)
-import Svg.Attributes as Attributes exposing (height, id, width, x, y, r, cx, cy, x1, x2, y1, y2, stroke)
-import OpenSolid.Svg as Svg
-import Msgs exposing (Msg(..))
-import Entity exposing (Entities, Entity, addEntity, createEntity)
+import Appearance exposing (..)
+import AttachmentSystem exposing (..)
+import BrushSelectSystem exposing (..)
+import BrushSystem exposing (..)
 import Components
     exposing
         ( Component(..)
+        , Port(PortSink, PortSource)
         , Shape(BoundingBox2d, Circle2d, LineSegment2d)
-        , Port(PortSource, PortSink)
         )
-import Draggable exposing (createNotDragged)
-import Shape exposing (..)
-import Drawable exposing (..)
-import Appearance exposing (..)
+import Dict exposing (Dict)
 import DragSystem exposing (..)
+import Draggable exposing (createNotDragged)
 import DraggableSystem exposing (..)
-import MultiSelectDragSystem exposing (..)
+import Drawable exposing (..)
+import Entity exposing (Entities, Entity, addEntity, createEntity)
 import HoverableSystem exposing (..)
-import SelectableSystem exposing (..)
-import BrushSelectSystem exposing (..)
-import PortSystem exposing (..)
-import AttachmentSystem exposing (..)
+import Html exposing (Html, div, text)
+import Html.Events
+import Json.Decode as Decode
 import LinkSystem exposing (..)
-import BrushSystem exposing (..)
-import OpenSolid.Point2d as Point2d exposing (Point2d)
+import Mouse exposing (Position, moves, ups)
+import Msgs exposing (Msg(..))
+import MultiSelectDragSystem exposing (..)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
-import Dict exposing (Dict)
+import OpenSolid.Point2d as Point2d exposing (Point2d)
+import OpenSolid.Svg as Svg
+import PortSystem exposing (..)
 import Render exposing (generateEntitySvgAttributes)
+import SelectableSystem exposing (..)
+import Shape exposing (..)
+import Svg exposing (Svg, rect, svg)
+import Svg.Attributes as Attributes exposing (cx, cy, height, id, r, stroke, width, x, x1, x2, y, y1, y2)
 
 
 main : Program Never Model Msg
@@ -225,7 +225,7 @@ init =
                 |> addEntity "link1" link1
                 |> addEntity "brush" brush
     in
-        ( Model entities, Cmd.none )
+    ( Model entities, Cmd.none )
 
 
 updateEntity : Entities -> Msg -> String -> Entity -> Entity
@@ -252,7 +252,7 @@ updateEntities msg model =
         newEntities =
             Dict.map configuredUpdater (applyMultiSelectDrag model.entities)
     in
-        { model | entities = newEntities }
+    { model | entities = newEntities }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -269,7 +269,7 @@ createSvgAttribtues =
 renderEntity : ( String, Entity ) -> Html msg
 renderEntity ( key, entity ) =
     case
-        (getShape entity)
+        getShape entity
     of
         Just (Shape shape) ->
             case
@@ -278,17 +278,17 @@ renderEntity ( key, entity ) =
                 BoundingBox2d box ->
                     Svg.boundingBox2d
                         (createSvgAttribtues entity)
-                        (box)
+                        box
 
                 Circle2d circle ->
                     Svg.circle2d
                         (createSvgAttribtues entity)
-                        (circle)
+                        circle
 
                 LineSegment2d lineSegment ->
                     Svg.lineSegment2d
                         (createSvgAttribtues entity)
-                        (lineSegment)
+                        lineSegment
 
         _ ->
             div [] []
@@ -339,7 +339,7 @@ customOnMouseDown =
                 , Decode.succeed (Press (Position 500 500))
                 ]
     in
-        Html.Events.on "mousedown" decoder
+    Html.Events.on "mousedown" decoder
 
 
 customOnWheel : Html.Attribute Msg
@@ -349,7 +349,7 @@ customOnWheel =
             Decode.oneOf
                 [ Decode.map Zoom (Decode.field "deltaY" Decode.int) ]
     in
-        Html.Events.on "wheel" decoder
+    Html.Events.on "wheel" decoder
 
 
 

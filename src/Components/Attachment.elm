@@ -1,7 +1,7 @@
-module Attachment exposing (getAttachment, filterAttachment, updateAttachment)
+module Attachment exposing (filterAttachment, getAttachment, updateAttachment)
 
-import Entity exposing (Entity, addComponent, getComponents, createEntity)
 import Components exposing (Component(Attachment))
+import Entity exposing (Entity, addComponent, createEntity, getComponents)
 
 
 getAttachment : Entity -> Maybe Component
