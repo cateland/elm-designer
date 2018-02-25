@@ -1,4 +1,4 @@
-module BrushSystem exposing (..)
+module BrushSystem exposing (brushSystem)
 
 import Brush exposing (getBrush, updateBrush)
 import Components
@@ -16,9 +16,9 @@ import Entity
         , addComponent
         , removeComponent
         )
-import Hoverable exposing (Hoverable)
 import HoverableComponent exposing (getHoverable, updateHoverable)
 import Math exposing (isVectorOver, postionToPoint2d)
+import Msgs exposing (Msg)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import Shape exposing (..)
@@ -64,8 +64,8 @@ intersectWithEntities point entities =
     Dict.foldl (intersectWithEntity point) False entities
 
 
-applyBrush : Entities -> Entity -> Entity
-applyBrush entities entity =
+brushSystem : Msgs.Msg -> Entities -> String -> Entity -> Entity
+brushSystem msg entities key entity =
     case ( getBrush entity, findControlDrag entities, getShape entity ) of
         ( Just (Brush isBrushable), Just drag, _ ) ->
             case drag.startPos.x == drag.currentPos.x && drag.startPos.y == drag.currentPos.y of

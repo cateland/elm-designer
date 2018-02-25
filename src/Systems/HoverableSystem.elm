@@ -1,8 +1,8 @@
-module HoverableSystem exposing (..)
+module HoverableSystem exposing (hoverableSystem)
 
 import Appearance exposing (getAppearance, updateAppearance)
 import Components exposing (Component(Appearance, HoverableComponent, Shape))
-import Entity exposing (Entity, addComponent)
+import Entity exposing (Entities, Entity, addComponent)
 import Hoverable exposing (getHoverAppearence, isHovered, toggleHoverrable)
 import HoverableComponent exposing (getHoverable, updateHoverable)
 import Math exposing (isVectorOver, postionToPoint2d)
@@ -10,8 +10,8 @@ import Msgs exposing (Msg(Move))
 import Shape exposing (..)
 
 
-applyHoverable : Msgs.Msg -> Entity -> Entity
-applyHoverable msg entity =
+hoverableSystem : Msgs.Msg -> Entities -> String -> Entity -> Entity
+hoverableSystem msg entities key entity =
     case
         msg
     of

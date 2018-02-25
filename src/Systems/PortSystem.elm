@@ -1,4 +1,4 @@
-module PortSystem exposing (..)
+module PortSystem exposing (portSystem)
 
 import Attachment exposing (..)
 import Components
@@ -11,6 +11,7 @@ import Components
 import Dict exposing (Dict)
 import Entity exposing (Entities, Entity, addComponent)
 import Math exposing (getCenterPosition, isVectorOver, postionToPoint2d, translateBy)
+import Msgs exposing (Msg)
 import Node exposing (..)
 import OpenSolid.Arc2d as Arc2d exposing (Arc2d)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
@@ -73,8 +74,8 @@ calculatePortAttachement getPosition nodeShape =
         |> Vector2d.from (getCenterPosition nodeShape)
 
 
-applyPort : Entities -> Entity -> Entity
-applyPort entities entity =
+portSystem : Msgs.Msg -> Entities -> String -> Entity -> Entity
+portSystem msg entities key entity =
     case ( getPort entity, getShape entity ) of
         ( Just (Port (PortSource nodeId)), Just (Shape portShape) ) ->
             case findNodeShape nodeId entities of
