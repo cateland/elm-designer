@@ -12,9 +12,9 @@ import Components
         , Shape(BoundingBox2d, Circle2d, LineSegment2d)
         )
 import Dict exposing (Dict)
-import DragSystem exposing (..)
+import DragSystem exposing (dragSystem)
 import Draggable exposing (createNotDragged)
-import DraggableSystem exposing (..)
+import DraggableSystem exposing (draggableSystem)
 import Drawable exposing (..)
 import Entity exposing (Entities, Entity, addEntity, createEntity)
 import Hoverable exposing (createNotHovered)
@@ -230,29 +230,34 @@ init =
     ( Model entities, Cmd.none )
 
 
-updateEntity : Entities -> Msg -> String -> Entity -> Entity
-updateEntity entities msg key components =
-    components
-        |> applyDrag msg
-        |> applyDraggable entities
-        |> applyHoverable msg
-        |> applySelectable msg
-        |> applyBrushSelect entities
-        |> applyPort entities
-        |> applyAttachement entities
-        |> applyLink entities
-        |> applyBrush entities
+updateEntity : Msg -> String -> Entity -> Entities -> Entities
+updateEntity msg key entity entities =
+    let
+        newEntity =
+            entity
+                |> dragSystem msg entities key
+                |> draggableSystem msg entities key
+                |> hoverableSystem msg entities key
+                |> selectableSystem msg entities key
+                |> portSystem msg entities key
+                |> attachementSystem msg entities key
+                |> linkSystem msg entities key
+                |> brushSystem msg entities key
+                |> brushSelectSystem msg entities key
+    in
+    Dict.insert key newEntity entities
 
 
 updateEntities : Msg -> Model -> Model
 updateEntities msg model =
     let
         configuredUpdater =
-            updateEntity model.entities msg
+            updateEntity msg
 
         -- foldl here so we have acces to updated components during the update loop !!!!!!
+        -- foldl doesn't let update the entity :/ guess i have to go on the one iteration per systems :/
         newEntities =
-            Dict.map configuredUpdater (applyMultiSelectDrag model.entities)
+            Dict.foldl configuredUpdater model.entities model.entities
     in
     { model | entities = newEntities }
 

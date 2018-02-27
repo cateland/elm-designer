@@ -1,13 +1,13 @@
-module DragSystem exposing (..)
+module DragSystem exposing (dragSystem)
 
 import Components exposing (Component(DragStatus), Drag)
 import DragStatus exposing (getDragStatus, updateDragStatus)
-import Entity exposing (Entity(..))
-import Msgs exposing (Msg(Move))
+import Entity exposing (Entities, Entity)
+import Msgs exposing (Msg)
 
 
-applyDrag : Msgs.Msg -> Entity -> Entity
-applyDrag msg entity =
+dragSystem : Msgs.Msg -> Entities -> String -> Entity -> Entity
+dragSystem msg entities key entity =
     case getDragStatus entity of
         Just (Components.DragStatus dragStatus) ->
             case dragStatus of

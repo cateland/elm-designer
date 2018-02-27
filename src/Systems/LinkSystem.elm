@@ -1,16 +1,17 @@
-module LinkSystem exposing (..)
+module LinkSystem exposing (linkSystem)
 
 import Components
     exposing
         ( Component(Attachment, Link, Node, Port, Shape)
         , Drag
-        , Port(..)
+        , Port
         , Shape(..)
         )
 import Dict exposing (Dict)
 import Entity exposing (Entities, Entity, addComponent)
 import Link exposing (..)
 import Math exposing (getCenterPosition, isVectorOver, postionToPoint2d, translateBy)
+import Msgs exposing (Msg)
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import Shape exposing (..)
 
@@ -30,8 +31,8 @@ findParentShape key entities =
             Nothing
 
 
-applyLink : Entities -> Entity -> Entity
-applyLink entities entity =
+linkSystem : Msgs.Msg -> Entities -> String -> Entity -> Entity
+linkSystem msg entities key entity =
     case getLink entity of
         Just (Link sourceId targetId) ->
             case ( findParentShape sourceId entities, findParentShape targetId entities ) of

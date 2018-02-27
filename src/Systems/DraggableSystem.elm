@@ -1,4 +1,4 @@
-module DraggableSystem exposing (..)
+module DraggableSystem exposing (draggableSystem)
 
 import Components
     exposing
@@ -11,6 +11,7 @@ import Draggable exposing (createDragged, createNotDragged, isDragged)
 import DraggableComponent exposing (getDraggable, updateDraggable)
 import Entity exposing (Entities, Entity)
 import Math exposing (isVectorOver, postionToPoint2d, translateBy)
+import Msgs exposing (Msg)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 import Shape exposing (..)
 
@@ -35,8 +36,8 @@ findControlDrag entities =
             Nothing
 
 
-applyDraggable : Entities -> Entity -> Entity
-applyDraggable entities entity =
+draggableSystem : Msgs.Msg -> Entities -> String -> Entity -> Entity
+draggableSystem msg entities key entity =
     case ( getDraggable entity, getShape entity, findControlDrag entities ) of
         ( Just (DraggableComponent dragStatus), Just (Shape entityShape), Just drag ) ->
             case
