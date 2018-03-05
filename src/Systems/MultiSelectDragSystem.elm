@@ -1,14 +1,17 @@
-module MultiSelectDragSystem exposing (..)
+module MultiSelectDragSystem exposing (multiSelectDragSystem)
 
+import Attribute exposing (fill)
 import Components
     exposing
-        ( Component(DraggableComponent, Drawable, SelectableComponent, Shape)
+        ( Component(DraggableComponent, Drawable, HoverableComponent, SelectableComponent, Shape)
         , Shape(BoundingBox2d)
         )
 import Dict
 import Draggable exposing (createDragged, toggleDraggable)
-import Entity exposing (Entities, Entity, createEntity)
+import Entity exposing (Entities, Entity, NewEntities, addToNewEntitiesWithKey, createEntity)
+import Hoverable exposing (createNotHovered)
 import Math exposing (getShapeBoundingBox)
+import Msgs exposing (Msg)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import Selectable exposing (getSelectable)
 import Shape exposing (getShape)
@@ -49,8 +52,8 @@ convertShapeListToBox entities =
     BoundingBox2d.hullOf (List.filterMap (foldIntoBox << extractShape) (Dict.values entities))
 
 
-applyMultiSelectDrag : Entities -> Entities
-applyMultiSelectDrag entities =
+multiSelectDragSystem : Msgs.Msg -> Entities -> String -> ( Entity, NewEntities ) -> ( Entity, NewEntities )
+multiSelectDragSystem msg entities key ( entity, newEntities ) =
     let
         selectedEntities =
             filterSelectedEntities entities
@@ -63,7 +66,8 @@ applyMultiSelectDrag entities =
             in
             case convertShapeListToBox boxList of
                 Just hull ->
-                    Dict.insert "multiDrag"
+                    ( entity
+                    , addToNewEntitiesWithKey "multiselectDrag"
                         (createEntity
                             [ Drawable 60
                             , Shape
@@ -71,12 +75,18 @@ applyMultiSelectDrag entities =
                                     hull
                                 )
                             , DraggableComponent createDragged
+                            , HoverableComponent
+                                (createNotHovered
+                                    [ fill "red" ]
+                                )
                             ]
                         )
-                        entities
+                        newEntities
+                    )
 
                 _ ->
-                    entities
+                    ( entity, newEntities )
 
         False ->
-            Dict.remove "multiDrag" entities
+            -- Dict.remove "multiDrag" entities
+            ( entity, newEntities )

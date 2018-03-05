@@ -16,7 +16,18 @@ import DragSystem exposing (dragSystem)
 import Draggable exposing (createNotDragged)
 import DraggableSystem exposing (draggableSystem)
 import Drawable exposing (..)
-import Entity exposing (Entities, Entity, addEntity, createEntity)
+import Entity
+    exposing
+        ( Entities
+        , Entity
+        , NewEntities
+        , addEntity
+        , createEmptyNewEntities
+        , createEntity
+        , getNewEntitiesValues
+        , getSeed
+        , isNewEntitiesEmpty
+        )
 import Hoverable exposing (createNotHovered)
 import HoverableSystem exposing (..)
 import Html exposing (Html, div, text)
@@ -31,11 +42,13 @@ import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Svg as Svg
 import PortSystem exposing (..)
+import Random.Pcg exposing (Seed, initialSeed, step)
 import Render exposing (generateEntitySvgAttributes)
 import SelectableSystem exposing (..)
 import Shape exposing (..)
 import Svg exposing (Svg, rect, svg)
 import Svg.Attributes as Attributes exposing (height, id, width)
+import Uuid
 
 
 main : Program Never Model Msg
@@ -45,6 +58,7 @@ main =
 
 type alias Model =
     { entities : Entities
+    , currentSeed : Seed
     }
 
 
@@ -216,6 +230,9 @@ brush =
 init : ( Model, Cmd msg )
 init =
     let
+        seed =
+            initialSeed 0
+
         entities =
             Dict.empty
                 |> addEntity "control" control
@@ -227,14 +244,24 @@ init =
                 |> addEntity "link1" link1
                 |> addEntity "brush" brush
     in
-    ( Model entities, Cmd.none )
+    ( Model entities seed, Cmd.none )
 
 
-updateEntity : Msg -> String -> Entity -> Entities -> Entities
-updateEntity msg key entity entities =
+addNewEntity : ( String, Entity ) -> Entities -> Entities
+addNewEntity ( key, entity ) entities =
+    Dict.insert key entity entities
+
+
+addNewEntities : NewEntities -> Entities -> Entities
+addNewEntities newEntities entities =
+    List.foldl addNewEntity entities (getNewEntitiesValues newEntities)
+
+
+updateEntity : Msg -> String -> Entity -> ( Seed, Entities ) -> ( Seed, Entities )
+updateEntity msg key entity ( seed, entities ) =
     let
-        newEntity =
-            entity
+        ( updatedEntity, newEntities ) =
+            ( entity, createEmptyNewEntities seed )
                 |> dragSystem msg entities key
                 |> draggableSystem msg entities key
                 |> hoverableSystem msg entities key
@@ -244,8 +271,14 @@ updateEntity msg key entity entities =
                 |> linkSystem msg entities key
                 |> brushSystem msg entities key
                 |> brushSelectSystem msg entities key
+                |> multiSelectDragSystem msg entities key
     in
-    Dict.insert key newEntity entities
+    case isNewEntitiesEmpty newEntities of
+        True ->
+            ( getSeed newEntities, Dict.insert key updatedEntity entities )
+
+        False ->
+            ( getSeed newEntities, addNewEntities newEntities (Dict.insert key updatedEntity entities) )
 
 
 updateEntities : Msg -> Model -> Model
@@ -254,12 +287,15 @@ updateEntities msg model =
         configuredUpdater =
             updateEntity msg
 
+        test =
+            Debug.log "count" (Dict.size model.entities)
+
         -- foldl here so we have acces to updated components during the update loop !!!!!!
         -- foldl doesn't let update the entity :/ guess i have to go on the one iteration per systems :/
-        newEntities =
-            Dict.foldl configuredUpdater model.entities model.entities
+        ( seed, newEntities ) =
+            Dict.foldl configuredUpdater ( model.currentSeed, model.entities ) model.entities
     in
-    { model | entities = newEntities }
+    { model | entities = newEntities, currentSeed = seed }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

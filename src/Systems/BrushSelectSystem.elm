@@ -3,7 +3,7 @@ module BrushSelectSystem exposing (brushSelectSystem)
 import Brush exposing (getBrush)
 import Components exposing (Component(Brush, SelectableComponent, Shape), Shape)
 import Dict
-import Entity exposing (Entities, Entity)
+import Entity exposing (Entities, Entity, NewEntities)
 import Math exposing (getShapeBoundingBox)
 import Msgs exposing (Msg)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
@@ -26,34 +26,34 @@ findBrushShape entities =
             Nothing
 
 
-brushSelectSystem : Msgs.Msg -> Entities -> String -> Entity -> Entity
-brushSelectSystem msg entities key entity =
+brushSelectSystem : Msgs.Msg -> Entities -> String -> (Entity, NewEntities) -> (Entity, NewEntities)
+brushSelectSystem msg entities key (entity, newEntities) =
     case ( getSelectable entity, getShape entity ) of
         ( Just (SelectableComponent (Components.NotSelected selectedAppearence)), Just (Shape entityShape) ) ->
             case findBrushShape entities of
                 Just brushShape ->
                     case BoundingBox2d.isContainedIn (getShapeBoundingBox brushShape) (getShapeBoundingBox entityShape) of
                         True ->
-                            updateSelectable (SelectableComponent (Components.Selected selectedAppearence)) entity
+                            (updateSelectable (SelectableComponent (Components.Selected selectedAppearence)) entity, newEntities)
 
                         False ->
-                            entity
+                            (entity, newEntities)
 
                 Nothing ->
-                    entity
+                    (entity, newEntities)
 
         ( Just (SelectableComponent (Components.Selected selectedAppearence)), Just (Shape entityShape) ) ->
             case findBrushShape entities of
                 Just brushShape ->
                     case BoundingBox2d.isContainedIn (getShapeBoundingBox brushShape) (getShapeBoundingBox entityShape) of
                         True ->
-                            entity
+                            (entity, newEntities)
 
                         False ->
-                            updateSelectable (SelectableComponent (Components.NotSelected selectedAppearence)) entity
+                            (updateSelectable (SelectableComponent (Components.NotSelected selectedAppearence)) entity, newEntities)
 
                 Nothing ->
-                    entity
+                    (entity, newEntities)
 
         _ ->
-            entity
+            (entity, newEntities)

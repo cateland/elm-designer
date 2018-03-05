@@ -8,7 +8,7 @@ import Components
         , Shape
         )
 import Dict exposing (Dict)
-import Entity exposing (Entities, Entity)
+import Entity exposing (Entities, Entity, NewEntities)
 import Math exposing (getCenterPosition, isVectorOver, postionToPoint2d, translateBy)
 import Msgs exposing (Msg)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
@@ -30,8 +30,8 @@ findParentShape key entities =
             Nothing
 
 
-attachementSystem : Msgs.Msg -> Entities -> String -> Entity -> Entity
-attachementSystem msg entities key entity =
+attachementSystem : Msgs.Msg -> Entities -> String -> (Entity, NewEntities) -> (Entity, NewEntities)
+attachementSystem msg entities key (entity, newEntities) =
     case ( getAttachment entity, getShape entity ) of
         ( Just (Attachment parentId vector), Just (Shape shape) ) ->
             case findParentShape parentId entities of
@@ -43,17 +43,17 @@ attachementSystem msg entities key entity =
                         newVector =
                             Vector2d.difference vector actualVector
                     in
-                    updateShape
+                    (updateShape
                         (Shape
                             (translateBy
                                 newVector
                                 shape
                             )
                         )
-                        entity
+                        entity, newEntities)
 
                 Nothing ->
-                    entity
+                    (entity, newEntities)
 
         _ ->
-            entity
+            (entity, newEntities)

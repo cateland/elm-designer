@@ -2,7 +2,7 @@ module HoverableSystem exposing (hoverableSystem)
 
 import Appearance exposing (getAppearance, updateAppearance)
 import Components exposing (Component(Appearance, HoverableComponent, Shape))
-import Entity exposing (Entities, Entity, addComponent)
+import Entity exposing (Entities, Entity, NewEntities, addComponent)
 import Hoverable exposing (getHoverAppearence, isHovered, toggleHoverrable)
 import HoverableComponent exposing (getHoverable, updateHoverable)
 import Math exposing (isVectorOver, postionToPoint2d)
@@ -10,8 +10,8 @@ import Msgs exposing (Msg(Move))
 import Shape exposing (..)
 
 
-hoverableSystem : Msgs.Msg -> Entities -> String -> Entity -> Entity
-hoverableSystem msg entities key entity =
+hoverableSystem : Msgs.Msg -> Entities -> String -> (Entity, NewEntities) -> (Entity, NewEntities)
+hoverableSystem msg entities key (entity, newEntities) =
     case
         msg
     of
@@ -28,20 +28,18 @@ hoverableSystem msg entities key entity =
                                 False ->
                                     case getAppearance entity of
                                         Just (Appearance ( initialAppearence, _ )) ->
-                                            updateHoverable
+                                            (updateHoverable
                                                 (HoverableComponent (toggleHoverrable hoverStatus))
-                                                (updateAppearance (Appearance ( initialAppearence, [] )) entity)
-
+                                                (updateAppearance (Appearance ( initialAppearence, [] )) entity), newEntities)
                                         Nothing ->
-                                            updateHoverable
+                                            (updateHoverable
                                                 (HoverableComponent (toggleHoverrable hoverStatus))
-                                                (addComponent (Appearance ( [], [] )) entity)
-
+                                                (addComponent (Appearance ( [], [] )) entity), newEntities)
                                         _ ->
-                                            entity
+                                             (entity, newEntities)
 
                                 True ->
-                                    entity
+                                     (entity, newEntities)
 
                         False ->
                             case
@@ -50,28 +48,28 @@ hoverableSystem msg entities key entity =
                                 True ->
                                     case getAppearance entity of
                                         Just (Appearance ( initialAppearence, overideAppearence )) ->
-                                            updateHoverable
+                                            (updateHoverable
                                                 (HoverableComponent (toggleHoverrable hoverStatus))
-                                                (updateAppearance (Appearance ( initialAppearence, getHoverAppearence hoverStatus )) entity)
+                                                (updateAppearance (Appearance ( initialAppearence, getHoverAppearence hoverStatus )) entity), newEntities)
 
                                         Nothing ->
-                                            updateHoverable
+                                            (updateHoverable
                                                 (HoverableComponent (toggleHoverrable hoverStatus))
-                                                (addComponent (Appearance ( [], getHoverAppearence hoverStatus )) entity)
+                                                (addComponent (Appearance ( [], getHoverAppearence hoverStatus )) entity), newEntities)
 
                                         _ ->
-                                            entity
+                                             (entity, newEntities)
 
                                 False ->
                                     case getAppearance entity of
                                         Just (Appearance ( initialAppearence, _ )) ->
-                                            updateAppearance (Appearance ( initialAppearence, [] )) entity
+                                            (updateAppearance (Appearance ( initialAppearence, [] )) entity, newEntities)
 
                                         _ ->
-                                            entity
+                                             (entity, newEntities)
 
                 _ ->
-                    entity
+                     (entity, newEntities)
 
         _ ->
-            entity
+            (entity, newEntities)
