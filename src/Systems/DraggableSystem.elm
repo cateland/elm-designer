@@ -9,8 +9,8 @@ import Dict exposing (Dict)
 import DragStatus exposing (getDragStatus, updateDragStatus)
 import Draggable exposing (createDragged, createNotDragged, isDragged)
 import DraggableComponent exposing (getDraggable, updateDraggable)
-import Entity exposing (Entities, Entity)
-import Math exposing (isVectorOver, postionToPoint2d, translateBy)
+import Entity exposing (Entities, Entity,NewEntities)
+import Math exposing (isVectorOver, positionToPoint2d, translateBy)
 import Msgs exposing (Msg)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 import Shape exposing (..)
@@ -36,17 +36,17 @@ findControlDrag entities =
             Nothing
 
 
-draggableSystem : Msgs.Msg -> Entities -> String -> Entity -> Entity
-draggableSystem msg entities key entity =
+draggableSystem : Msgs.Msg -> Entities -> String -> (Entity, NewEntities) -> (Entity, NewEntities)
+draggableSystem msg entities key (entity, newEntities) =
     case ( getDraggable entity, getShape entity, findControlDrag entities ) of
         ( Just (DraggableComponent dragStatus), Just (Shape entityShape), Just drag ) ->
             case
-                isVectorOver (postionToPoint2d drag.startPos) entityShape
+                isVectorOver (positionToPoint2d drag.startPos) entityShape
             of
                 True ->
                     case isDragged dragStatus of
                         True ->
-                            updateShape
+                            (updateShape
                                 (Shape
                                     (translateBy
                                         (Vector2d.fromComponents
@@ -57,15 +57,15 @@ draggableSystem msg entities key entity =
                                         entityShape
                                     )
                                 )
-                                entity
+                                entity, newEntities)
 
                         False ->
-                            updateDraggable (DraggableComponent createDragged) entity
+                            (updateDraggable (DraggableComponent createDragged) entity, newEntities)
 
                 False ->
                     case isDragged dragStatus of
                         True ->
-                            updateShape
+                            (updateShape
                                 (Shape
                                     (translateBy
                                         (Vector2d.fromComponents
@@ -76,13 +76,13 @@ draggableSystem msg entities key entity =
                                         entityShape
                                     )
                                 )
-                                entity
+                                entity, newEntities)
 
                         False ->
-                            entity
+                            (entity, newEntities)
 
         ( Just (DraggableComponent _), Just (Shape entityShape), Nothing ) ->
-            updateDraggable (DraggableComponent createNotDragged) entity
+            (updateDraggable (DraggableComponent createNotDragged) entity, newEntities)
 
         _ ->
-            entity
+            (entity, newEntities)

@@ -13,11 +13,12 @@ import Entity
     exposing
         ( Entities
         , Entity
+        , NewEntities
         , addComponent
         , removeComponent
         )
 import HoverableComponent exposing (getHoverable, updateHoverable)
-import Math exposing (isVectorOver, postionToPoint2d)
+import Math exposing (isVectorOver, positionToPoint2d)
 import Msgs exposing (Msg)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
@@ -64,23 +65,23 @@ intersectWithEntities point entities =
     Dict.foldl (intersectWithEntity point) False entities
 
 
-brushSystem : Msgs.Msg -> Entities -> String -> Entity -> Entity
-brushSystem msg entities key entity =
+brushSystem : Msgs.Msg -> Entities -> String -> ( Entity, NewEntities ) -> ( Entity, NewEntities )
+brushSystem msg entities key ( entity, newEntities ) =
     case ( getBrush entity, findControlDrag entities, getShape entity ) of
         ( Just (Brush isBrushable), Just drag, _ ) ->
             case drag.startPos.x == drag.currentPos.x && drag.startPos.y == drag.currentPos.y of
                 True ->
-                    entity
+                    ( entity, newEntities )
 
                 False ->
-                    case ( intersectWithEntities (postionToPoint2d drag.startPos) entities, isBrushable ) of
+                    case ( intersectWithEntities (positionToPoint2d drag.startPos) entities, isBrushable ) of
                         ( True, True ) ->
-                            updateBrush (Brush False) entity
+                            ( updateBrush (Brush False) entity, newEntities )
 
                         ( False, True ) ->
                             case getShape entity of
                                 Just _ ->
-                                    updateShape
+                                    ( updateShape
                                         (Shape
                                             (BoundingBox2d
                                                 (BoundingBox2d.with
@@ -93,9 +94,11 @@ brushSystem msg entities key entity =
                                             )
                                         )
                                         entity
+                                    , newEntities
+                                    )
 
                                 Nothing ->
-                                    addComponent
+                                    ( addComponent
                                         (Shape
                                             (BoundingBox2d
                                                 (BoundingBox2d.with
@@ -108,12 +111,14 @@ brushSystem msg entities key entity =
                                             )
                                         )
                                         entity
+                                    , newEntities
+                                    )
 
                         _ ->
-                            entity
+                            ( entity, newEntities )
 
         ( Just (Brush _), Nothing, Just shape ) ->
-            removeComponent shape entity
+            ( removeComponent shape entity, newEntities )
 
         _ ->
-            updateBrush (Brush True) entity
+            ( updateBrush (Brush True) entity, newEntities )

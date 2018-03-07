@@ -9,8 +9,8 @@ import Components
         , Shape(..)
         )
 import Dict exposing (Dict)
-import Entity exposing (Entities, Entity, addComponent)
-import Math exposing (getCenterPosition, isVectorOver, postionToPoint2d, translateBy)
+import Entity exposing (Entities, Entity, NewEntities, addComponent)
+import Math exposing (getCenterPosition, isVectorOver, translateBy)
 import Msgs exposing (Msg)
 import Node exposing (..)
 import OpenSolid.Arc2d as Arc2d exposing (Arc2d)
@@ -74,34 +74,34 @@ calculatePortAttachement getPosition nodeShape =
         |> Vector2d.from (getCenterPosition nodeShape)
 
 
-portSystem : Msgs.Msg -> Entities -> String -> Entity -> Entity
-portSystem msg entities key entity =
+portSystem : Msgs.Msg -> Entities -> String -> (Entity, NewEntities) -> (Entity, NewEntities)
+portSystem msg entities key (entity, newEntities) =
     case ( getPort entity, getShape entity ) of
         ( Just (Port (PortSource nodeId)), Just (Shape portShape) ) ->
             case findNodeShape nodeId entities of
                 Just nodeShape ->
                     case getAttachment entity of
                         Just (Attachment _ _) ->
-                            entity
+                            (entity, newEntities)
 
                         _ ->
-                            addComponent (Attachment nodeId (calculatePortAttachement getSourcePortPosition nodeShape)) entity
+                            (addComponent (Attachment nodeId (calculatePortAttachement getSourcePortPosition nodeShape)) entity, newEntities)
 
                 Nothing ->
-                    entity
+                    (entity, newEntities)
 
         ( Just (Port (PortSink nodeId)), Just (Shape portShape) ) ->
             case findNodeShape nodeId entities of
                 Just nodeShape ->
                     case getAttachment entity of
                         Just (Attachment _ _) ->
-                            entity
+                            (entity, newEntities)
 
                         _ ->
-                            addComponent (Attachment nodeId (calculatePortAttachement getSinkPortPosition nodeShape)) entity
+                            (addComponent (Attachment nodeId (calculatePortAttachement getSinkPortPosition nodeShape)) entity, newEntities)
 
                 Nothing ->
-                    entity
+                    (entity, newEntities)
 
         _ ->
-            entity
+            (entity, newEntities)

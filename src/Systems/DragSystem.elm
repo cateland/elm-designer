@@ -2,12 +2,12 @@ module DragSystem exposing (dragSystem)
 
 import Components exposing (Component(DragStatus), Drag)
 import DragStatus exposing (getDragStatus, updateDragStatus)
-import Entity exposing (Entities, Entity)
+import Entity exposing (Entities, Entity, NewEntities)
 import Msgs exposing (Msg)
 
 
-dragSystem : Msgs.Msg -> Entities -> String -> Entity -> Entity
-dragSystem msg entities key entity =
+dragSystem : Msgs.Msg -> Entities -> String -> (Entity, NewEntities) -> (Entity, NewEntities)
+dragSystem msg entities key (entity, newEntities) =
     case getDragStatus entity of
         Just (Components.DragStatus dragStatus) ->
             case dragStatus of
@@ -21,13 +21,13 @@ dragSystem msg entities key entity =
                                 newDrag =
                                     { drag | previousPos = previousPos, currentPos = position }
                             in
-                            updateDragStatus (Components.DragStatus (Just newDrag)) entity
+                            (updateDragStatus (Components.DragStatus (Just newDrag)) entity, newEntities)
 
                         Msgs.Release position ->
-                            updateDragStatus (Components.DragStatus Nothing) entity
+                            (updateDragStatus (Components.DragStatus Nothing) entity, newEntities)
 
                         _ ->
-                            entity
+                            (entity, newEntities)
 
                 Nothing ->
                     case msg of
@@ -39,10 +39,10 @@ dragSystem msg entities key entity =
                                     , currentPos = position
                                     }
                             in
-                            updateDragStatus (Components.DragStatus (Just drag)) entity
+                            (updateDragStatus (Components.DragStatus (Just drag)) entity, newEntities)
 
                         _ ->
-                            entity
+                            (entity, newEntities)
 
         _ ->
-            entity
+            (entity, newEntities)
