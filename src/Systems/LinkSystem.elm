@@ -10,7 +10,7 @@ import Components
 import Dict exposing (Dict)
 import Entity exposing (Entities, Entity, NewEntities, addComponent)
 import Link exposing (..)
-import Math exposing (getCenterPosition, isVectorOver, postionToPoint2d, translateBy)
+import Math exposing (getCenterPosition, isVectorOver, translateBy)
 import Msgs exposing (Msg)
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import Shape exposing (..)

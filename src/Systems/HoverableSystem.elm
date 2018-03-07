@@ -5,7 +5,7 @@ import Components exposing (Component(Appearance, HoverableComponent, Shape))
 import Entity exposing (Entities, Entity, NewEntities, addComponent)
 import Hoverable exposing (getHoverAppearence, isHovered, toggleHoverrable)
 import HoverableComponent exposing (getHoverable, updateHoverable)
-import Math exposing (isVectorOver, postionToPoint2d)
+import Math exposing (isVectorOver, positionToPoint2d)
 import Msgs exposing (Msg(Move))
 import Shape exposing (..)
 
@@ -23,7 +23,7 @@ hoverableSystem msg entities key (entity, newEntities) =
                     case isHovered hoverStatus of
                         True ->
                             case
-                                isVectorOver (postionToPoint2d position) entityShape
+                                isVectorOver (positionToPoint2d position) entityShape
                             of
                                 False ->
                                     case getAppearance entity of
@@ -43,7 +43,7 @@ hoverableSystem msg entities key (entity, newEntities) =
 
                         False ->
                             case
-                                isVectorOver (postionToPoint2d position) entityShape
+                                isVectorOver (positionToPoint2d position) entityShape
                             of
                                 True ->
                                     case getAppearance entity of

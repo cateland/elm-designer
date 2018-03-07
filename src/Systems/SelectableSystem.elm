@@ -3,7 +3,7 @@ module SelectableSystem exposing (selectableSystem)
 import Appearance exposing (getAppearance, updateAppearance)
 import Components exposing (Component(Appearance, SelectableComponent, Shape), Selectable(..))
 import Entity exposing (Entities, Entity, NewEntities, addComponent)
-import Math exposing (isVectorOver, postionToPoint2d)
+import Math exposing (isVectorOver, positionToPoint2d)
 import Msgs exposing (Msg)
 import Selectable exposing (getSelectable, updateSelectable)
 import Shape exposing (..)
@@ -19,7 +19,7 @@ selectableSystem msg entities key (entity, newEntities) =
                 ( getSelectable entity, getShape entity, getAppearance entity )
             of
                 ( Just (SelectableComponent (Components.NotSelected selectedAppearence)), Just (Shape entityShape), _ ) ->
-                    case isVectorOver (postionToPoint2d position) entityShape of
+                    case isVectorOver (positionToPoint2d position) entityShape of
                         True ->
                             (updateSelectable (SelectableComponent (Pressed ( position, selectedAppearence ))) entity, newEntities)
 
@@ -27,7 +27,7 @@ selectableSystem msg entities key (entity, newEntities) =
                             (entity, newEntities)
 
                 ( Just (SelectableComponent (Components.Selected selectedAppearence)), Just (Shape entityShape), Just (Appearance ( initialAppearence, overideAppearence )) ) ->
-                    case isVectorOver (postionToPoint2d position) entityShape of
+                    case isVectorOver (positionToPoint2d position) entityShape of
                         True ->
                             (entity, newEntities)
 

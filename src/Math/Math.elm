@@ -9,8 +9,8 @@ import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
-postionToPoint2d : Position -> Point2d
-postionToPoint2d position =
+positionToPoint2d : Position -> Point2d
+positionToPoint2d position =
     Point2d.fromCoordinates ( toFloat position.x, toFloat position.y )
 
 

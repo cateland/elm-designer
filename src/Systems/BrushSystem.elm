@@ -18,7 +18,7 @@ import Entity
         , removeComponent
         )
 import HoverableComponent exposing (getHoverable, updateHoverable)
-import Math exposing (isVectorOver, postionToPoint2d)
+import Math exposing (isVectorOver, positionToPoint2d)
 import Msgs exposing (Msg)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
@@ -74,7 +74,7 @@ brushSystem msg entities key ( entity, newEntities ) =
                     ( entity, newEntities )
 
                 False ->
-                    case ( intersectWithEntities (postionToPoint2d drag.startPos) entities, isBrushable ) of
+                    case ( intersectWithEntities (positionToPoint2d drag.startPos) entities, isBrushable ) of
                         ( True, True ) ->
                             ( updateBrush (Brush False) entity, newEntities )
 

@@ -9,7 +9,7 @@ import Components
         )
 import Dict exposing (Dict)
 import Entity exposing (Entities, Entity, NewEntities)
-import Math exposing (getCenterPosition, isVectorOver, postionToPoint2d, translateBy)
+import Math exposing (getCenterPosition, isVectorOver, translateBy)
 import Msgs exposing (Msg)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 import Shape exposing (..)
