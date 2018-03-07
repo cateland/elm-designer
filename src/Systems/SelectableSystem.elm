@@ -3,11 +3,11 @@ module SelectableSystem exposing (selectableSystem)
 import Appearance exposing (getAppearance, updateAppearance)
 import Components exposing (Component(Appearance, SelectableComponent, Shape), Selectable(..))
 import Entity exposing (Entities, Entity, NewEntities, addComponent)
-import Math exposing (isVectorOver, positionToPoint2d)
+import Math exposing (positionToPoint2d)
 import Msgs exposing (Msg)
 import Selectable exposing (getSelectable, updateSelectable)
-import Shape exposing (..)
-
+import Shape exposing (isVectorOver)
+import ShapeComponent exposing (getShape)
 
 selectableSystem : Msgs.Msg -> Entities -> String -> (Entity, NewEntities) -> (Entity, NewEntities)
 selectableSystem msg entities key (entity, newEntities) =

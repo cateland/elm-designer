@@ -5,16 +5,14 @@ import Components
         ( Component(Attachment, Link, Node, Port, Shape)
         , Drag
         , Port
-        , Shape(..)
         )
 import Dict exposing (Dict)
 import Entity exposing (Entities, Entity, NewEntities, addComponent)
 import Link exposing (..)
-import Math exposing (getCenterPosition, isVectorOver, translateBy)
 import Msgs exposing (Msg)
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
-import Shape exposing (..)
-
+import Shape exposing (Shape, getCenterPosition, isVectorOver, translateBy, createLineSegment)
+import ShapeComponent exposing (getShape, updateShape)
 
 findParentShape : String -> Entities -> Maybe Shape
 findParentShape key entities =
@@ -41,14 +39,14 @@ linkSystem msg entities key ( entity, newEntities ) =
                         Just shape ->
                             ( updateShape
                                 (Shape
-                                    (LineSegment2d (LineSegment2d.fromEndpoints ( getCenterPosition sourceShape, getCenterPosition targetShape )))
+                                    (createLineSegment (LineSegment2d.fromEndpoints ( getCenterPosition sourceShape, getCenterPosition targetShape )))
                                 )
                                 entity
                             , newEntities
                             )
 
                         Nothing ->
-                            ( addComponent (Shape (LineSegment2d (LineSegment2d.fromEndpoints ( getCenterPosition sourceShape, getCenterPosition targetShape )))) entity, newEntities )
+                            ( addComponent (Shape (createLineSegment (LineSegment2d.fromEndpoints ( getCenterPosition sourceShape, getCenterPosition targetShape )))) entity, newEntities )
 
                 _ ->
                     ( entity, newEntities )

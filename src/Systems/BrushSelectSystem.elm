@@ -1,14 +1,14 @@
 module BrushSelectSystem exposing (brushSelectSystem)
 
 import Brush exposing (getBrush)
-import Components exposing (Component(Brush, SelectableComponent, Shape), Shape)
+import Components exposing (Component(Brush, SelectableComponent, Shape))
 import Dict
 import Entity exposing (Entities, Entity, NewEntities)
-import Math exposing (getShapeBoundingBox)
 import Msgs exposing (Msg)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import Selectable exposing (getSelectable, updateSelectable)
-import Shape exposing (getShape)
+import ShapeComponent exposing (getShape)
+import Shape exposing (Shape, getShapeBoundingBox)
 
 
 findBrushShape : Entities -> Maybe Shape
