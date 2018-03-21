@@ -1,4 +1,4 @@
-module Main exposing (main)
+module Main exposing (Model, main, updateEntity, updateEntities)
 
 import Appearance exposing (..)
 import AttachmentSystem exposing (..)

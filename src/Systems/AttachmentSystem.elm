@@ -58,3 +58,43 @@ attachementSystem msg entities key ( entity, newEntities ) =
 
         _ ->
             ( entity, newEntities )
+
+
+newAttachementSystem : Msgs.Msg -> Entities -> String -> ( Entity, NewEntities ) -> ( Entity, NewEntities )
+newAttachementSystem msg entities key tuple =
+    let
+        ( entity, newEntities ) =
+            tuple
+    in
+    case getAttachment entity of
+        Just (Attachment parentId vector) ->
+            case getShape entity of
+                Just (Shape shape) ->
+                    case findParentShape parentId entities of
+                        Just parentShape ->
+                            let
+                                actualVector =
+                                    Vector2d.from (getCenterPosition parentShape) (getCenterPosition shape)
+
+                                newVector =
+                                    Vector2d.difference vector actualVector
+                            in
+                            ( updateShape
+                                (Shape
+                                    (translateBy
+                                        newVector
+                                        shape
+                                    )
+                                )
+                                entity
+                            , newEntities
+                            )
+
+                        Nothing ->
+                            tuple
+
+                _ ->
+                    tuple
+
+        _ ->
+            tuple
