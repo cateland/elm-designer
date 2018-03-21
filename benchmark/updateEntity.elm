@@ -8,7 +8,7 @@ import Entity
         , createEmptyNewEntities
         )
 import Main exposing (updateEntity)
-import Model exposing (box1, circle1, entities)
+import Entities exposing (box1, circle1, entities)
 import Msgs exposing (Msg(Move))
 import Random.Pcg exposing (Seed, initialSeed, step)
 

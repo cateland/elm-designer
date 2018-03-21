@@ -1,4 +1,4 @@
-module Model exposing (..)
+module Entities exposing (..)
 
 import Attribute exposing (fill, rx, ry, stroke, strokeWidth)
 import Components exposing (Component(..), Port(PortSink, PortSource))

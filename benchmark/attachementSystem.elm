@@ -5,7 +5,7 @@ import Benchmark exposing (Benchmark, benchmark, describe)
 import Benchmark.Runner exposing (BenchmarkProgram, program)
 import Entity exposing (createEmptyNewEntities)
 import Main exposing (Model)
-import Model exposing (box1, circle1, entities)
+import Entities exposing (box1, circle1, entities)
 import Msgs exposing (Msg(Move))
 import Random.Pcg exposing (Seed, initialSeed, step)
 
