@@ -5,7 +5,6 @@ import Components
     exposing
         ( Component(Appearance, Brush, HoverableComponent, Shape)
         , Drag
-        , Shape(..)
         )
 import Dict exposing (Dict)
 import DragStatus exposing (getDragStatus, updateDragStatus)
@@ -18,11 +17,12 @@ import Entity
         , removeComponent
         )
 import HoverableComponent exposing (getHoverable, updateHoverable)
-import Math exposing (isVectorOver, positionToPoint2d)
+import Math exposing (positionToPoint2d)
 import Msgs exposing (Msg)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
-import Shape exposing (..)
+import Shape exposing (isVectorOver, createBoundingBox)
+import ShapeComponent exposing (getShape, updateShape)
 
 
 findControlDrag : Entities -> Maybe Drag
@@ -83,7 +83,7 @@ brushSystem msg entities key ( entity, newEntities ) =
                                 Just _ ->
                                     ( updateShape
                                         (Shape
-                                            (BoundingBox2d
+                                            (createBoundingBox
                                                 (BoundingBox2d.with
                                                     { minX = toFloat drag.startPos.x
                                                     , maxX = toFloat drag.currentPos.x
@@ -100,7 +100,7 @@ brushSystem msg entities key ( entity, newEntities ) =
                                 Nothing ->
                                     ( addComponent
                                         (Shape
-                                            (BoundingBox2d
+                                            (createBoundingBox
                                                 (BoundingBox2d.with
                                                     { minX = toFloat drag.startPos.x
                                                     , maxX = toFloat drag.currentPos.x

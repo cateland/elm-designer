@@ -1,49 +1,87 @@
-module Shape exposing (..)
+module Shape
+    exposing
+        ( Shape(BoundingBox2d, Circle2d, LineSegment2d)
+        , createBoundingBox
+        , createLineSegment
+        , getCenterPosition
+        , getShapeBoundingBox
+        , isVectorOver
+        , translateBy
+        )
 
-import Components exposing (Component(Shape))
-import Entity exposing (Entity, addComponent, createEntity, getComponents)
-
-
-getShape : Entity -> Maybe Component
-getShape entity =
-    case getComponents entity of
-        [] ->
-            Nothing
-
-        x :: xs ->
-            case x of
-                Shape _ ->
-                    Just x
-
-                _ ->
-                    getShape (createEntity xs)
+import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
+import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
+import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
+import OpenSolid.Point2d as Point2d exposing (Point2d)
+import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
-filterShape : Entity -> Entity
-filterShape entity =
-    case getComponents entity of
-        [] ->
-            createEntity []
-
-        x :: xs ->
-            case x of
-                Shape _ ->
-                    filterShape (createEntity xs)
-
-                _ ->
-                    addComponent x (filterShape (createEntity xs))
+type Shape
+    = BoundingBox2d BoundingBox2d
+    | Circle2d Circle2d
+    | LineSegment2d LineSegment2d
 
 
-updateShape : Component -> Entity -> Entity
-updateShape component entity =
-    case component of
-        Shape _ ->
-            case getShape entity of
-                Nothing ->
-                    entity
+createLineSegment : LineSegment2d -> Shape
+createLineSegment lineSegment =
+    LineSegment2d lineSegment
 
-                _ ->
-                    addComponent component (filterShape entity)
 
-        _ ->
-            entity
+createBoundingBox : BoundingBox2d -> Shape
+createBoundingBox boundingBox =
+    BoundingBox2d boundingBox
+
+
+isVectorOver : Point2d -> Shape -> Bool
+isVectorOver point2d shape =
+    case
+        shape
+    of
+        BoundingBox2d box ->
+            BoundingBox2d.contains point2d box
+
+        Circle2d circle ->
+            Circle2d.contains point2d circle
+
+        LineSegment2d _ ->
+            False
+
+
+translateBy : Vector2d -> Shape -> Shape
+translateBy vector shape =
+    case shape of
+        BoundingBox2d box ->
+            BoundingBox2d
+                (BoundingBox2d.translateBy vector box)
+
+        Circle2d circle ->
+            Circle2d (Circle2d.translateBy vector circle)
+
+        LineSegment2d lineSegment ->
+            LineSegment2d (LineSegment2d.translateBy vector lineSegment)
+
+
+getCenterPosition : Shape -> Point2d
+getCenterPosition shape =
+    case shape of
+        BoundingBox2d box ->
+            BoundingBox2d.centroid box
+
+        Circle2d circle ->
+            Circle2d.centerPoint circle
+
+        LineSegment2d lineSegment ->
+            LineSegment2d.midpoint lineSegment
+
+
+getShapeBoundingBox : Shape -> BoundingBox2d.BoundingBox2d
+getShapeBoundingBox shape =
+    case shape of
+        BoundingBox2d box ->
+            box
+
+        Circle2d circle ->
+            Circle2d.boundingBox circle
+
+        LineSegment2d segment ->
+            LineSegment2d.boundingBox segment

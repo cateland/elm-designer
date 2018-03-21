@@ -6,11 +6,9 @@ import Components
         ( Component(Attachment, Node, Port, Shape)
         , Drag
         , Port(..)
-        , Shape(..)
         )
 import Dict exposing (Dict)
 import Entity exposing (Entities, Entity, NewEntities, addComponent)
-import Math exposing (getCenterPosition, isVectorOver, translateBy)
 import Msgs exposing (Msg)
 import Node exposing (..)
 import OpenSolid.Arc2d as Arc2d exposing (Arc2d)
@@ -20,7 +18,8 @@ import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
 import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 import Port exposing (..)
-import Shape exposing (..)
+import Shape exposing (Shape(..), getCenterPosition, isVectorOver, translateBy)
+import ShapeComponent exposing (getShape)
 
 
 findNodeShape : String -> Entities -> Maybe Shape

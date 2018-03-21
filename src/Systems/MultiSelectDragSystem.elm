@@ -4,17 +4,16 @@ import Attribute exposing (fill)
 import Components
     exposing
         ( Component(DraggableComponent, Drawable, HoverableComponent, SelectableComponent, Shape)
-        , Shape(BoundingBox2d)
         )
 import Dict
 import Draggable exposing (createDragged, toggleDraggable)
 import Entity exposing (Entities, Entity, NewEntities, addToNewEntitiesWithKey, createEntity)
 import Hoverable exposing (createNotHovered)
-import Math exposing (getShapeBoundingBox)
 import Msgs exposing (Msg)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import Selectable exposing (getSelectable)
-import Shape exposing (getShape)
+import Shape exposing (getShapeBoundingBox, createBoundingBox)
+import ShapeComponent exposing (getShape)
 
 
 filter : String -> Entity -> Bool
@@ -71,7 +70,7 @@ multiSelectDragSystem msg entities key ( entity, newEntities ) =
                         (createEntity
                             [ Drawable 60
                             , Shape
-                                (BoundingBox2d
+                                (createBoundingBox
                                     hull
                                 )
                             , DraggableComponent createDragged

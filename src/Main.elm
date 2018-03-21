@@ -1,4 +1,4 @@
-module Main exposing (main)
+module Main exposing (Model, main, updateEntity, updateEntities)
 
 import Appearance exposing (..)
 import AttachmentSystem exposing (..)
@@ -9,7 +9,6 @@ import Components
     exposing
         ( Component(..)
         , Port(PortSink, PortSource)
-        , Shape(BoundingBox2d, Circle2d, LineSegment2d)
         )
 import Dict exposing (Dict)
 import DragSystem exposing (dragSystem)
@@ -45,11 +44,10 @@ import PortSystem exposing (..)
 import Random.Pcg exposing (Seed, initialSeed, step)
 import Render exposing (generateEntitySvgAttributes)
 import SelectableSystem exposing (..)
-import Shape exposing (..)
+import Shape exposing (Shape(..), createBoundingBox)
+import ShapeComponent exposing (getShape)
 import Svg exposing (Svg, rect, svg)
 import Svg.Attributes as Attributes exposing (height, id, width)
-import Uuid
-
 
 main : Program Never Model Msg
 main =
@@ -72,7 +70,7 @@ box1 =
     createEntity
         [ Drawable 70
         , Shape
-            (BoundingBox2d
+            (createBoundingBox
                 (BoundingBox2d.with
                     { minX = 50
                     , maxX = 70
@@ -90,7 +88,7 @@ box2 =
     createEntity
         [ Drawable 70
         , Shape
-            (BoundingBox2d
+            (createBoundingBox
                 (BoundingBox2d.with
                     { minX = 200
                     , maxX = 400
