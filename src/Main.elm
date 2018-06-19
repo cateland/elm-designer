@@ -1,4 +1,4 @@
-module Main exposing (Model, main, updateEntity, updateEntities)
+module Main exposing (Model, main, newUpdateEntities, newUpdateEntity, updateEntities, updateEntity)
 
 import Appearance exposing (..)
 import AttachmentSystem exposing (..)
@@ -13,7 +13,7 @@ import Components
 import Dict exposing (Dict)
 import DragSystem exposing (dragSystem)
 import Draggable exposing (createNotDragged)
-import DraggableSystem exposing (draggableSystem)
+import DraggableSystem exposing (draggableSystem, newDraggableSystem)
 import Drawable exposing (..)
 import Entity
     exposing
@@ -48,6 +48,7 @@ import Shape exposing (Shape(..), createBoundingBox)
 import ShapeComponent exposing (getShape)
 import Svg exposing (Svg, rect, svg)
 import Svg.Attributes as Attributes exposing (height, id, width)
+
 
 main : Program Never Model Msg
 main =
@@ -279,11 +280,52 @@ updateEntity msg key entity ( seed, entities ) =
             ( getSeed newEntities, addNewEntities newEntities (Dict.insert key updatedEntity entities) )
 
 
+newUpdateEntity : Msg -> String -> Entity -> ( Seed, Entities ) -> ( Seed, Entities )
+newUpdateEntity msg key entity ( seed, entities ) =
+    let
+        ( updatedEntity, newEntities ) =
+            ( entity, createEmptyNewEntities seed )
+                |> dragSystem msg entities key
+                |> newDraggableSystem msg entities key
+                |> newHoverableSystem msg entities key
+                |> newSelectableSystem msg entities key
+                |> newPortSystem msg entities key
+                |> newAttachementSystem msg entities key
+                |> newLinkSystem msg entities key
+                |> newBrushSystem msg entities key
+                |> newBrushSelectSystem msg entities key
+                |> newMultiSelectDragSystem msg entities key
+    in
+    case isNewEntitiesEmpty newEntities of
+        True ->
+            ( seed, Dict.insert key updatedEntity entities )
+
+        False ->
+            ( getSeed newEntities, addNewEntities newEntities (Dict.insert key updatedEntity entities) )
+
+
 updateEntities : Msg -> Model -> Model
 updateEntities msg model =
     let
         configuredUpdater =
             updateEntity msg
+
+        test =
+            Debug.log "count" (Dict.size model.entities)
+
+        -- foldl here so we have acces to updated components during the update loop !!!!!!
+        -- foldl doesn't let update the entity :/ guess i have to go on the one iteration per systems :/
+        ( seed, newEntities ) =
+            Dict.foldl configuredUpdater ( model.currentSeed, model.entities ) model.entities
+    in
+    { model | entities = newEntities, currentSeed = seed }
+
+
+newUpdateEntities : Msg -> Model -> Model
+newUpdateEntities msg model =
+    let
+        configuredUpdater =
+            newUpdateEntity msg
 
         test =
             Debug.log "count" (Dict.size model.entities)

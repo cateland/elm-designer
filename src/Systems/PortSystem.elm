@@ -1,4 +1,4 @@
-module PortSystem exposing (portSystem)
+module PortSystem exposing (newPortSystem, portSystem)
 
 import Attachment exposing (..)
 import Components
@@ -73,34 +73,106 @@ calculatePortAttachement getPosition nodeShape =
         |> Vector2d.from (getCenterPosition nodeShape)
 
 
-portSystem : Msgs.Msg -> Entities -> String -> (Entity, NewEntities) -> (Entity, NewEntities)
-portSystem msg entities key (entity, newEntities) =
-    case ( getPort entity, getShape entity ) of
-        ( Just (Port (PortSource nodeId)), Just (Shape portShape) ) ->
-            case findNodeShape nodeId entities of
-                Just nodeShape ->
-                    case getAttachment entity of
-                        Just (Attachment _ _) ->
-                            (entity, newEntities)
+portSystem : Msgs.Msg -> Entities -> String -> ( Entity, NewEntities ) -> ( Entity, NewEntities )
+portSystem msg entities key tuple =
+    let
+        ( entity, newEntities ) =
+            tuple
+    in
+    case getPort entity of
+        Just (Port (PortSource nodeId)) ->
+            case getAttachment entity of
+                Just (Attachment _ _) ->
+                    ( entity, newEntities )
+
+                _ ->
+                    case getShape entity of
+                        Just (Shape portShape) ->
+                            case findNodeShape nodeId entities of
+                                Just nodeShape ->
+                                    ( addComponent (Attachment nodeId (calculatePortAttachement getSourcePortPosition nodeShape)) entity, newEntities )
+
+                                Nothing ->
+                                    tuple
 
                         _ ->
-                            (addComponent (Attachment nodeId (calculatePortAttachement getSourcePortPosition nodeShape)) entity, newEntities)
+                            tuple
 
-                Nothing ->
-                    (entity, newEntities)
+        Just (Port (PortSink nodeId)) ->
+            case getAttachment entity of
+                Just (Attachment _ _) ->
+                    tuple
 
-        ( Just (Port (PortSink nodeId)), Just (Shape portShape) ) ->
-            case findNodeShape nodeId entities of
-                Just nodeShape ->
-                    case getAttachment entity of
-                        Just (Attachment _ _) ->
-                            (entity, newEntities)
+                _ ->
+                    case getShape entity of
+                        Just (Shape portShape) ->
+                            case findNodeShape nodeId entities of
+                                Just nodeShape ->
+                                    case getAttachment entity of
+                                        Just (Attachment _ _) ->
+                                            tuple
+
+                                        _ ->
+                                            ( addComponent (Attachment nodeId (calculatePortAttachement getSinkPortPosition nodeShape)) entity, newEntities )
+
+                                Nothing ->
+                                    tuple
 
                         _ ->
-                            (addComponent (Attachment nodeId (calculatePortAttachement getSinkPortPosition nodeShape)) entity, newEntities)
-
-                Nothing ->
-                    (entity, newEntities)
+                            tuple
 
         _ ->
-            (entity, newEntities)
+            tuple
+
+
+
+newPortSystem : Msgs.Msg -> Entities -> String -> ( Entity, NewEntities ) -> ( Entity, NewEntities )
+newPortSystem msg entities key tuple =
+    let
+        ( entity, newEntities ) =
+            tuple
+    in
+    case getPort entity of
+        Just (Port (PortSource nodeId)) ->
+            case getAttachment entity of
+                Just (Attachment _ _) ->
+                    ( entity, newEntities )
+
+                _ ->
+                    case getShape entity of
+                        Just (Shape portShape) ->
+                            case findNodeShape nodeId entities of
+                                Just nodeShape ->
+                                    ( addComponent (Attachment nodeId (calculatePortAttachement getSourcePortPosition nodeShape)) entity, newEntities )
+
+                                Nothing ->
+                                    tuple
+
+                        _ ->
+                            tuple
+
+        Just (Port (PortSink nodeId)) ->
+            case getAttachment entity of
+                Just (Attachment _ _) ->
+                    tuple
+
+                _ ->
+                    case getShape entity of
+                        Just (Shape portShape) ->
+                            case findNodeShape nodeId entities of
+                                Just nodeShape ->
+                                    case getAttachment entity of
+                                        Just (Attachment _ _) ->
+                                            tuple
+
+                                        _ ->
+                                            ( addComponent (Attachment nodeId (calculatePortAttachement getSinkPortPosition nodeShape)) entity, newEntities )
+
+                                Nothing ->
+                                    tuple
+
+                        _ ->
+                            tuple
+
+        _ ->
+            tuple

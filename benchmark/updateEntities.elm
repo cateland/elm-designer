@@ -7,7 +7,7 @@ import Entity
         ( Entities
         , createEmptyNewEntities
         )
-import Main exposing (updateEntities)
+import Main exposing (updateEntities, newUpdateEntities)
 import Entities exposing (entities)
 import Msgs exposing (Msg(Move))
 import Random.Pcg exposing (Seed, initialSeed, step)
@@ -39,7 +39,7 @@ suite =
             "old"
             (\_ -> updateEntities msg model)
             "new"
-            (\_ -> updateEntities msg model)
+            (\_ -> newUpdateEntities msg model)
         ]
 
 

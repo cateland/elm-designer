@@ -1,4 +1,4 @@
-module SelectableSystem exposing (selectableSystem)
+module SelectableSystem exposing (newSelectableSystem, selectableSystem)
 
 import Appearance exposing (getAppearance, updateAppearance)
 import Components exposing (Component(Appearance, SelectableComponent, Shape), Selectable(..))
@@ -9,67 +9,173 @@ import Selectable exposing (getSelectable, updateSelectable)
 import Shape exposing (isVectorOver)
 import ShapeComponent exposing (getShape)
 
-selectableSystem : Msgs.Msg -> Entities -> String -> (Entity, NewEntities) -> (Entity, NewEntities)
-selectableSystem msg entities key (entity, newEntities) =
+
+selectableSystem : Msgs.Msg -> Entities -> String -> ( Entity, NewEntities ) -> ( Entity, NewEntities )
+selectableSystem msg entities key tuple =
+    let
+        ( entity, newEntities ) =
+            tuple
+    in
     case
         msg
     of
         Msgs.Press position ->
-            case
-                ( getSelectable entity, getShape entity, getAppearance entity )
-            of
-                ( Just (SelectableComponent (Components.NotSelected selectedAppearence)), Just (Shape entityShape), _ ) ->
-                    case isVectorOver (positionToPoint2d position) entityShape of
-                        True ->
-                            (updateSelectable (SelectableComponent (Pressed ( position, selectedAppearence ))) entity, newEntities)
+            case getSelectable entity of
+                Just (SelectableComponent (Components.NotSelected selectedAppearence)) ->
+                    case
+                        ( getShape entity, getAppearance entity )
+                    of
+                        ( Just (Shape entityShape), Just (Appearance ( initialAppearence, overideAppearence )) ) ->
+                            if isVectorOver (positionToPoint2d position) entityShape then
+                                tuple
+                            else
+                                ( updateSelectable
+                                    (SelectableComponent (Components.NotSelected selectedAppearence))
+                                    (updateAppearance (Appearance ( initialAppearence, overideAppearence )) entity)
+                                , newEntities
+                                )
 
-                        False ->
-                            (entity, newEntities)
-
-                ( Just (SelectableComponent (Components.Selected selectedAppearence)), Just (Shape entityShape), Just (Appearance ( initialAppearence, overideAppearence )) ) ->
-                    case isVectorOver (positionToPoint2d position) entityShape of
-                        True ->
-                            (entity, newEntities)
-
-                        False ->
-                            (updateSelectable
-                                (SelectableComponent (Components.NotSelected selectedAppearence))
-                                (updateAppearance (Appearance ( initialAppearence, overideAppearence )) entity), newEntities)
-
-                _ ->
-                    (entity, newEntities)
-
-        Msgs.Release position ->
-            case
-                ( getSelectable entity, getShape entity )
-            of
-                ( Just (SelectableComponent (Components.Pressed ( pressPosition, selectedAppearence ))), Just (Shape entityShape) ) ->
-                    case getAppearance entity of
-                        Just (Appearance ( initialAppearence, overideAppearence )) ->
-                            case pressPosition.x == position.x && pressPosition.y == position.y of
-                                True ->
-                                    (updateSelectable
-                                        (SelectableComponent (Selected selectedAppearence))
-                                        (updateAppearance (Appearance ( initialAppearence, List.append overideAppearence selectedAppearence )) entity), newEntities)
-
-                                False ->
-                                    (updateSelectable
-                                        (SelectableComponent (NotSelected selectedAppearence))
-                                        (updateAppearance (Appearance ( initialAppearence, overideAppearence )) entity), newEntities)
-
-                        Nothing ->
-                            (entity, newEntities)
+                        ( Just (Shape entityShape), _ ) ->
+                            if isVectorOver (positionToPoint2d position) entityShape then
+                                ( updateSelectable (SelectableComponent (Pressed ( position, selectedAppearence ))) entity, newEntities )
+                            else
+                                tuple
 
                         _ ->
-                            (entity, newEntities)
+                            tuple
 
                 _ ->
-                    (entity, newEntities)
+                    tuple
+
+        Msgs.Release position ->
+            case getSelectable entity of
+                Just (SelectableComponent (Components.Pressed ( pressPosition, selectedAppearence ))) ->
+                    case
+                        getShape entity
+                    of
+                        Just (Shape entityShape) ->
+                            case getAppearance entity of
+                                Just (Appearance ( initialAppearence, overideAppearence )) ->
+                                    if pressPosition == position then
+                                        ( updateSelectable
+                                            (SelectableComponent (Selected selectedAppearence))
+                                            (updateAppearance (Appearance ( initialAppearence, List.append overideAppearence selectedAppearence )) entity)
+                                        , newEntities
+                                        )
+                                    else
+                                        ( updateSelectable
+                                            (SelectableComponent (NotSelected selectedAppearence))
+                                            (updateAppearance (Appearance ( initialAppearence, overideAppearence )) entity)
+                                        , newEntities
+                                        )
+
+                                Nothing ->
+                                    tuple
+
+                                _ ->
+                                    tuple
+
+                        _ ->
+                            tuple
+
+                _ ->
+                    tuple
 
         _ ->
-            case ( getSelectable entity, getAppearance entity ) of
-                ( Just (SelectableComponent (Components.Selected selectedAppearence)), Just (Appearance ( initialAppearence, overideAppearence )) ) ->
-                    (updateAppearance (Appearance ( initialAppearence, List.append overideAppearence selectedAppearence )) entity, newEntities)
+            case getSelectable entity of
+                Just (SelectableComponent (Components.Selected selectedAppearence)) ->
+                    case ( getSelectable entity, getAppearance entity ) of
+                        ( Just (SelectableComponent (Components.Selected selectedAppearence)), Just (Appearance ( initialAppearence, overideAppearence )) ) ->
+                            ( updateAppearance (Appearance ( initialAppearence, List.append overideAppearence selectedAppearence )) entity, newEntities )
+
+                        _ ->
+                            tuple
 
                 _ ->
-                    (entity, newEntities)
+                    tuple
+
+
+
+newSelectableSystem : Msgs.Msg -> Entities -> String -> ( Entity, NewEntities ) -> ( Entity, NewEntities )
+newSelectableSystem msg entities key tuple =
+    let
+        ( entity, newEntities ) =
+            tuple
+    in
+    case
+        msg
+    of
+        Msgs.Press position ->
+            case getSelectable entity of
+                Just (SelectableComponent (Components.NotSelected selectedAppearence)) ->
+                    case
+                        ( getShape entity, getAppearance entity )
+                    of
+                        ( Just (Shape entityShape), Just (Appearance ( initialAppearence, overideAppearence )) ) ->
+                            if isVectorOver (positionToPoint2d position) entityShape then
+                                tuple
+                            else
+                                ( updateSelectable
+                                    (SelectableComponent (Components.NotSelected selectedAppearence))
+                                    (updateAppearance (Appearance ( initialAppearence, overideAppearence )) entity)
+                                , newEntities
+                                )
+
+                        ( Just (Shape entityShape), _ ) ->
+                            if isVectorOver (positionToPoint2d position) entityShape then
+                                ( updateSelectable (SelectableComponent (Pressed ( position, selectedAppearence ))) entity, newEntities )
+                            else
+                                tuple
+
+                        _ ->
+                            tuple
+
+                _ ->
+                    tuple
+
+        Msgs.Release position ->
+            case getSelectable entity of
+                Just (SelectableComponent (Components.Pressed ( pressPosition, selectedAppearence ))) ->
+                    case
+                        getShape entity
+                    of
+                        Just (Shape entityShape) ->
+                            case getAppearance entity of
+                                Just (Appearance ( initialAppearence, overideAppearence )) ->
+                                    if pressPosition == position then
+                                        ( updateSelectable
+                                            (SelectableComponent (Selected selectedAppearence))
+                                            (updateAppearance (Appearance ( initialAppearence, List.append overideAppearence selectedAppearence )) entity)
+                                        , newEntities
+                                        )
+                                    else
+                                        ( updateSelectable
+                                            (SelectableComponent (NotSelected selectedAppearence))
+                                            (updateAppearance (Appearance ( initialAppearence, overideAppearence )) entity)
+                                        , newEntities
+                                        )
+
+                                Nothing ->
+                                    tuple
+
+                                _ ->
+                                    tuple
+
+                        _ ->
+                            tuple
+
+                _ ->
+                    tuple
+
+        _ ->
+            case getSelectable entity of
+                Just (SelectableComponent (Components.Selected selectedAppearence)) ->
+                    case ( getSelectable entity, getAppearance entity ) of
+                        ( Just (SelectableComponent (Components.Selected selectedAppearence)), Just (Appearance ( initialAppearence, overideAppearence )) ) ->
+                            ( updateAppearance (Appearance ( initialAppearence, List.append overideAppearence selectedAppearence )) entity, newEntities )
+
+                        _ ->
+                            tuple
+
+                _ ->
+                    tuple

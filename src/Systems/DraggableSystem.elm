@@ -1,4 +1,4 @@
-module DraggableSystem exposing (draggableSystem)
+module DraggableSystem exposing (draggableSystem, newDraggableSystem)
 
 import Components
     exposing
@@ -38,56 +38,128 @@ findControlDrag entities =
 
 
 draggableSystem : Msgs.Msg -> Entities -> String -> ( Entity, NewEntities ) -> ( Entity, NewEntities )
-draggableSystem msg entities key ( entity, newEntities ) =
-    case ( getDraggable entity, getShape entity, findControlDrag entities ) of
-        ( Just (DraggableComponent dragStatus), Just (Shape entityShape), Just drag ) ->
-            case
-                isVectorOver (positionToPoint2d drag.startPos) entityShape
-            of
-                True ->
-                    case isDragged dragStatus of
+draggableSystem msg entities key tuple =
+    let
+        ( entity, newEntities ) = tuple
+    in
+    case getDraggable entity of
+        Just (DraggableComponent dragStatus) ->
+            case ( getShape entity, findControlDrag entities ) of
+                ( Just (Shape entityShape), Just drag ) ->
+                    case
+                        isVectorOver (positionToPoint2d drag.startPos) entityShape
+                    of
                         True ->
-                            ( updateShape
-                                (Shape
-                                    (translateBy
-                                        (Vector2d.fromComponents
-                                            ( toFloat (drag.currentPos.x - drag.previousPos.x)
-                                            , toFloat (drag.currentPos.y - drag.previousPos.y)
+                            case isDragged dragStatus of
+                                True ->
+                                    ( updateShape
+                                        (Shape
+                                            (translateBy
+                                                (Vector2d.fromComponents
+                                                    ( toFloat (drag.currentPos.x - drag.previousPos.x)
+                                                    , toFloat (drag.currentPos.y - drag.previousPos.y)
+                                                    )
+                                                )
+                                                entityShape
                                             )
                                         )
-                                        entityShape
+                                        entity
+                                    , newEntities
                                     )
-                                )
-                                entity
-                            , newEntities
-                            )
+
+                                False ->
+                                    ( updateDraggable (DraggableComponent createDragged) entity, newEntities )
 
                         False ->
-                            ( updateDraggable (DraggableComponent createDragged) entity, newEntities )
-
-                False ->
-                    case isDragged dragStatus of
-                        True ->
-                            ( updateShape
-                                (Shape
-                                    (translateBy
-                                        (Vector2d.fromComponents
-                                            ( toFloat (drag.currentPos.x - drag.previousPos.x)
-                                            , toFloat (drag.currentPos.y - drag.previousPos.y)
+                            case isDragged dragStatus of
+                                True ->
+                                    ( updateShape
+                                        (Shape
+                                            (translateBy
+                                                (Vector2d.fromComponents
+                                                    ( toFloat (drag.currentPos.x - drag.previousPos.x)
+                                                    , toFloat (drag.currentPos.y - drag.previousPos.y)
+                                                    )
+                                                )
+                                                entityShape
                                             )
                                         )
-                                        entityShape
+                                        entity
+                                    , newEntities
                                     )
-                                )
-                                entity
-                            , newEntities
-                            )
 
-                        False ->
-                            ( entity, newEntities )
+                                False ->
+                                    tuple
 
-        ( Just (DraggableComponent _), Just (Shape entityShape), Nothing ) ->
-            ( updateDraggable (DraggableComponent createNotDragged) entity, newEntities )
+                ( Just (Shape entityShape), Nothing ) ->
+                    ( updateDraggable (DraggableComponent createNotDragged) entity, newEntities )
+
+                _ ->
+                    tuple
 
         _ ->
-            ( entity, newEntities )
+            tuple
+
+
+newDraggableSystem : Msgs.Msg -> Entities -> String -> ( Entity, NewEntities ) -> ( Entity, NewEntities )
+newDraggableSystem msg entities key tuple =
+    let
+        ( entity, newEntities ) = tuple
+    in
+    case getDraggable entity of
+        Just (DraggableComponent dragStatus) ->
+            case ( getShape entity, findControlDrag entities ) of
+                ( Just (Shape entityShape), Just drag ) ->
+                    case
+                        isVectorOver (positionToPoint2d drag.startPos) entityShape
+                    of
+                        True ->
+                            case isDragged dragStatus of
+                                True ->
+                                    ( updateShape
+                                        (Shape
+                                            (translateBy
+                                                (Vector2d.fromComponents
+                                                    ( toFloat (drag.currentPos.x - drag.previousPos.x)
+                                                    , toFloat (drag.currentPos.y - drag.previousPos.y)
+                                                    )
+                                                )
+                                                entityShape
+                                            )
+                                        )
+                                        entity
+                                    , newEntities
+                                    )
+
+                                False ->
+                                    ( updateDraggable (DraggableComponent createDragged) entity, newEntities )
+
+                        False ->
+                            case isDragged dragStatus of
+                                True ->
+                                    ( updateShape
+                                        (Shape
+                                            (translateBy
+                                                (Vector2d.fromComponents
+                                                    ( toFloat (drag.currentPos.x - drag.previousPos.x)
+                                                    , toFloat (drag.currentPos.y - drag.previousPos.y)
+                                                    )
+                                                )
+                                                entityShape
+                                            )
+                                        )
+                                        entity
+                                    , newEntities
+                                    )
+
+                                False ->
+                                    tuple
+
+                ( Just (Shape entityShape), Nothing ) ->
+                    ( updateDraggable (DraggableComponent createNotDragged) entity, newEntities )
+
+                _ ->
+                    tuple
+
+        _ ->
+            tuple

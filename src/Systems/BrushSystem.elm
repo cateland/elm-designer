@@ -1,4 +1,4 @@
-module BrushSystem exposing (brushSystem)
+module BrushSystem exposing (brushSystem, newBrushSystem)
 
 import Brush exposing (getBrush, updateBrush)
 import Components
@@ -21,7 +21,7 @@ import Math exposing (positionToPoint2d)
 import Msgs exposing (Msg)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
-import Shape exposing (isVectorOver, createBoundingBox)
+import Shape exposing (createBoundingBox, isVectorOver)
 import ShapeComponent exposing (getShape, updateShape)
 
 
@@ -66,59 +66,137 @@ intersectWithEntities point entities =
 
 
 brushSystem : Msgs.Msg -> Entities -> String -> ( Entity, NewEntities ) -> ( Entity, NewEntities )
-brushSystem msg entities key ( entity, newEntities ) =
-    case ( getBrush entity, findControlDrag entities, getShape entity ) of
-        ( Just (Brush isBrushable), Just drag, _ ) ->
-            case drag.startPos.x == drag.currentPos.x && drag.startPos.y == drag.currentPos.y of
-                True ->
-                    ( entity, newEntities )
+brushSystem msg entities key tuple =
+    let
+        ( entity, newEntities ) =
+            tuple
+    in
+    case getBrush entity of
+        Just (Brush isBrushable) ->
+            case ( findControlDrag entities, getShape entity ) of
+                ( Just drag, _ ) ->
+                    case drag.startPos.x == drag.currentPos.x && drag.startPos.y == drag.currentPos.y of
+                        True ->
+                            tuple
 
-                False ->
-                    case ( intersectWithEntities (positionToPoint2d drag.startPos) entities, isBrushable ) of
-                        ( True, True ) ->
-                            ( updateBrush (Brush False) entity, newEntities )
+                        False ->
+                            case ( intersectWithEntities (positionToPoint2d drag.startPos) entities, isBrushable ) of
+                                ( True, True ) ->
+                                    ( updateBrush (Brush False) entity, newEntities )
 
-                        ( False, True ) ->
-                            case getShape entity of
-                                Just _ ->
-                                    ( updateShape
-                                        (Shape
-                                            (createBoundingBox
-                                                (BoundingBox2d.with
-                                                    { minX = toFloat drag.startPos.x
-                                                    , maxX = toFloat drag.currentPos.x
-                                                    , minY = toFloat drag.startPos.y
-                                                    , maxY = toFloat drag.currentPos.y
-                                                    }
+                                ( False, True ) ->
+                                    case getShape entity of
+                                        Just _ ->
+                                            ( updateShape
+                                                (Shape
+                                                    (createBoundingBox
+                                                        (BoundingBox2d.with
+                                                            { minX = toFloat drag.startPos.x
+                                                            , maxX = toFloat drag.currentPos.x
+                                                            , minY = toFloat drag.startPos.y
+                                                            , maxY = toFloat drag.currentPos.y
+                                                            }
+                                                        )
+                                                    )
                                                 )
+                                                entity
+                                            , newEntities
                                             )
-                                        )
-                                        entity
-                                    , newEntities
-                                    )
 
-                                Nothing ->
-                                    ( addComponent
-                                        (Shape
-                                            (createBoundingBox
-                                                (BoundingBox2d.with
-                                                    { minX = toFloat drag.startPos.x
-                                                    , maxX = toFloat drag.currentPos.x
-                                                    , minY = toFloat drag.startPos.y
-                                                    , maxY = toFloat drag.currentPos.y
-                                                    }
+                                        Nothing ->
+                                            ( addComponent
+                                                (Shape
+                                                    (createBoundingBox
+                                                        (BoundingBox2d.with
+                                                            { minX = toFloat drag.startPos.x
+                                                            , maxX = toFloat drag.currentPos.x
+                                                            , minY = toFloat drag.startPos.y
+                                                            , maxY = toFloat drag.currentPos.y
+                                                            }
+                                                        )
+                                                    )
                                                 )
+                                                entity
+                                            , newEntities
                                             )
-                                        )
-                                        entity
-                                    , newEntities
-                                    )
 
-                        _ ->
-                            ( entity, newEntities )
+                                _ ->
+                                    tuple
 
-        ( Just (Brush _), Nothing, Just shape ) ->
-            ( removeComponent shape entity, newEntities )
+                ( Nothing, Just shape ) ->
+                    ( removeComponent shape entity, newEntities )
+
+                _ ->
+                    ( updateBrush (Brush True) entity, newEntities )
 
         _ ->
-            ( updateBrush (Brush True) entity, newEntities )
+            tuple
+
+
+
+newBrushSystem : Msgs.Msg -> Entities -> String -> ( Entity, NewEntities ) -> ( Entity, NewEntities )
+newBrushSystem msg entities key tuple =
+    let
+        ( entity, newEntities ) =
+            tuple
+    in
+    case getBrush entity of
+        Just (Brush isBrushable) ->
+            case ( findControlDrag entities, getShape entity ) of
+                ( Just drag, _ ) ->
+                    case drag.startPos.x == drag.currentPos.x && drag.startPos.y == drag.currentPos.y of
+                        True ->
+                            tuple
+
+                        False ->
+                            case ( intersectWithEntities (positionToPoint2d drag.startPos) entities, isBrushable ) of
+                                ( True, True ) ->
+                                    ( updateBrush (Brush False) entity, newEntities )
+
+                                ( False, True ) ->
+                                    case getShape entity of
+                                        Just _ ->
+                                            ( updateShape
+                                                (Shape
+                                                    (createBoundingBox
+                                                        (BoundingBox2d.with
+                                                            { minX = toFloat drag.startPos.x
+                                                            , maxX = toFloat drag.currentPos.x
+                                                            , minY = toFloat drag.startPos.y
+                                                            , maxY = toFloat drag.currentPos.y
+                                                            }
+                                                        )
+                                                    )
+                                                )
+                                                entity
+                                            , newEntities
+                                            )
+
+                                        Nothing ->
+                                            ( addComponent
+                                                (Shape
+                                                    (createBoundingBox
+                                                        (BoundingBox2d.with
+                                                            { minX = toFloat drag.startPos.x
+                                                            , maxX = toFloat drag.currentPos.x
+                                                            , minY = toFloat drag.startPos.y
+                                                            , maxY = toFloat drag.currentPos.y
+                                                            }
+                                                        )
+                                                    )
+                                                )
+                                                entity
+                                            , newEntities
+                                            )
+
+                                _ ->
+                                    tuple
+
+                ( Nothing, Just shape ) ->
+                    ( removeComponent shape entity, newEntities )
+
+                _ ->
+                    ( updateBrush (Brush True) entity, newEntities )
+
+        _ ->
+            tuple

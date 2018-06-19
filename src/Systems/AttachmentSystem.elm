@@ -25,9 +25,8 @@ findParentShape key entities =
                 _ ->
                     Nothing
 
-        _ ->
+        Nothing ->
             Nothing
-
 
 attachementSystem : Msgs.Msg -> Entities -> String -> ( Entity, NewEntities ) -> ( Entity, NewEntities )
 attachementSystem msg entities key ( entity, newEntities ) =

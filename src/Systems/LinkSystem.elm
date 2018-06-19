@@ -1,4 +1,4 @@
-module LinkSystem exposing (linkSystem)
+module LinkSystem exposing (linkSystem, newLinkSystem)
 
 import Components
     exposing
@@ -11,8 +11,9 @@ import Entity exposing (Entities, Entity, NewEntities, addComponent)
 import Link exposing (..)
 import Msgs exposing (Msg)
 import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
-import Shape exposing (Shape, getCenterPosition, isVectorOver, translateBy, createLineSegment)
+import Shape exposing (Shape, createLineSegment, getCenterPosition, isVectorOver, translateBy)
 import ShapeComponent exposing (getShape, updateShape)
+
 
 findParentShape : String -> Entities -> Maybe Shape
 findParentShape key entities =
@@ -30,7 +31,11 @@ findParentShape key entities =
 
 
 linkSystem : Msgs.Msg -> Entities -> String -> ( Entity, NewEntities ) -> ( Entity, NewEntities )
-linkSystem msg entities key ( entity, newEntities ) =
+linkSystem msg entities key tuple =
+    let
+        ( entity, newEntities ) =
+            tuple
+    in
     case getLink entity of
         Just (Link sourceId targetId) ->
             case ( findParentShape sourceId entities, findParentShape targetId entities ) of
@@ -49,7 +54,37 @@ linkSystem msg entities key ( entity, newEntities ) =
                             ( addComponent (Shape (createLineSegment (LineSegment2d.fromEndpoints ( getCenterPosition sourceShape, getCenterPosition targetShape )))) entity, newEntities )
 
                 _ ->
-                    ( entity, newEntities )
+                    tuple
 
         _ ->
-            ( entity, newEntities )
+            tuple
+
+
+newLinkSystem : Msgs.Msg -> Entities -> String -> ( Entity, NewEntities ) -> ( Entity, NewEntities )
+newLinkSystem msg entities key tuple =
+    let
+        ( entity, newEntities ) =
+            tuple
+    in
+    case getLink entity of
+        Just (Link sourceId targetId) ->
+            case ( findParentShape sourceId entities, findParentShape targetId entities ) of
+                ( Just sourceShape, Just targetShape ) ->
+                    case getShape entity of
+                        Just shape ->
+                            ( updateShape
+                                (Shape
+                                    (createLineSegment (LineSegment2d.fromEndpoints ( getCenterPosition sourceShape, getCenterPosition targetShape )))
+                                )
+                                entity
+                            , newEntities
+                            )
+
+                        Nothing ->
+                            ( addComponent (Shape (createLineSegment (LineSegment2d.fromEndpoints ( getCenterPosition sourceShape, getCenterPosition targetShape )))) entity, newEntities )
+
+                _ ->
+                    tuple
+
+        _ ->
+            tuple

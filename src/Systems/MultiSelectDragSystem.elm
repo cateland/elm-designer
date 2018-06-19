@@ -1,4 +1,4 @@
-module MultiSelectDragSystem exposing (multiSelectDragSystem)
+module MultiSelectDragSystem exposing (multiSelectDragSystem, newMultiSelectDragSystem)
 
 import Attribute exposing (fill)
 import Components
@@ -52,8 +52,9 @@ convertShapeListToBox entities =
 
 
 multiSelectDragSystem : Msgs.Msg -> Entities -> String -> ( Entity, NewEntities ) -> ( Entity, NewEntities )
-multiSelectDragSystem msg entities key ( entity, newEntities ) =
+multiSelectDragSystem msg entities key tuple =
     let
+        ( entity, newEntities ) = tuple
         selectedEntities =
             filterSelectedEntities entities
     in
@@ -84,8 +85,48 @@ multiSelectDragSystem msg entities key ( entity, newEntities ) =
                     )
 
                 _ ->
-                    ( entity, newEntities )
+                    tuple
 
         False ->
             -- Dict.remove "multiDrag" entities
-            ( entity, newEntities )
+            tuple
+
+newMultiSelectDragSystem : Msgs.Msg -> Entities -> String -> ( Entity, NewEntities ) -> ( Entity, NewEntities )
+newMultiSelectDragSystem msg entities key tuple =
+    let
+        ( entity, newEntities ) = tuple
+        selectedEntities =
+            filterSelectedEntities entities
+    in
+    case Dict.size selectedEntities > 1 of
+        True ->
+            let
+                boxList =
+                    selectedEntities
+            in
+            case convertShapeListToBox boxList of
+                Just hull ->
+                    ( entity
+                    , addToNewEntitiesWithKey "multiselectDrag"
+                        (createEntity
+                            [ Drawable 60
+                            , Shape
+                                (createBoundingBox
+                                    hull
+                                )
+                            , DraggableComponent createDragged
+                            , HoverableComponent
+                                (createNotHovered
+                                    [ fill "red" ]
+                                )
+                            ]
+                        )
+                        newEntities
+                    )
+
+                _ ->
+                    tuple
+
+        False ->
+            -- Dict.remove "multiDrag" entities
+            tuple

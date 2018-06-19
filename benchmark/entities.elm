@@ -9,6 +9,7 @@ import Hoverable exposing (createNotHovered)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
 import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
+import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 import Shape exposing (Shape(..), createBoundingBox)
 
 
@@ -148,6 +149,29 @@ circle2 =
             )
         ]
 
+
+circle3 : Entity
+circle3 =
+    createEntity
+        [ Drawable 80
+        , Shape
+            (Circle2d
+                (Circle2d.with
+                    { centerPoint = Point2d.fromCoordinates ( 70, 120 )
+                    , radius = 10
+                    }
+                )
+            )
+        , Port (PortSource "circle0")
+        , Attachment "circle0" (Vector2d.fromComponents (10.0, 10.0))
+        , Appearance
+            ( [ stroke "#1563A5"
+              , strokeWidth "2"
+              , fill "white"
+              ]
+            , []
+            )
+        ]
 
 link1 : Entity
 link1 =
