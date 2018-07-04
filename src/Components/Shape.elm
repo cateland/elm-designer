@@ -9,11 +9,11 @@ module Shape
         , translateBy
         )
 
-import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
-import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
-import OpenSolid.LineSegment2d as LineSegment2d exposing (LineSegment2d)
-import OpenSolid.Point2d as Point2d exposing (Point2d)
-import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
+import BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
+import Circle2d as Circle2d exposing (Circle2d)
+import LineSegment2d as LineSegment2d exposing (LineSegment2d)
+import Point2d as Point2d exposing (Point2d)
+import Vector2d as Vector2d exposing (Vector2d)
 
 
 type Shape

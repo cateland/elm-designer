@@ -1,6 +1,6 @@
 module Attachment exposing (Attachment, createAttachment, getAttachmentTarget, setAttachmentTarget, getAttachmentOffset, setAttachmntOffset)
 
-import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
+import Vector2d as Vector2d exposing (Vector2d)
 
 
 type alias Attachment =

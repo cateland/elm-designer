@@ -23,10 +23,10 @@ import Html.Events
 import Json.Decode as Decode
 import Mouse exposing (Position, moves, ups)
 import Msgs exposing (Msg(..))
-import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
-import OpenSolid.Circle2d as Circle2d exposing (Circle2d)
-import OpenSolid.Point2d as Point2d exposing (Point2d)
-import OpenSolid.Svg as Svg
+import BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
+import Circle2d as Circle2d exposing (Circle2d)
+import Point2d as Point2d exposing (Point2d)
+import Geometry.Svg as Svg
 import Random.Pcg exposing (Seed, initialSeed, step)
 import Render exposing (generateEntitySvgAttributes)
 import Shape exposing (Shape(..), createBoundingBox)
@@ -66,7 +66,7 @@ test =
     entity
         <> [ shape
                 (createBoundingBox
-                    (BoundingBox2d.with
+                    (BoundingBox2d.fromExtrema
                         { minX = 50
                         , maxX = 70
                         , minY = 50

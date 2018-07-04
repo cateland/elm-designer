@@ -25,7 +25,7 @@ import Hoverable exposing (Hoverable)
 import Attachment exposing (Attachment)
 import Mouse exposing (Position)
 import Shape exposing (Shape)
-import OpenSolid.Point2d as Point2d exposing (Point2d)
+import Point2d as Point2d exposing (Point2d)
 
 
 type alias Drag =

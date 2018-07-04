@@ -1,7 +1,7 @@
 module Draggable exposing (Draggable, DragStatus, createDragged, createNotDragged, isDragged, getDraggStatus, updateCurrentPosition, getDragMoveVectorDelta)
 
 import Mouse exposing (Position)
-import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
+import Vector2d as Vector2d exposing (Vector2d)
 import Math exposing (positionToPoint2d)
 
 
