@@ -20,6 +20,8 @@ import Random.Pcg exposing (Seed, initialSeed, step)
 import Uuid
 import Shape exposing (Shape)
 import Draggable exposing (Draggable)
+import Attachment exposing (Attachment)
+import Port exposing (Port)
 
 
 type alias Component =
@@ -28,8 +30,10 @@ type alias Component =
 
 type alias Entity =
     { shape : Maybe Shape
+    , attachment : Maybe Attachment
     , drawable : Maybe Int
     , drag : Maybe Draggable
+    , portComponent : Maybe Port
     }
 
 

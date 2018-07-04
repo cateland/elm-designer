@@ -3,7 +3,10 @@ module Main exposing (Model, main, updateEntities, updateEntity)
 import Attribute exposing (fill, rx, ry, stroke, strokeWidth)
 import Dict exposing (Dict)
 import Draggable exposing (Draggable, createNotDragged)
+import Port exposing (Port, createPortSource, createPortSink)
+import AttachmentSystem exposing (attachementSystem)
 import DraggableSystem exposing (draggableSystem)
+import PortSystem exposing (portSystem)
 import Entity
     exposing
         ( Entities
@@ -29,7 +32,7 @@ import Point2d as Point2d exposing (Point2d)
 import Geometry.Svg as Svg
 import Random.Pcg exposing (Seed, initialSeed, step)
 import Render exposing (generateEntitySvgAttributes)
-import Shape exposing (Shape(..), createBoundingBox)
+import Shape exposing (Shape(..), createBoundingBox, createCircle2d)
 import Svg exposing (Svg, rect, svg)
 import Svg.Attributes as Attributes exposing (height, id, width)
 
@@ -49,20 +52,34 @@ drag drag entity =
     { entity | drag = Just (drag) }
 
 
+portComponent : Port -> Component
+portComponent portComponent entity =
+    { entity | portComponent = Just (portComponent) }
+
+
 entity : Entity
 entity =
     { shape = Nothing
+    , attachment = Nothing
     , drawable = Nothing
     , drag = Nothing
+    , portComponent = Nothing
     }
 
 
+main : Program Never Model Msg
+main =
+    Html.program { init = init, view = view, update = update, subscriptions = subscriptions }
 
--- A blue entity
+
+type alias Model =
+    { entities : Entities
+    , currentSeed : Seed
+    }
 
 
-test : Entity
-test =
+box1 : Entity
+box1 =
     entity
         <> [ shape
                 (createBoundingBox
@@ -79,37 +96,25 @@ test =
            ]
 
 
-main : Program Never Model Msg
-main =
-    Html.program { init = init, view = view, update = update, subscriptions = subscriptions }
+box2 : Entity
+box2 =
+    entity
+        <> [ shape
+                (createBoundingBox
+                    (BoundingBox2d.fromExtrema
+                        { minX = 200
+                        , maxX = 400
+                        , minY = 150
+                        , maxY = 250
+                        }
+                    )
+                )
+           , drawable 10
+           , drag createNotDragged
+           ]
 
 
-type alias Model =
-    { entities : Entities
-    , currentSeed : Seed
-    }
 
-
-
--- control : Entity
--- control =
---     createEntity [ Components.DragStatus Nothing ]
--- box1 : Entity
--- box1 =
---     createEntity
---         [ Drawable 70
---         , ShapeComponent
---             (createBoundingBox
---                 (BoundingBox2d.with
---                     { minX = 50
---                     , maxX = 70
---                     , minY = 50
---                     , maxY = 70
---                     }
---                 )
---             )
---         , DraggableComponent createNotDragged
---         ]
 -- box2 : Entity
 -- box2 =
 --     createEntity
@@ -144,6 +149,25 @@ type alias Model =
 --             )
 --         , Node
 --         ]
+
+
+circleComponent : Entity
+circleComponent =
+    entity
+        <> [ shape
+                (createCircle2d
+                    (Circle2d.withRadius 50
+                        (Point2d.fromCoordinates
+                            ( 100, 150 )
+                        )
+                    )
+                )
+           , drawable 10
+           , drag createNotDragged
+           ]
+
+
+
 -- circleComponent : Entity
 -- circleComponent =
 --     createEntity
@@ -174,6 +198,26 @@ type alias Model =
 --             )
 --         , Node
 --         ]
+
+
+circle1 : Entity
+circle1 =
+    entity
+        <> [ shape
+                (createCircle2d
+                    (Circle2d.withRadius 10
+                        (Point2d.fromCoordinates
+                            ( 70, 120 )
+                        )
+                    )
+                )
+           , drawable 10
+           , drag createNotDragged
+           , portComponent (createPortSource "circle0")
+           ]
+
+
+
 -- circle1 : Entity
 -- circle1 =
 --     createEntity
@@ -195,6 +239,26 @@ type alias Model =
 --             , []
 --             )
 --         ]
+
+
+circle2 : Entity
+circle2 =
+    entity
+        <> [ shape
+                (createCircle2d
+                    (Circle2d.withRadius 10
+                        (Point2d.fromCoordinates
+                            ( 70, 120 )
+                        )
+                    )
+                )
+           , drawable 10
+           , drag createNotDragged
+           , portComponent (createPortSink "box2")
+           ]
+
+
+
 -- circle2 : Entity
 -- circle2 =
 --     createEntity
@@ -247,14 +311,13 @@ init =
 
         entities =
             Dict.empty
-                |> addEntity "test" test
+                -- |> addEntity "control" control
+                |> addEntity "box1" box1
+                |> addEntity "box2" box2
+                |> addEntity "circle0" circleComponent
+                |> addEntity "circle1" circle1
+                |> addEntity "circle2" circle2
 
-        -- |> addEntity "control" control
-        -- |> addEntity "box1" box1
-        -- |> addEntity "box2" box2
-        -- |> addEntity "circle0" circleComponent
-        -- |> addEntity "circle1" circle1
-        -- |> addEntity "circle2" circle2
         -- |> addEntity "link1" link1
         -- |> addEntity "brush" brush
     in
@@ -277,6 +340,8 @@ updateEntity msg key entity ( seed, entities ) =
         ( updatedEntity, newEntities ) =
             ( entity, createEmptyNewEntities seed )
                 |> draggableSystem msg entities key
+                |> attachementSystem msg entities key
+                |> portSystem msg entities key
     in
         case isNewEntitiesEmpty newEntities of
             True ->

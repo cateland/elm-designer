@@ -3,6 +3,7 @@ module Shape
         ( Shape(BoundingBox2d, Circle2d, LineSegment2d)
         , createBoundingBox
         , createLineSegment
+        , createCircle2d
         , getCenterPosition
         , getShapeBoundingBox
         , isVectorOver
@@ -31,6 +32,10 @@ createLineSegment lineSegment =
 createBoundingBox : BoundingBox2d -> Shape
 createBoundingBox boundingBox =
     BoundingBox2d boundingBox
+
+createCircle2d : Circle2d -> Shape
+createCircle2d circle2d =
+    Circle2d circle2d
 
 
 isVectorOver : Point2d -> Shape -> Bool

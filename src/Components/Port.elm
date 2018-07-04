@@ -1,49 +1,46 @@
-module Port exposing (filterPort, getPort, updatePort)
-
-import Components exposing (Component(Port))
-import Entity exposing (Entity, addComponent, createEntity, getComponents)
+module Port exposing (Port, createPortSource, createPortSink, getTarget, isPortSource, isPortSink)
 
 
-getPort : Entity -> Maybe Component
-getPort entity =
-    case getComponents entity of
-        [] ->
-            Nothing
-
-        x :: xs ->
-            case x of
-                Port _ ->
-                    Just x
-
-                _ ->
-                    getPort (createEntity xs)
+type Port
+    = PortSource String
+    | PortSink String
 
 
-filterPort : Entity -> Entity
-filterPort entity =
-    case getComponents entity of
-        [] ->
-            createEntity []
-
-        x :: xs ->
-            case x of
-                Port _ ->
-                    filterPort (createEntity xs)
-
-                _ ->
-                    addComponent x (filterPort (createEntity xs))
+createPortSource : String -> Port
+createPortSource target =
+    PortSource target
 
 
-updatePort : Component -> Entity -> Entity
-updatePort component entity =
-    case component of
-        Port _ ->
-            case getPort entity of
-                Nothing ->
-                    entity
+createPortSink : String -> Port
+createPortSink target =
+    PortSink target
 
-                _ ->
-                    addComponent component (filterPort entity)
 
-        _ ->
-            entity
+isPortSource : Port -> Bool
+isPortSource portComponent =
+    case portComponent of
+        PortSource _ ->
+            True
+
+        PortSink _ ->
+            False
+
+
+getTarget : Port -> String
+getTarget portComponent =
+    case portComponent of
+        PortSink target ->
+            target
+
+        PortSource target ->
+            target
+
+
+isPortSink : Port -> Bool
+isPortSink portComponent =
+    case portComponent of
+        PortSink _ ->
+            True
+
+        PortSource _ ->
+            False
