@@ -21,6 +21,7 @@ type Shape
     | Circle2d Circle2d
     | LineSegment2d LineSegment2d
 
+    
 
 createLineSegment : LineSegment2d -> Shape
 createLineSegment lineSegment =

@@ -1,14 +1,25 @@
-module Draggable exposing (Draggable, createDragged, createNotDragged, isDragged, toggleDraggable)
+module Draggable exposing (Draggable, DragStatus, createDragged, createNotDragged, isDragged, getDraggStatus, updateCurrentPosition, getDragMoveVectorDelta)
+
+import Mouse exposing (Position)
+import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
+import Math exposing (positionToPoint2d)
+
+
+type alias DragStatus =
+    { startPos : Mouse.Position
+    , previousPos : Mouse.Position
+    , currentPos : Mouse.Position
+    }
 
 
 type Draggable
-    = Dragged
+    = Dragged DragStatus
     | NotDragged
 
 
-createDragged : Draggable
-createDragged =
-    Dragged
+createDragged : DragStatus -> Draggable
+createDragged status =
+    Dragged status
 
 
 createNotDragged : Draggable
@@ -19,18 +30,28 @@ createNotDragged =
 isDragged : Draggable -> Bool
 isDragged drag =
     case drag of
-        Dragged ->
+        Dragged _ ->
             True
 
         NotDragged ->
             False
 
 
-toggleDraggable : Draggable -> Draggable
-toggleDraggable drag =
-    case drag of
-        Dragged ->
-            NotDragged
+getDraggStatus : Draggable -> Maybe DragStatus
+getDraggStatus draggable =
+    case draggable of
+        Dragged dragStatus ->
+            Just dragStatus
 
         NotDragged ->
-            Dragged
+            Nothing
+
+
+updateCurrentPosition : DragStatus -> Mouse.Position -> DragStatus
+updateCurrentPosition dragStatus position =
+    { dragStatus | previousPos = dragStatus.currentPos, currentPos = position }
+
+
+getDragMoveVectorDelta : DragStatus -> Vector2d
+getDragMoveVectorDelta dragStatus =
+    Vector2d.from (positionToPoint2d dragStatus.previousPos) (positionToPoint2d dragStatus.currentPos)

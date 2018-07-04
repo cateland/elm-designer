@@ -3,7 +3,7 @@ module BrushSystem exposing (brushSystem, newBrushSystem)
 import Brush exposing (getBrush, updateBrush)
 import Components
     exposing
-        ( Component(Appearance, Brush, HoverableComponent, Shape)
+        ( Component(Appearance, Brush, HoverableComponent, ShapeComponent)
         , Drag
         )
 import Dict exposing (Dict)
@@ -53,7 +53,7 @@ intersectWithEntity point key entity intersect =
 
         False ->
             case ( getShape entity, getHoverable entity ) of
-                ( Just (Shape shape), Just (HoverableComponent _) ) ->
+                ( Just (ShapeComponent shape), Just (HoverableComponent _) ) ->
                     isVectorOver point shape
 
                 _ ->
@@ -88,7 +88,7 @@ brushSystem msg entities key tuple =
                                     case getShape entity of
                                         Just _ ->
                                             ( updateShape
-                                                (Shape
+                                                (ShapeComponent
                                                     (createBoundingBox
                                                         (BoundingBox2d.with
                                                             { minX = toFloat drag.startPos.x
@@ -105,7 +105,7 @@ brushSystem msg entities key tuple =
 
                                         Nothing ->
                                             ( addComponent
-                                                (Shape
+                                                (ShapeComponent
                                                     (createBoundingBox
                                                         (BoundingBox2d.with
                                                             { minX = toFloat drag.startPos.x
@@ -157,7 +157,7 @@ newBrushSystem msg entities key tuple =
                                     case getShape entity of
                                         Just _ ->
                                             ( updateShape
-                                                (Shape
+                                                (ShapeComponent
                                                     (createBoundingBox
                                                         (BoundingBox2d.with
                                                             { minX = toFloat drag.startPos.x
@@ -174,7 +174,7 @@ newBrushSystem msg entities key tuple =
 
                                         Nothing ->
                                             ( addComponent
-                                                (Shape
+                                                (ShapeComponent
                                                     (createBoundingBox
                                                         (BoundingBox2d.with
                                                             { minX = toFloat drag.startPos.x

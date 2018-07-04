@@ -3,7 +3,7 @@ module MultiSelectDragSystem exposing (multiSelectDragSystem, newMultiSelectDrag
 import Attribute exposing (fill)
 import Components
     exposing
-        ( Component(DraggableComponent, Drawable, HoverableComponent, SelectableComponent, Shape)
+        ( Component(DraggableComponent, Drawable, HoverableComponent, SelectableComponent, ShapeComponent)
         )
 import Dict
 import Draggable exposing (createDragged, toggleDraggable)
@@ -19,7 +19,7 @@ import ShapeComponent exposing (getShape)
 filter : String -> Entity -> Bool
 filter key entity =
     case ( getSelectable entity, getShape entity ) of
-        ( Just (SelectableComponent (Components.Selected _)), Just (Shape entityShape) ) ->
+        ( Just (SelectableComponent (Components.Selected _)), Just (ShapeComponent entityShape) ) ->
             True
 
         _ ->
@@ -39,7 +39,7 @@ extractShape entity =
 foldIntoBox : Maybe Component -> Maybe BoundingBox2d
 foldIntoBox shape =
     case shape of
-        Just (Shape shape) ->
+        Just (ShapeComponent shape) ->
             Just (getShapeBoundingBox shape)
 
         _ ->
@@ -70,7 +70,7 @@ multiSelectDragSystem msg entities key tuple =
                     , addToNewEntitiesWithKey "multiselectDrag"
                         (createEntity
                             [ Drawable 60
-                            , Shape
+                            , ShapeComponent
                                 (createBoundingBox
                                     hull
                                 )
@@ -110,7 +110,7 @@ newMultiSelectDragSystem msg entities key tuple =
                     , addToNewEntitiesWithKey "multiselectDrag"
                         (createEntity
                             [ Drawable 60
-                            , Shape
+                            , ShapeComponent
                                 (createBoundingBox
                                     hull
                                 )

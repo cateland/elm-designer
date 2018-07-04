@@ -4,6 +4,7 @@ import Attribute exposing (fill, rx, ry, stroke, strokeWidth)
 import Components exposing (Component(..), Port(PortSink, PortSource))
 import Dict exposing (Dict)
 import Draggable exposing (createNotDragged)
+import Attachment exposing (createAttachment)
 import Entity exposing (Entities, Entity, addEntity, createEntity)
 import Hoverable exposing (createNotHovered)
 import OpenSolid.BoundingBox2d as BoundingBox2d exposing (BoundingBox2d)
@@ -22,7 +23,7 @@ box1 : Entity
 box1 =
     createEntity
         [ Drawable 70
-        , Shape
+        , ShapeComponent
             (createBoundingBox
                 (BoundingBox2d.with
                     { minX = 50
@@ -40,7 +41,7 @@ box2 : Entity
 box2 =
     createEntity
         [ Drawable 70
-        , Shape
+        , ShapeComponent
             (createBoundingBox
                 (BoundingBox2d.with
                     { minX = 200
@@ -76,7 +77,7 @@ circleComponent : Entity
 circleComponent =
     createEntity
         [ Drawable 70
-        , Shape
+        , ShapeComponent
             (Circle2d
                 (Circle2d.with
                     { centerPoint = Point2d.fromCoordinates ( 100, 150 )
@@ -108,7 +109,7 @@ circle1 : Entity
 circle1 =
     createEntity
         [ Drawable 80
-        , Shape
+        , ShapeComponent
             (Circle2d
                 (Circle2d.with
                     { centerPoint = Point2d.fromCoordinates ( 70, 120 )
@@ -131,7 +132,7 @@ circle2 : Entity
 circle2 =
     createEntity
         [ Drawable 80
-        , Shape
+        , ShapeComponent
             (Circle2d
                 (Circle2d.with
                     { centerPoint = Point2d.fromCoordinates ( 70, 120 )
@@ -154,7 +155,7 @@ circle3 : Entity
 circle3 =
     createEntity
         [ Drawable 80
-        , Shape
+        , ShapeComponent
             (Circle2d
                 (Circle2d.with
                     { centerPoint = Point2d.fromCoordinates ( 70, 120 )
@@ -163,7 +164,7 @@ circle3 =
                 )
             )
         , Port (PortSource "circle0")
-        , Attachment "circle0" (Vector2d.fromComponents (10.0, 10.0))
+        , AttachmentComponent (createAttachment "circle0" (Vector2d.fromComponents ( 10.0, 10.0 )))
         , Appearance
             ( [ stroke "#1563A5"
               , strokeWidth "2"
@@ -172,6 +173,7 @@ circle3 =
             , []
             )
         ]
+
 
 link1 : Entity
 link1 =

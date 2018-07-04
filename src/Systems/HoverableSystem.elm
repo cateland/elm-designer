@@ -1,7 +1,7 @@
 module HoverableSystem exposing (hoverableSystem, newHoverableSystem)
 
 import Appearance exposing (getAppearance, updateAppearance)
-import Components exposing (Component(Appearance, HoverableComponent, Shape))
+import Components exposing (Component(Appearance, HoverableComponent, ShapeComponent))
 import Entity exposing (Entities, Entity, NewEntities, addComponent)
 import Hoverable exposing (getHoverAppearence, isHovered, toggleHoverrable)
 import HoverableComponent exposing (getHoverable, updateHoverable)
@@ -23,7 +23,7 @@ hoverableSystem msg entities key tuple =
             case getHoverable entity of
                 Just (HoverableComponent hoverStatus) ->
                     case getShape entity of
-                        Just (Shape entityShape) ->
+                        Just (ShapeComponent entityShape) ->
                             case isHovered hoverStatus of
                                 True ->
                                     case
@@ -104,7 +104,7 @@ newHoverableSystem msg entities key tuple =
             case getHoverable entity of
                 Just (HoverableComponent hoverStatus) ->
                     case getShape entity of
-                        Just (Shape entityShape) ->
+                        Just (ShapeComponent entityShape) ->
                             case isHovered hoverStatus of
                                 True ->
                                     case

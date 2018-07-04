@@ -2,7 +2,7 @@ module LinkSystem exposing (linkSystem, newLinkSystem)
 
 import Components
     exposing
-        ( Component(Attachment, Link, Node, Port, Shape)
+        ( Component(AttachmentComponent, Link, Node, Port, ShapeComponent)
         , Drag
         , Port
         )
@@ -20,7 +20,7 @@ findParentShape key entities =
     case Dict.get key entities of
         Just entity ->
             case getShape entity of
-                Just (Shape nodeShape) ->
+                Just (ShapeComponent nodeShape) ->
                     Just nodeShape
 
                 _ ->
@@ -43,7 +43,7 @@ linkSystem msg entities key tuple =
                     case getShape entity of
                         Just shape ->
                             ( updateShape
-                                (Shape
+                                (ShapeComponent
                                     (createLineSegment (LineSegment2d.fromEndpoints ( getCenterPosition sourceShape, getCenterPosition targetShape )))
                                 )
                                 entity
@@ -51,7 +51,7 @@ linkSystem msg entities key tuple =
                             )
 
                         Nothing ->
-                            ( addComponent (Shape (createLineSegment (LineSegment2d.fromEndpoints ( getCenterPosition sourceShape, getCenterPosition targetShape )))) entity, newEntities )
+                            ( addComponent (ShapeComponent (createLineSegment (LineSegment2d.fromEndpoints ( getCenterPosition sourceShape, getCenterPosition targetShape )))) entity, newEntities )
 
                 _ ->
                     tuple
@@ -73,7 +73,7 @@ newLinkSystem msg entities key tuple =
                     case getShape entity of
                         Just shape ->
                             ( updateShape
-                                (Shape
+                                (ShapeComponent
                                     (createLineSegment (LineSegment2d.fromEndpoints ( getCenterPosition sourceShape, getCenterPosition targetShape )))
                                 )
                                 entity
@@ -81,7 +81,7 @@ newLinkSystem msg entities key tuple =
                             )
 
                         Nothing ->
-                            ( addComponent (Shape (createLineSegment (LineSegment2d.fromEndpoints ( getCenterPosition sourceShape, getCenterPosition targetShape )))) entity, newEntities )
+                            ( addComponent (ShapeComponent (createLineSegment (LineSegment2d.fromEndpoints ( getCenterPosition sourceShape, getCenterPosition targetShape )))) entity, newEntities )
 
                 _ ->
                     tuple

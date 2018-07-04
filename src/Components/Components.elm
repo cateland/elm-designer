@@ -2,7 +2,7 @@ module Components
     exposing
         ( Component
             ( Appearance
-            , Attachment
+            , AttachmentComponent
             , Brush
             , DragStatus
             , DraggableComponent
@@ -12,7 +12,7 @@ module Components
             , Node
             , Port
             , SelectableComponent
-            , Shape
+            , ShapeComponent
             )
         , Drag
         , Port(PortSink, PortSource)
@@ -22,10 +22,10 @@ module Components
 import Attribute exposing (Attribute)
 import Draggable exposing (Draggable)
 import Hoverable exposing (Hoverable)
+import Attachment exposing (Attachment)
 import Mouse exposing (Position)
 import Shape exposing (Shape)
 import OpenSolid.Point2d as Point2d exposing (Point2d)
-import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
 type alias Drag =
@@ -51,7 +51,7 @@ type Port
 
 type Component
     = Drawable Int
-    | Shape Shape
+    | ShapeComponent Shape
     | DragStatus (Maybe Drag)
     | DraggableComponent Draggable
     | HoverableComponent Hoverable
@@ -59,6 +59,6 @@ type Component
     | Node
     | Port Port
     | Link String String
-    | Attachment String Vector2d
+    | AttachmentComponent Attachment
     | Appearance ( List Attribute, List Attribute )
     | Brush Bool

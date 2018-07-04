@@ -1,49 +1,34 @@
-module Attachment exposing (filterAttachment, getAttachment, updateAttachment)
+module Attachment exposing (Attachment, createAttachment, getAttachmentTarget, setAttachmentTarget, getAttachmentOffset, setAttachmntOffset)
 
-import Components exposing (Component(Attachment))
-import Entity exposing (Entity, addComponent, createEntity, getComponents)
-
-
-getAttachment : Entity -> Maybe Component
-getAttachment entity =
-    case getComponents entity of
-        [] ->
-            Nothing
-
-        x :: xs ->
-            case x of
-                Attachment _ _ ->
-                    Just x
-
-                _ ->
-                    getAttachment (createEntity xs)
+import OpenSolid.Vector2d as Vector2d exposing (Vector2d)
 
 
-filterAttachment : Entity -> Entity
-filterAttachment entity =
-    case getComponents entity of
-        [] ->
-            createEntity []
-
-        x :: xs ->
-            case x of
-                Attachment _ _ ->
-                    filterAttachment (createEntity xs)
-
-                _ ->
-                    addComponent x (filterAttachment (createEntity xs))
+type alias Attachment =
+    { attachmentId : String
+    , offset : Vector2d
+    }
 
 
-updateAttachment : Component -> Entity -> Entity
-updateAttachment component entity =
-    case component of
-        Attachment _ _ ->
-            case getAttachment entity of
-                Nothing ->
-                    entity
+createAttachment : String -> Vector2d -> Attachment
+createAttachment attachmentId offset =
+    Attachment attachmentId offset
 
-                _ ->
-                    addComponent component (filterAttachment entity)
 
-        _ ->
-            entity
+getAttachmentTarget : Attachment -> String
+getAttachmentTarget attachment =
+    attachment.attachmentId
+
+
+setAttachmentTarget : Attachment -> String -> Attachment
+setAttachmentTarget attachment attachmentId =
+    { attachment | attachmentId = attachmentId }
+
+
+getAttachmentOffset : Attachment -> Vector2d
+getAttachmentOffset attachment =
+    attachment.offset
+
+
+setAttachmntOffset : Attachment -> Vector2d -> Attachment
+setAttachmntOffset attachment offset =
+    { attachment | offset = offset }

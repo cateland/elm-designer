@@ -1,7 +1,7 @@
 module SelectableSystem exposing (newSelectableSystem, selectableSystem)
 
 import Appearance exposing (getAppearance, updateAppearance)
-import Components exposing (Component(Appearance, SelectableComponent, Shape), Selectable(..))
+import Components exposing (Component(Appearance, SelectableComponent, ShapeComponent), Selectable(..))
 import Entity exposing (Entities, Entity, NewEntities, addComponent)
 import Math exposing (positionToPoint2d)
 import Msgs exposing (Msg)
@@ -25,7 +25,7 @@ selectableSystem msg entities key tuple =
                     case
                         ( getShape entity, getAppearance entity )
                     of
-                        ( Just (Shape entityShape), Just (Appearance ( initialAppearence, overideAppearence )) ) ->
+                        ( Just (ShapeComponent entityShape), Just (Appearance ( initialAppearence, overideAppearence )) ) ->
                             if isVectorOver (positionToPoint2d position) entityShape then
                                 tuple
                             else
@@ -35,7 +35,7 @@ selectableSystem msg entities key tuple =
                                 , newEntities
                                 )
 
-                        ( Just (Shape entityShape), _ ) ->
+                        ( Just (ShapeComponent entityShape), _ ) ->
                             if isVectorOver (positionToPoint2d position) entityShape then
                                 ( updateSelectable (SelectableComponent (Pressed ( position, selectedAppearence ))) entity, newEntities )
                             else
@@ -53,7 +53,7 @@ selectableSystem msg entities key tuple =
                     case
                         getShape entity
                     of
-                        Just (Shape entityShape) ->
+                        Just (ShapeComponent entityShape) ->
                             case getAppearance entity of
                                 Just (Appearance ( initialAppearence, overideAppearence )) ->
                                     if pressPosition == position then
@@ -111,7 +111,7 @@ newSelectableSystem msg entities key tuple =
                     case
                         ( getShape entity, getAppearance entity )
                     of
-                        ( Just (Shape entityShape), Just (Appearance ( initialAppearence, overideAppearence )) ) ->
+                        ( Just (ShapeComponent entityShape), Just (Appearance ( initialAppearence, overideAppearence )) ) ->
                             if isVectorOver (positionToPoint2d position) entityShape then
                                 tuple
                             else
@@ -121,7 +121,7 @@ newSelectableSystem msg entities key tuple =
                                 , newEntities
                                 )
 
-                        ( Just (Shape entityShape), _ ) ->
+                        ( Just (ShapeComponent entityShape), _ ) ->
                             if isVectorOver (positionToPoint2d position) entityShape then
                                 ( updateSelectable (SelectableComponent (Pressed ( position, selectedAppearence ))) entity, newEntities )
                             else
@@ -139,7 +139,7 @@ newSelectableSystem msg entities key tuple =
                     case
                         getShape entity
                     of
-                        Just (Shape entityShape) ->
+                        Just (ShapeComponent entityShape) ->
                             case getAppearance entity of
                                 Just (Appearance ( initialAppearence, overideAppearence )) ->
                                     if pressPosition == position then

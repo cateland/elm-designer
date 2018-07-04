@@ -2,28 +2,35 @@ module Entity
     exposing
         ( Entities
         , Entity
+        , Component
         , NewEntities
-        , addComponent
         , addEntity
         , addToNewEntities
         , addToNewEntitiesWithKey
         , createEmptyNewEntities
-        , createEntity
-        , getComponents
         , getNewEntitiesValues
         , getSeed
         , isNewEntitiesEmpty
-        , removeComponent
+        , (<>)
         )
 
-import Components exposing (Component)
+import List exposing ((::), map)
 import Dict exposing (Dict)
 import Random.Pcg exposing (Seed, initialSeed, step)
 import Uuid
+import Shape exposing (Shape)
+import Draggable exposing (Draggable)
 
 
-type Entity
-    = Entity (List Component)
+type alias Component =
+    Entity -> Entity
+
+
+type alias Entity =
+    { shape : Maybe Shape
+    , drawable : Maybe Int
+    , drag : Maybe Draggable
+    }
 
 
 type alias Entities =
@@ -45,7 +52,7 @@ addToNewEntities entity (NewEntities ( seed, list )) =
         ( newUuid, newSeed ) =
             step Uuid.uuidGenerator seed
     in
-    NewEntities ( newSeed, ( toString newUuid, entity ) :: list )
+        NewEntities ( newSeed, ( toString newUuid, entity ) :: list )
 
 
 addToNewEntitiesWithKey : String -> Entity -> NewEntities -> NewEntities
@@ -68,29 +75,19 @@ getNewEntitiesValues (NewEntities ( _, list )) =
     list
 
 
-createEntity : List Component -> Entity
-createEntity components =
-    Entity components
-
-
 isComponentEquals : Component -> Component -> Bool
 isComponentEquals component1 component2 =
     component1 == component2
 
 
-addComponent : Component -> Entity -> Entity
-addComponent component (Entity components) =
-    Entity (component :: components)
+(<>) : Entity -> List Component -> Entity
+(<>) entity components =
+    case components of
+        [] ->
+            entity
 
-
-removeComponent : Component -> Entity -> Entity
-removeComponent component (Entity components) =
-    Entity (List.filter (not << isComponentEquals component) components)
-
-
-getComponents : Entity -> List Component
-getComponents (Entity components) =
-    components
+        flip :: fs ->
+            (<>) (flip entity) fs
 
 
 addEntity : String -> Entity -> Entities -> Entities

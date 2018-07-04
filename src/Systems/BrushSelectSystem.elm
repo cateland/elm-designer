@@ -1,7 +1,7 @@
 module BrushSelectSystem exposing (brushSelectSystem, newBrushSelectSystem)
 
 import Brush exposing (getBrush)
-import Components exposing (Component(Brush, SelectableComponent, Shape))
+import Components exposing (Component(Brush, SelectableComponent, ShapeComponent))
 import Dict
 import Entity exposing (Entities, Entity, NewEntities)
 import Msgs exposing (Msg)
@@ -16,7 +16,7 @@ findBrushShape entities =
     case Dict.get "brush" entities of
         Just entity ->
             case ( getBrush entity, getShape entity ) of
-                ( Just (Brush _), Just (Shape brushShape) ) ->
+                ( Just (Brush _), Just (ShapeComponent brushShape) ) ->
                     Just brushShape
 
                 _ ->
@@ -34,7 +34,7 @@ brushSelectSystem msg entities key tuple =
     case getSelectable entity of
         Just (SelectableComponent (Components.NotSelected selectedAppearence)) ->
             case getShape entity of
-                Just (Shape entityShape) ->
+                Just (ShapeComponent entityShape) ->
                     case findBrushShape entities of
                         Just brushShape ->
                             case BoundingBox2d.isContainedIn (getShapeBoundingBox brushShape) (getShapeBoundingBox entityShape) of
@@ -52,7 +52,7 @@ brushSelectSystem msg entities key tuple =
 
         Just (SelectableComponent (Components.Selected selectedAppearence)) ->
             case getShape entity of
-                Just (Shape entityShape) ->
+                Just (ShapeComponent entityShape) ->
                     case findBrushShape entities of
                         Just brushShape ->
                             case BoundingBox2d.isContainedIn (getShapeBoundingBox brushShape) (getShapeBoundingBox entityShape) of
@@ -80,7 +80,7 @@ newBrushSelectSystem msg entities key tuple =
     case getSelectable entity of
         Just (SelectableComponent (Components.NotSelected selectedAppearence)) ->
             case getShape entity of
-                Just (Shape entityShape) ->
+                Just (ShapeComponent entityShape) ->
                     case findBrushShape entities of
                         Just brushShape ->
                             case BoundingBox2d.isContainedIn (getShapeBoundingBox brushShape) (getShapeBoundingBox entityShape) of
@@ -98,7 +98,7 @@ newBrushSelectSystem msg entities key tuple =
 
         Just (SelectableComponent (Components.Selected selectedAppearence)) ->
             case getShape entity of
-                Just (Shape entityShape) ->
+                Just (ShapeComponent entityShape) ->
                     case findBrushShape entities of
                         Just brushShape ->
                             case BoundingBox2d.isContainedIn (getShapeBoundingBox brushShape) (getShapeBoundingBox entityShape) of
