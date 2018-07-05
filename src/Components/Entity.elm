@@ -22,6 +22,8 @@ import Shape exposing (Shape)
 import Draggable exposing (Draggable)
 import Attachment exposing (Attachment)
 import Port exposing (Port)
+import Link exposing (Link)
+import Appearence exposing (Appearence)
 
 
 type alias Component =
@@ -34,6 +36,8 @@ type alias Entity =
     , drawable : Maybe Int
     , drag : Maybe Draggable
     , portComponent : Maybe Port
+    , linkComponent: Maybe Link
+    , appearence : Maybe Appearence
     }
 
 

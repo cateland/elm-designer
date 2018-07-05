@@ -4,9 +4,12 @@ import Attribute exposing (fill, rx, ry, stroke, strokeWidth)
 import Dict exposing (Dict)
 import Draggable exposing (Draggable, createNotDragged)
 import Port exposing (Port, createPortSource, createPortSink)
+import Link exposing (Link)
+import Appearence exposing (Appearence, createAppearence)
 import AttachmentSystem exposing (attachementSystem)
 import DraggableSystem exposing (draggableSystem)
 import PortSystem exposing (portSystem)
+import LinkSystem exposing (linkSystem)
 import Entity
     exposing
         ( Entities
@@ -57,6 +60,16 @@ portComponent portComponent entity =
     { entity | portComponent = Just (portComponent) }
 
 
+linkComponent : Link -> Component
+linkComponent linkComponent entity =
+    { entity | linkComponent = Just (linkComponent) }
+
+
+appearence : Appearence -> Component
+appearence appearence entity =
+    { entity | appearence = Just (appearence) }
+
+
 entity : Entity
 entity =
     { shape = Nothing
@@ -64,6 +77,8 @@ entity =
     , drawable = Nothing
     , drag = Nothing
     , portComponent = Nothing
+    , linkComponent = Nothing
+    , appearence = Nothing
     }
 
 
@@ -111,6 +126,16 @@ box2 =
                 )
            , drawable 10
            , drag createNotDragged
+           , appearence
+                (createAppearence
+                    [ stroke "#C5C5C5"
+                    , strokeWidth "2"
+                    , fill "#F6F6F6"
+                    , rx "4"
+                    , ry "4"
+                    ]
+                    []
+                )
            ]
 
 
@@ -118,28 +143,7 @@ box2 =
 -- box2 : Entity
 -- box2 =
 --     createEntity
---         [ Drawable 70
---         , ShapeComponent
---             (createBoundingBox
---                 (BoundingBox2d.with
---                     { minX = 200
---                     , maxX = 400
---                     , minY = 150
---                     , maxY = 250
---                     }
---                 )
---             )
---         , DraggableComponent createNotDragged
---         , Appearance
---             ( [ stroke "#C5C5C5"
---               , strokeWidth "2"
---               , fill "#F6F6F6"
---               , rx "4"
---               , ry "4"
---               ]
---             , []
---             )
---         , SelectableComponent
+--         [ SelectableComponent
 --             (Components.NotSelected
 --                 [ stroke "#67BBFF" ]
 --             )
@@ -164,6 +168,14 @@ circleComponent =
                 )
            , drawable 10
            , drag createNotDragged
+           , appearence
+                (createAppearence
+                    [ stroke "#C5C5C5"
+                    , strokeWidth "2"
+                    , fill "#F6F6F6"
+                    ]
+                    []
+                )
            ]
 
 
@@ -171,24 +183,7 @@ circleComponent =
 -- circleComponent : Entity
 -- circleComponent =
 --     createEntity
---         [ Drawable 70
---         , ShapeComponent
---             (Circle2d
---                 (Circle2d.with
---                     { centerPoint = Point2d.fromCoordinates ( 100, 150 )
---                     , radius = 50
---                     }
---                 )
---             )
---         , DraggableComponent createNotDragged
---         , Appearance
---             ( [ stroke "#C5C5C5"
---               , strokeWidth "2"
---               , fill "#F6F6F6"
---               ]
---             , []
---             )
---         , SelectableComponent
+--         [ SelectableComponent
 --             (Components.NotSelected
 --                 [ stroke "red" ]
 --             )
@@ -214,31 +209,15 @@ circle1 =
            , drawable 10
            , drag createNotDragged
            , portComponent (createPortSource "circle0")
+           , appearence
+                (createAppearence
+                    [ stroke "#1563A5"
+                    , strokeWidth "2"
+                    , fill "white"
+                    ]
+                    []
+                )
            ]
-
-
-
--- circle1 : Entity
--- circle1 =
---     createEntity
---         [ Drawable 80
---         , ShapeComponent
---             (Circle2d
---                 (Circle2d.with
---                     { centerPoint = Point2d.fromCoordinates ( 70, 120 )
---                     , radius = 10
---                     }
---                 )
---             )
---         , Port (PortSource "circle0")
---         , Appearance
---             ( [ stroke "#1563A5"
---               , strokeWidth "2"
---               , fill "white"
---               ]
---             , []
---             )
---         ]
 
 
 circle2 : Entity
@@ -255,38 +234,33 @@ circle2 =
            , drawable 10
            , drag createNotDragged
            , portComponent (createPortSink "box2")
+           , appearence
+                (createAppearence
+                    [ stroke "#1563A5"
+                    , strokeWidth "2"
+                    , fill "white"
+                    ]
+                    []
+                )
+           ]
+
+
+link1 : Entity
+link1 =
+    entity
+        <> [ linkComponent (Link "circle1" "circle2")
+           , drawable 90
+           , appearence
+                (createAppearence
+                    [ stroke "#1563A5"
+                    , strokeWidth "5"
+                    ]
+                    []
+                )
            ]
 
 
 
--- circle2 : Entity
--- circle2 =
---     createEntity
---         [ Drawable 80
---         , ShapeComponent
---             (Circle2d
---                 (Circle2d.with
---                     { centerPoint = Point2d.fromCoordinates ( 70, 120 )
---                     , radius = 10
---                     }
---                 )
---             )
---         , Port (PortSink "box2")
---         , Appearance
---             ( [ stroke "#1563A5"
---               , strokeWidth "2"
---               , fill "white"
---               ]
---             , []
---             )
---         ]
--- link1 : Entity
--- link1 =
---     createEntity
---         [ Drawable 90
---         , Link "circle1" "circle2"
---         , Appearance ( [ stroke "#1563A5", strokeWidth "5" ], [] )
---         ]
 -- brush : Entity
 -- brush =
 --     createEntity
@@ -300,7 +274,6 @@ circle2 =
 --             , []
 --             )
 --         ]
---{ centerPoint : Point2d, radius : Float }
 
 
 init : ( Model, Cmd msg )
@@ -317,8 +290,8 @@ init =
                 |> addEntity "circle0" circleComponent
                 |> addEntity "circle1" circle1
                 |> addEntity "circle2" circle2
+                |> addEntity "link1" link1
 
-        -- |> addEntity "link1" link1
         -- |> addEntity "brush" brush
     in
         ( Model entities seed, Cmd.none )
@@ -342,6 +315,7 @@ updateEntity msg key entity ( seed, entities ) =
                 |> draggableSystem msg entities key
                 |> attachementSystem msg entities key
                 |> portSystem msg entities key
+                |> linkSystem msg entities key
     in
         case isNewEntitiesEmpty newEntities of
             True ->
@@ -373,6 +347,15 @@ update msg model =
     ( updateEntities msg model, Cmd.none )
 
 
+createSvgAttribtues : Entity -> List (Svg.Attribute msg)
+createSvgAttribtues entity =
+    Maybe.withDefault []
+        (entity
+            |> .appearence
+            |> Maybe.map generateEntitySvgAttributes
+        )
+
+
 renderEntity : ( String, Entity ) -> Html msg
 renderEntity ( key, entity ) =
     case
@@ -384,17 +367,17 @@ renderEntity ( key, entity ) =
             of
                 BoundingBox2d box ->
                     Svg.boundingBox2d
-                        [ Attributes.fill "black" ]
+                        (createSvgAttribtues entity)
                         box
 
                 Circle2d circle ->
                     Svg.circle2d
-                        [ Attributes.fill "black" ]
+                        (createSvgAttribtues entity)
                         circle
 
                 LineSegment2d lineSegment ->
                     Svg.lineSegment2d
-                        [ Attributes.fill "black" ]
+                        (createSvgAttribtues entity)
                         lineSegment
 
         _ ->

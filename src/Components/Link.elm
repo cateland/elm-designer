@@ -1,49 +1,20 @@
-module Link exposing (filterLink, getLink, updateLink)
-
-import Components exposing (Component(Link))
-import Entity exposing (Entity, addComponent, createEntity, getComponents)
+module Link exposing (Link, createLink, getSource, getTarget)
 
 
-getLink : Entity -> Maybe Component
-getLink entity =
-    case getComponents entity of
-        [] ->
-            Nothing
-
-        x :: xs ->
-            case x of
-                Link _ _ ->
-                    Just x
-
-                _ ->
-                    getLink (createEntity xs)
+type alias Link =
+    { source : String, target : String }
 
 
-filterLink : Entity -> Entity
-filterLink entity =
-    case getComponents entity of
-        [] ->
-            createEntity []
-
-        x :: xs ->
-            case x of
-                Link _ _ ->
-                    filterLink (createEntity xs)
-
-                _ ->
-                    addComponent x (filterLink (createEntity xs))
+createLink : String -> String -> Link
+createLink source target =
+    Link source target
 
 
-updateLink : Component -> Entity -> Entity
-updateLink component entity =
-    case component of
-        Link _ _ ->
-            case getLink entity of
-                Nothing ->
-                    entity
+getSource : Link -> String
+getSource link =
+    link.source
 
-                _ ->
-                    addComponent component (filterLink entity)
 
-        _ ->
-            entity
+getTarget : Link -> String
+getTarget link =
+    link.target
