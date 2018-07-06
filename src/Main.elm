@@ -3,11 +3,13 @@ module Main exposing (Model, main, updateEntities, updateEntity)
 import Attribute exposing (fill, rx, ry, stroke, strokeWidth)
 import Dict exposing (Dict)
 import Draggable exposing (Draggable, createNotDragged)
+import Hoverable exposing (Hoverable)
 import Port exposing (Port, createPortSource, createPortSink)
 import Link exposing (Link)
 import Appearence exposing (Appearence, createAppearence)
 import AttachmentSystem exposing (attachementSystem)
 import DraggableSystem exposing (draggableSystem)
+import HoverableSystem exposing (hoverableSystem)
 import PortSystem exposing (portSystem)
 import LinkSystem exposing (linkSystem)
 import Entity
@@ -55,6 +57,11 @@ drag drag entity =
     { entity | drag = Just (drag) }
 
 
+hover : Hoverable -> Component
+hover hover entity =
+    { entity | hover = Just (hover) }
+
+
 portComponent : Port -> Component
 portComponent portComponent entity =
     { entity | portComponent = Just (portComponent) }
@@ -79,6 +86,7 @@ entity =
     , portComponent = Nothing
     , linkComponent = Nothing
     , appearence = Nothing
+    , hover = Nothing
     }
 
 
@@ -136,6 +144,10 @@ box2 =
                     ]
                     []
                 )
+           , hover
+                (createNotHovered
+                    [ fill "white" ]
+                )
            ]
 
 
@@ -146,10 +158,6 @@ box2 =
 --         [ SelectableComponent
 --             (Components.NotSelected
 --                 [ stroke "#67BBFF" ]
---             )
---         , HoverableComponent
---             (createNotHovered
---                 [ fill "white" ]
 --             )
 --         , Node
 --         ]
@@ -176,6 +184,10 @@ circleComponent =
                     ]
                     []
                 )
+           , hover
+                (createNotHovered
+                    [ fill "white" ]
+                )
            ]
 
 
@@ -186,10 +198,6 @@ circleComponent =
 --         [ SelectableComponent
 --             (Components.NotSelected
 --                 [ stroke "red" ]
---             )
---         , HoverableComponent
---             (createNotHovered
---                 [ fill "white" ]
 --             )
 --         , Node
 --         ]
@@ -313,6 +321,7 @@ updateEntity msg key entity ( seed, entities ) =
         ( updatedEntity, newEntities ) =
             ( entity, createEmptyNewEntities seed )
                 |> draggableSystem msg entities key
+                |> hoverableSystem msg entities key
                 |> attachementSystem msg entities key
                 |> portSystem msg entities key
                 |> linkSystem msg entities key

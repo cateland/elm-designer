@@ -1,4 +1,4 @@
-module Appearence exposing (Appearence, createAppearence, getInitialAppearence, getOverrindingAppearence)
+module Appearence exposing (Appearence, createAppearence, getInitialAppearence, getOverrindingAppearence, setOverrideAppearence, clearOverrideAppearence)
 
 import Attribute exposing (Attribute)
 
@@ -20,3 +20,12 @@ getInitialAppearence ( intialAppearence, _ ) =
 getOverrindingAppearence : Appearence -> List Attribute
 getOverrindingAppearence ( _, overridenAppearence ) =
     overridenAppearence
+
+
+setOverrideAppearence : List Attribute -> Appearence -> Appearence
+setOverrideAppearence overridenAppearence ( intialAppearence, _ ) =
+    ( intialAppearence, overridenAppearence )
+
+clearOverrideAppearence : Appearence -> Appearence
+clearOverrideAppearence (intialAppearence, _) =
+    (intialAppearence, [])

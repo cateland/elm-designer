@@ -20,6 +20,7 @@ import Random.Pcg exposing (Seed, initialSeed, step)
 import Uuid
 import Shape exposing (Shape)
 import Draggable exposing (Draggable)
+import Hoverable exposing (Hoverable)
 import Attachment exposing (Attachment)
 import Port exposing (Port)
 import Link exposing (Link)
@@ -35,6 +36,7 @@ type alias Entity =
     , attachment : Maybe Attachment
     , drawable : Maybe Int
     , drag : Maybe Draggable
+    , hover : Maybe Hoverable
     , portComponent : Maybe Port
     , linkComponent: Maybe Link
     , appearence : Maybe Appearence
